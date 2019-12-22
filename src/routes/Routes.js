@@ -1,14 +1,11 @@
-import React from 'react';
-import { BrowserRouter, Switch } from 'react-router-dom';
-
+import React from 'react'
+import {BrowserRouter, Switch} from 'react-router-dom'
 
 const Routes = () => (
-    // rendering the router with layout
-    <BrowserRouter>
-        <Switch>
-            
-        </Switch>
-    </BrowserRouter>
-);
+  // rendering the router with layout
+  <BrowserRouter>
+    <Switch />
+  </BrowserRouter>
+)
 
-export default Routes;
+export default Routes

@@ -48,16 +48,57 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "kcd-scripts test",
+    "lint": "kcd-scripts lint",
+    "validate": "kcd-scripts validate",
+    "setup": "npm install --silent && npm run validate --silent"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "kcd-scripts pre-commit"
+    }
+  },
+  "babel": {
+    "presets": [
+      "kcd-scripts/babel"
+    ]
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "./node_modules/kcd-scripts/eslint.js",
+    "rules": {
+      "import/prefer-default-export": "off",
+      "jsx-a11y/label-has-for": "off",
+      "react/prop-types": "off",
+      "import/no-unassigned-import": "off",
+      "no-console": "off",
+      "jsx-a11y/accessible-emoji": "off",
+      "consistent-return": "off"
+    }
+  },
+  "eslintIgnore": [
+    "node_modules",
+    "coverage"
+  ],
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": false,
+    "jsxBracketSameLine": false,
+    "proseWrap": "always"
   },
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "jest-axe": "^3.2.0",
+    "kcd-scripts": "^1.14.0"
+  }
 }
