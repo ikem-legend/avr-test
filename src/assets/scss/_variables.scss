@@ -18,6 +18,8 @@ $gray-700: #4B4B5A;
 $gray-800: #343a40;
 $gray-900: #212529;
 $black:    #000;
+$avenir-blue: #1ca4a9;
+$avenir-red: #ff004e;
 
 $grays: ();
 // stylelint-disable-next-line scss/dollar-variable-default
@@ -163,7 +165,8 @@ $sizes: map-merge(
 //
 // Settings for the `<body>` element.
 
-$body-bg:                   #f3f4f7;
+$body-bg:                   #ffffff;
+// $body-bg:                   #f3f4f7;
 $body-color:                $gray-600;
 
 
