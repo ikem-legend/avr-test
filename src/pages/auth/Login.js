@@ -45,8 +45,11 @@ class Login extends Component {
     this._isMounted = true
 
     document.body.classList.add('authentication-bg')
+    const {email, password} = this.state
     // Another possible solution is to use an array to loop through the state then update field styling
-    document.querySelector('.float-container').classList.add('active')
+    if (email && password) {
+    	document.querySelectorAll('.float-container').classList.add('active')
+    }
   }
 
   componentWillUnmount() {
