@@ -23,7 +23,7 @@ import {
 } from 'availity-reactstrap-validation'
 // import {Mail, Lock} from 'react-feather'
 
-// import { loginUser } from '../../redux/actions';
+import { loginUser } from '../../redux/actions';
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 import logo from '../../assets/images/logo.png'
@@ -75,7 +75,7 @@ class Login extends Component {
   }
 
   deactivateField = e => {
-    console.log(e.target.name)
+    // console.log(e.target.name)
     document.querySelector(
       `.float-container #${e.target.name}`,
     ).parentElement.style.borderLeft = '1px solid #ccc'
@@ -146,7 +146,7 @@ class Login extends Component {
                         <AvGroup className="float-container mb-0">
                           <Label for="email">Email</Label>
                           <AvInput
-                            type="email"
+                            type="text"
                             name="email"
                             id="email"
                             // placeholder="hello@avenir.com"
@@ -233,12 +233,13 @@ class Login extends Component {
   }
 }
 
-const mapStateToProps = state => {
+// const mapStateToProps = state => {
   // const { user, loading, error } = state.Auth;
   // const { loading, error } = state.Auth;
   // return { user, loading, error };
   // return { loading, error };
-}
+// }
 
-export default connect(mapStateToProps)(Login)
+// export default connect(mapStateToProps)(Login)
+export default connect(null, { loginUser })(Login);
 // export default connect(mapStateToProps, { loginUser })(Login);
