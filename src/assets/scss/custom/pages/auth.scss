@@ -1,3 +1,4 @@
+// Login
 .login-bg {
 	background: transparent url('../../../images/login-bg.svg') 0% 0% no-repeat padding-box;
 	background-size: cover;
@@ -11,11 +12,12 @@
 	  position: relative;
 		input {
 		  border: none;
+		  border-radius: 0;
 		  outline: 0;
 		  margin: 10px 0 0px;
 		}
 	}
-	.float-container:nth-child(1) {
+	.float-container.n1 {
 	  	border-bottom: 0;
 	  }
 	.float-container.active label {
@@ -41,6 +43,9 @@
 		color: $avenir-red;
 		border: 1px solid $avenir-red;
 	}
+	.btn-blue {
+		background-color: $avenir-blue;
+	}
 	.btn-blue-inverted {
 		color: $avenir-blue;
 		border: 1px solid $avenir-blue;
@@ -52,5 +57,44 @@
 	}
 	.invalid-feedback {
 		padding: 0 8px;
+	}
+}
+
+// Signup
+.account-pages {
+	.lead {
+		font-size: 12px;
+		text-transform: uppercase;
+		color: $avenir-blue;
+	}
+	.verify-info {
+		font-size: 12px;
+	}
+	.ssn {
+		background-color: $avenir-light-blue;
+		label {
+			position: inherit;
+		}
+		p {
+			padding: 12px;
+			font-size: 12px;
+		}
+		input {
+	    width: 95%;
+	    height: 4rem;
+	    background-color: $white;
+		}
+	}
+	.custom-control-input:checked ~ .custom-control-label::before {
+		background-color: $avenir-blue !important;
+	}
+	.login {
+		margin: 0.5rem 0;
+		a {
+			color: $avenir-blue;
+		}
+	}
+	.btn-blue {
+		background-color: $avenir-blue;
 	}
 }
