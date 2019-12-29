@@ -143,7 +143,7 @@ class Login extends Component {
                         onValidSubmit={this.handleValidSubmit}
                         className="authentication-form"
                       >
-                        <AvGroup className="float-container mb-0">
+                        <AvGroup className="float-container n1 mb-0">
                           <Label for="email">Email</Label>
                           <AvInput
                             type="text"
@@ -183,7 +183,7 @@ class Login extends Component {
                           <Container>
                             <Row>
                               <Col md={{offset: 4, size: 4}}>
-                                <Button color="red" className="btn-block">
+                                <Button color="blue" className="btn-block">
                                   Login
                                 </Button>
                               </Col>
