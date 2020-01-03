@@ -1,6 +1,6 @@
 // Login
 .login-bg {
-	background: transparent url('../../../images/login-bg.svg') 0% 0% no-repeat padding-box;
+	background: transparent url('../../../images/login-bg-2.svg') 0% 0% no-repeat padding-box;
 	background-size: cover;
 	transform: matrix(0.98, 0.19, -0.19, 0.98, 0, 0);
 	opacity: 1;
@@ -61,6 +61,13 @@
 }
 
 // Signup
+.login-bg {
+	background: transparent url('../../../images/login-bg.svg') 0% 0% no-repeat padding-box;
+	background-size: cover;
+	// transform: matrix(0.98, 0.19, -0.19, 0.98, 0, 0);
+	opacity: 1;
+}
+
 .account-pages {
 	.lead {
 		font-size: 12px;
@@ -82,6 +89,7 @@
 		input {
 	    width: 95%;
 	    height: 4rem;
+	    font-size: 1rem;
 	    background-color: $white;
 		}
 	}

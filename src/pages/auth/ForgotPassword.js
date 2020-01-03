@@ -28,7 +28,7 @@ import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 import logo from '../../assets/images/logo.png'
 
-class Login extends Component {
+class ForgotPassword extends Component {
   _isMounted = false
 
   constructor(props) {
@@ -124,7 +124,15 @@ class Login extends Component {
 
                       <div className="mx-auto mb-5"></div>
 
-                      <h6 className="h5 mb-4 mt-4">Welcome back!</h6>
+                      <h6 className="h5 mt-4">Forgot Password?</h6>
+                      <div className="mb-4">
+                        <p className="verify-info font-weight-bold text-muted mb-0">
+                          Enter the email you’ve registered with.
+                        </p>
+                        <p className="verify-info font-weight-bold text-muted mb-0">
+                          We’ll send you the password reset instructions there.
+                        </p>
+                      </div>
 
                       {this.props.error && (
                         <Alert color="danger" isOpen={this.props.error}>
@@ -136,8 +144,8 @@ class Login extends Component {
                         onValidSubmit={this.handleValidSubmit}
                         className="authentication-form"
                       >
-                        <AvGroup className="float-container n1 mb-0">
-                          <Label for="email">Email</Label>
+                        <AvGroup className="float-container mb-4">
+                          <Label for="email">Your Email Address</Label>
                           <AvInput
                             type="email"
                             name="email"
@@ -148,36 +156,15 @@ class Login extends Component {
                             onBlur={this.deactivateField}
                             required
                           />
-                          <AvFeedback>This field is invalid</AvFeedback>
-                        </AvGroup>
-
-                        <AvGroup className="mb-5 float-container">
-                          <Label for="password">Password</Label>
-                          <AvInput
-                            type="password"
-                            name="password"
-                            id="password"
-                            // placeholder="Enter your password"
-                            value={this.state.password}
-                            onFocus={this.activateField}
-                            onBlur={this.deactivateField}
-                            required
-                          />
-                          <AvFeedback>This field is invalid</AvFeedback>
-                          <Link
-                            to="/account/forgot-password"
-                            className="mt-3 float-right blue-text font-weight-bold text-unline-dashed ml-1"
-                          >
-                            Forgot password?
-                          </Link>
+                          <AvFeedback>Email is invalid</AvFeedback>
                         </AvGroup>
 
                         <FormGroup className="form-group mb-0 text-center">
                           <Container>
                             <Row>
-                              <Col md={{offset: 4, size: 4}}>
+                              <Col md={{size: 8}}>
                                 <Button color="blue" className="btn-block">
-                                  Login
+                                  Request Password Reset
                                 </Button>
                               </Col>
                               <Col md={4}>
@@ -185,7 +172,7 @@ class Login extends Component {
                                   color="blue-inverted"
                                   className="btn-block"
                                 >
-                                  Sign Up
+                                  Back to Login
                                 </Button>
                               </Col>
                             </Row>
@@ -213,7 +200,9 @@ class Login extends Component {
                       </p>
                     </Col>
                     <Col className="col-4">
-                      <p className="text-muted float-right">Privacy | Terms</p>
+                      <p className="text-muted font-weight-bold float-right">
+                        Privacy | Terms
+                      </p>
                     </Col>
                   </Row>
                 </Col>
@@ -239,6 +228,6 @@ class Login extends Component {
 // return { loading, error };
 // }
 
-// export default connect(mapStateToProps)(Login)
-export default connect(null, {loginUser})(Login)
-// export default connect(mapStateToProps, { loginUser })(Login);
+// export default connect(mapStateToProps)(ForgotPassword)
+export default connect(null, {loginUser})(ForgotPassword)
+// export default connect(mapStateToProps, { loginUser })(ForgotPassword);

@@ -5,8 +5,8 @@ import {Route} from 'react-router-dom'
 // auth
 const Login = React.lazy(() => import('../pages/auth/Login'))
 // const Logout = React.lazy(() => import('../pages/auth/Logout'));
-const Signup = React.lazy(() => import('../pages/auth/Signup'));
-// const ForgetPassword = React.lazy(() => import('../pages/auth/ForgetPassword'));
+const Signup = React.lazy(() => import('../pages/auth/Signup'))
+const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
 
 // auth
 const authRoutes = {
@@ -26,10 +26,10 @@ const authRoutes = {
     //     route: Route,
     // },
     {
-        path: '/account/signup',
-        name: 'Signup',
-        component: Signup,
-        route: Route,
+      path: '/account/signup',
+      name: 'Signup',
+      component: Signup,
+      route: Route,
     },
     // {
     //     path: '/account/confirm',
@@ -37,12 +37,12 @@ const authRoutes = {
     //     component: Confirm,
     //     route: Route,
     // },
-    // {
-    //     path: '/account/forget-password',
-    //     name: 'Forget Password',
-    //     component: ForgetPassword,
-    //     route: Route,
-    // },
+    {
+      path: '/account/forgot-password',
+      name: 'Forgot Password',
+      component: ForgotPassword,
+      route: Route,
+    },
   ],
 }
 
