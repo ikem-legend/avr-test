@@ -24,6 +24,7 @@ import Flatpickr from 'react-flatpickr'
 import MaskedInput from 'react-text-mask'
 // import { Mail, Lock, User } from 'react-feather';
 
+import {callApi} from '../../helpers/api'
 import {registerUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -39,28 +40,30 @@ class Signup extends Component {
         firstname: '',
         lastname: '',
         phone: '',
-        ssn: '',
         dob: new Date('2004-01-01').getTime(),
+        email: '',
+        password: '',
+        ssn: '',
         address: '',
         zipcode: '',
         city: '',
         country: '',
       },
-      countries: [
-        {value: 'usa', label: 'USA'},
-        {value: 'uk', label: 'UK'},
-        {value: 'singapore', label: 'Singapore'},
-      ],
       cities: [
-        {value: 'new york', label: 'New York'},
-        {value: 'la', label: 'Los Angeles'},
-        {value: 'atl', label: 'Atlanta'},
+        // {value: 'new york', label: 'New York'},
+        // {value: 'la', label: 'Los Angeles'},
+        // {value: 'atl', label: 'Atlanta'},
       ],
+      countries: [
+        // {value: 'usa', label: 'USA'},
+        // {value: 'uk', label: 'UK'},
+        // {value: 'singapore', label: 'Singapore'},
+      ]
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this._isMounted = true
     document.body.classList.add('authentication-bg')
     const {firstname, lastname} = this.state
@@ -68,6 +71,28 @@ class Signup extends Component {
     if (firstname && lastname) {
       document.querySelectorAll('.float-container').classList.add('active')
     }
+    await callApi('/data/countries', null, 'GET')
+    	.then(response => {
+    		// console.log(response)
+    		const countryList = response.data.map(coun => (
+    			{value: coun.id, label: coun.name}
+    		))
+    		const cityArray = response.data.map(coun => (
+    			coun.cities.map(city => (
+	    			{value: city.id, label: city.name}
+    			))
+    		))
+    		const cityList = [].concat(...cityArray)
+    		// console.log(cityList)
+    		this.setState({
+    			cities: cityList,
+    			countries: countryList
+    		});
+    	})
+    	.catch(err => 
+    		console.log(err)
+    	)
+    	// console.log(registerUser)
   }
 
   componentWillUnmount() {
@@ -80,8 +105,22 @@ class Signup extends Component {
    * @param {object} event The event object
    * @param {object} values Values to be submitted
    */
-  handleValidSubmit = (event, values) => {
-    this.props.registerUser(values.fullname, values.email, values.password)
+  handleValidSubmit = () => {
+  	// console.log(event, values)
+  	console.log(this.state.inputs)
+  	const data = {...this.state.inputs}
+  	data.ssn = data.ssn.replace(/-/g, '')
+  	data.dob = String(data.dob)
+  	data.first_name = String(data.firstname)
+  	data.last_name = String(data.lastname)
+  	data.zip_code = String(data.zipcode)
+  	data.city_id = String(data.city.value)
+  	data.country_id = String(data.country.value)
+  	Object.keys(data).forEach(
+  		key => (key === 'firstname' || key === 'lastname' || key === 'zipcode' || key === 'city' || key === 'country') && delete data[key]
+  	)
+  	console.log(data)
+    this.props.registerUser(data)
   }
 
   activateField = e => {
@@ -108,9 +147,11 @@ class Signup extends Component {
   }
 
   updateInputValue = e => {
-    console.log(e)
+  	// e.persist()
+    // console.log(e.target)
     e.preventDefault()
     const {name, value} = e.target
+    // console.log(name, value)
     this.setState(prevState => ({
       ...prevState,
       inputs: {
@@ -145,11 +186,13 @@ class Signup extends Component {
       lastname,
       phone,
       dob,
+      email,
+      password,
       ssn,
       address,
       zipcode,
       city,
-      country,
+      country
     } = this.state.inputs
     return (
       <Fragment>
@@ -162,7 +205,7 @@ class Signup extends Component {
           <div className="account-pages mt-5 mb-5">
             <Container>
               <Row className="justify-content-center">
-                <Col xl={10}>
+                <Col xl={12}>
                   <Row>
                     <Col md={6} className="d-none d-md-inline-block">
                       <div className="auth-page-sidebar">
@@ -175,7 +218,7 @@ class Signup extends Component {
                           </p>
                         </div>
                       </div>
-                      <div className="overlay login-bg"></div>
+                      <div className="overlay signup-bg"></div>
                     </Col>
                     <Col md={6} className="position-relative">
                       {/* preloader */}
@@ -342,6 +385,75 @@ class Signup extends Component {
                               <AvFeedback>This field is invalid</AvFeedback>
                             </AvGroup>
                           </Col>
+                          <Col md={6}>
+                            <AvGroup className="float-container">
+                              <Label for="email">Email</Label>
+                              <AvInput
+                                type="email"
+                                name="email"
+                                id="email"
+                                // placeholder="Avenir A"
+                                value={email}
+                                onFocus={this.activateField}
+                                onBlur={this.deactivateField}
+                                onChange={this.updateInputValue}
+                                validate={{
+                                  // pattern: {
+                                  //   value: '^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+                                  //   errorMessage:
+                                  //     'Email must be valid in the format email@example.com',
+                                  // },
+                                  minLength: {
+                                    value: 5,
+                                    errorMessage:
+                                      'Your email address must be between 5 and 40 characters',
+                                  },
+                                  maxLength: {
+                                    value: 40,
+                                    errorMessage:
+                                      'Your email address must be between 5 and 40 characters',
+                                  },
+                                }}
+                                required
+                              />
+
+                              <AvFeedback>Email is invalid</AvFeedback>
+                            </AvGroup>
+                          </Col>
+                          <Col md={6}>
+                            <AvGroup className="float-container">
+                              <Label for="password">Password</Label>
+                              <AvInput
+                                type="password"
+                                name="password"
+                                id="password"
+                                // placeholder="Avenir A"
+                                value={password}
+                                onFocus={this.activateField}
+                                onBlur={this.deactivateField}
+                                onChange={this.updateInputValue}
+                                validate={{
+                                  pattern: {
+                                    value: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
+                                    errorMessage:
+                                      'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
+                                  },
+                                  minLength: {
+                                    value: 8,
+                                    errorMessage:
+                                      'Your name must be between 8 and 20 characters',
+                                  },
+                                  maxLength: {
+                                    value: 20,
+                                    errorMessage:
+                                      'Your name must be between 8 and 20 characters',
+                                  },
+                                }}
+                                required
+                              />
+                              <AvFeedback>Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters</AvFeedback>
+                            </AvGroup>
+                          </Col>
                           <Col md={12}>
                             <AvGroup className="ssn">
                               <Row>
@@ -375,11 +487,12 @@ class Signup extends Component {
                                       /\d/,
                                       /[1-9]/,
                                     ]}
+                                    name="ssn"
                                     className="form-control text-center"
                                     placeholder="999-99-9999"
                                     // placeholder="___-__-____"
                                     value={ssn}
-                                    // onChange={this.updateInputValue}
+                                    onChange={this.updateInputValue}
                                     required
                                   />
                                   <AvFeedback>
@@ -442,7 +555,7 @@ class Signup extends Component {
                                     ...prevState,
                                     inputs: {
                                       ...prevState.inputs,
-                                      city: val,
+                                      city: val
                                     },
                                   }))
                                 }
@@ -462,7 +575,7 @@ class Signup extends Component {
                                     ...prevState,
                                     inputs: {
                                       ...prevState.inputs,
-                                      country: val,
+                                      country: val
                                     },
                                   }))
                                 }

@@ -26,7 +26,6 @@ import {
 import {loginUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-import logo from '../../assets/images/logo.png'
 
 class Login extends Component {
   _isMounted = false
@@ -61,7 +60,10 @@ class Login extends Component {
    * Handles the submit
    */
   handleValidSubmit = (event, values) => {
-    this.props.loginUser(values.email, values.password, this.props.history)
+  	console.log(values)
+  	const user = {...values}
+  	console.log(user)
+    this.props.loginUser(user, this.props.history)
   }
 
   activateField = e => {

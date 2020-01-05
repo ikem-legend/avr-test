@@ -2,7 +2,7 @@
 import { Cookies } from 'react-cookie';
 import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
 
-import { fetchJSON } from '../../helpers/api';
+import { callApi } from '../../helpers/api';
 
 import { LOGIN_USER, LOGOUT_USER, REGISTER_USER, FORGET_PASSWORD } from './constants';
 
@@ -28,17 +28,13 @@ const setSession = user => {
  * Login the user
  * @param {*} payload - username and password
  */
-function* login({ payload: { username, password } }) {
-    const options = {
-        body: JSON.stringify({ username, password }),
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-    };
-
+function* login({ payload: { user, history } }) {
+    console.log(user)
     try {
-        const response = yield call(fetchJSON, '/users/authenticate', options);
+        const response = yield call(callApi, '/auth/signin', user, 'POST');
         setSession(response);
         yield put(loginUserSuccess(response));
+        yield call(() => history.push('/'))
     } catch (error) {
         let message;
         switch (error.status) {
@@ -58,7 +54,7 @@ function* login({ payload: { username, password } }) {
 
 /**
  * Logout the user
- * @param {*} param0
+ * @param {*} {object} payload
  */
 function* logout({ payload: { history } }) {
     try {
@@ -72,15 +68,10 @@ function* logout({ payload: { history } }) {
 /**
  * Register the user
  */
-function* register({ payload: { fullname, email, password } }) {
-    const options = {
-        body: JSON.stringify({ fullname, email, password }),
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-    };
-
+function* register({payload: {user}}) {
+    // console.log(user)
     try {
-        const response = yield call(fetchJSON, '/users/register', options);
+        const response = yield call(callApi, '/auth/signup', user, 'POST');
         yield put(registerUserSuccess(response));
     } catch (error) {
         let message;
@@ -109,7 +100,7 @@ function* forgetPassword({ payload: { username } }) {
     };
 
     try {
-        const response = yield call(fetchJSON, '/users/password-reset', options);
+        const response = yield call(callApi, '/users/password-reset', options);
         yield put(forgetPasswordSuccess(response.message));
     } catch (error) {
         let message;

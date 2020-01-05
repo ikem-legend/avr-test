@@ -13,9 +13,9 @@ import {
 } from './constants';
 
 
-export const loginUser = (username, password) => ({
+export const loginUser = (user) => ({
     type: LOGIN_USER,
-    payload: { username, password },
+    payload: { user },
 });
 
 export const loginUserSuccess = (user) => ({
@@ -28,9 +28,9 @@ export const loginUserFailed = (error) => ({
     payload: error,
 });
 
-export const registerUser = (fullname, email, password) => ({
+export const registerUser = (user) => ({
     type: REGISTER_USER,
-    payload: { fullname, email, password },
+    payload: { user },
 });
 
 export const registerUserSuccess = (user) => ({

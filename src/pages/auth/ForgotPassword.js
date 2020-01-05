@@ -26,7 +26,6 @@ import {
 import {loginUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-import logo from '../../assets/images/logo.png'
 
 class ForgotPassword extends Component {
   _isMounted = false
