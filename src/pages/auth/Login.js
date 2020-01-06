@@ -104,7 +104,6 @@ class Login extends Component {
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
     if (isAuthTokenValid) {
-    	console.log("I ran")
       return <Redirect to="/dashboard" />
     }
   }

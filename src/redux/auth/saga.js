@@ -42,7 +42,6 @@ function* login({ payload: { user, history } }) {
         setSession(userObj);
         yield put(loginUserSuccess(userObj));
         yield call(() => history.push('/dashboard'))
-        yield call(() => console.log(history))
     } catch (error) {
         let message;
         switch (error.status) {
@@ -81,6 +80,7 @@ function* register({payload: {user}}) {
     try {
         const response = yield call(callApi, '/auth/signup', user, 'POST');
         yield put(registerUserSuccess(response));
+        // yield call(() => history.push('/dashboard'))
     } catch (error) {
         let message;
         switch (error.status) {
