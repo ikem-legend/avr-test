@@ -1,12 +1,55 @@
 import React from 'react'
-import {Route} from 'react-router-dom'
-// import {Route, Redirect} from 'react-router-dom'
+import {Route, Redirect} from 'react-router-dom'
+import * as FeatherIcon from 'react-feather';
+
+import { isUserAuthenticated, getLoggedInUser } from '../helpers/authUtils';
 
 // auth
 const Login = React.lazy(() => import('../pages/auth/Login'))
 // const Logout = React.lazy(() => import('../pages/auth/Logout'));
 const Signup = React.lazy(() => import('../pages/auth/Signup'))
 const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
+// dashboard
+const Dashboard = React.lazy(() => import('../pages/dashboard'));
+
+
+// handle auth and authorization
+const PrivateRoute = ({ component: Component, roles, ...rest }) => (
+  <Route
+    {...rest}
+    render={props => {
+      if (!isUserAuthenticated()) {
+        // not logged in so redirect to login page with the return url
+        return <Redirect to={{ pathname: '/account/login', state: { from: props.location } }} />;
+      }
+
+      const loggedInUser = getLoggedInUser();
+      // check if route is restricted by role
+      if (roles && roles.indexOf(loggedInUser.role) === -1) {
+        // role not authorised so redirect to home page
+        return <Redirect to={{ pathname: '/' }} />;
+      }
+
+      // authorised so return component
+      return <Component {...props} />;
+    }}
+  />
+);
+
+// dashboards
+const dashboardRoutes = {
+  path: '/dashboard',
+  name: 'Dashboard',
+  icon: FeatherIcon.Home,
+  header: 'Navigation',
+  badge: {
+      variant: 'success',
+      text: '1',
+  },
+  component: Dashboard,
+  // roles: ['Admin'],
+  route: Route
+};
 
 // auth
 const authRoutes = {
@@ -62,7 +105,8 @@ const flattenRoutes = routes => {
 }
 
 // All routes
-const allRoutes = [authRoutes]
+const allRoutes = [authRoutes, dashboardRoutes]
+const authProtectedRoutes = [dashboardRoutes]
 const allFlattenRoutes = flattenRoutes(allRoutes)
 
-export {allFlattenRoutes}
+export {allFlattenRoutes, authProtectedRoutes}

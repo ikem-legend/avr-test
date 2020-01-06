@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
-import {Redirect, Link} from 'react-router-dom'
+import {Redirect, Link, withRouter} from 'react-router-dom'
 
 import {
   Container,
@@ -60,10 +60,10 @@ class Login extends Component {
    * Handles the submit
    */
   handleValidSubmit = (event, values) => {
-  	console.log(values)
-  	const user = {...values}
-  	console.log(user)
-    this.props.loginUser(user, this.props.history)
+  	const {history} = this.props
+  	// console.log(values)
+  	// console.log(history)
+    this.props.loginUser(values, history)
   }
 
   activateField = e => {
@@ -104,7 +104,8 @@ class Login extends Component {
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
     if (isAuthTokenValid) {
-      return <Redirect to="/" />
+    	console.log("I ran")
+      return <Redirect to="/dashboard" />
     }
   }
 
@@ -242,5 +243,5 @@ class Login extends Component {
 // }
 
 // export default connect(mapStateToProps)(Login)
-export default connect(null, {loginUser})(Login)
+export default connect(null, {loginUser})(withRouter(Login))
 // export default connect(mapStateToProps, { loginUser })(Login);

@@ -13,9 +13,9 @@ import {
 } from './constants';
 
 
-export const loginUser = (user) => ({
+export const loginUser = (user, history) => ({
     type: LOGIN_USER,
-    payload: { user },
+    payload: { user, history },
 });
 
 export const loginUserSuccess = (user) => ({

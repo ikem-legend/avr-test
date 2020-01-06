@@ -17,10 +17,11 @@ import {
 
 /**
  * Sets the session
- * @param {*} user
+ * @param {object} user
  */
 const setSession = user => {
     let cookies = new Cookies();
+    // console.log(cookies, user)
     if (user) cookies.set('user', JSON.stringify(user), { path: '/' });
     else cookies.remove('user', { path: '/' });
 };
@@ -29,12 +30,19 @@ const setSession = user => {
  * @param {*} payload - username and password
  */
 function* login({ payload: { user, history } }) {
-    console.log(user)
+    console.log(user, history)
     try {
-        const response = yield call(callApi, '/auth/signin', user, 'POST');
-        setSession(response);
-        yield put(loginUserSuccess(response));
-        yield call(() => history.push('/'))
+        const result = yield call(callApi, '/auth/signin', user, 'POST');
+        const response = yield call(callApi, '/auth/me', user, 'GET', result.token);
+        // console.log(response)
+        const {data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber}} = response
+        const userObj = {}
+        Object.assign(userObj, {myFirstName, myLastName, myEmailAddress, myPhoneNumber}, {token: result.token})
+        // console.log(userObj)
+        setSession(userObj);
+        yield put(loginUserSuccess(userObj));
+        yield call(() => history.push('/dashboard'))
+        yield call(() => console.log(history))
     } catch (error) {
         let message;
         switch (error.status) {
