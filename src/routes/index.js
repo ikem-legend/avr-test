@@ -1,40 +1,45 @@
 import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
-import * as FeatherIcon from 'react-feather';
+import * as FeatherIcon from 'react-feather'
 
-import { isUserAuthenticated, getLoggedInUser } from '../helpers/authUtils';
+import {isUserAuthenticated} from '../helpers/authUtils'
+// import { isUserAuthenticated, getLoggedInUser } from '../helpers/authUtils';
 
 // auth
 const Login = React.lazy(() => import('../pages/auth/Login'))
 // const Logout = React.lazy(() => import('../pages/auth/Logout'));
 const Signup = React.lazy(() => import('../pages/auth/Signup'))
+const Verify = React.lazy(() => import('../pages/auth/Verify'))
 const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
 // dashboard
-const Dashboard = React.lazy(() => import('../pages/dashboard'));
-
+const Dashboard = React.lazy(() => import('../pages/dashboard'))
 
 // handle auth and authorization
-const PrivateRoute = ({ component: Component, roles, ...rest }) => (
+const PrivateRoute = ({component: Component, roles, ...rest}) => (
   <Route
     {...rest}
     render={props => {
       if (!isUserAuthenticated()) {
         // not logged in so redirect to login page with the return url
-        return <Redirect to={{ pathname: '/account/login', state: { from: props.location } }} />;
+        return (
+          <Redirect
+            to={{pathname: '/account/login', state: {from: props.location}}}
+          />
+        )
       }
 
-      const loggedInUser = getLoggedInUser();
+      // const loggedInUser = getLoggedInUser();
       // check if route is restricted by role
-      if (roles && roles.indexOf(loggedInUser.role) === -1) {
-        // role not authorised so redirect to home page
-        return <Redirect to={{ pathname: '/' }} />;
-      }
+      // if (roles && roles.indexOf(loggedInUser.role) === -1) {
+      //   // role not authorised so redirect to home page
+      //   return <Redirect to={{ pathname: '/' }} />;
+      // }
 
       // authorised so return component
-      return <Component {...props} />;
+      return <Component {...props} />
     }}
   />
-);
+)
 
 // dashboards
 const dashboardRoutes = {
@@ -43,13 +48,13 @@ const dashboardRoutes = {
   icon: FeatherIcon.Home,
   header: 'Navigation',
   badge: {
-      variant: 'success',
-      text: '1',
+    variant: 'success',
+    text: '1',
   },
   component: Dashboard,
   // roles: ['Admin'],
-  route: Route
-};
+  route: PrivateRoute,
+}
 
 // auth
 const authRoutes = {
@@ -72,6 +77,12 @@ const authRoutes = {
       path: '/account/signup',
       name: 'Signup',
       component: Signup,
+      route: Route,
+    },
+    {
+      path: '/account/verify',
+      name: 'Verify',
+      component: Verify,
       route: Route,
     },
     // {

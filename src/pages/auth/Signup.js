@@ -58,7 +58,8 @@ class Signup extends Component {
         // {value: 'usa', label: 'USA'},
         // {value: 'uk', label: 'UK'},
         // {value: 'singapore', label: 'Singapore'},
-      ]
+      ],
+      terms: false,
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
@@ -72,27 +73,24 @@ class Signup extends Component {
       document.querySelectorAll('.float-container').classList.add('active')
     }
     await callApi('/data/countries', null, 'GET')
-    	.then(response => {
-    		// console.log(response)
-    		const countryList = response.data.map(coun => (
-    			{value: coun.id, label: coun.name}
-    		))
-    		const cityArray = response.data.map(coun => (
-    			coun.cities.map(city => (
-	    			{value: city.id, label: city.name}
-    			))
-    		))
-    		const cityList = [].concat(...cityArray)
-    		// console.log(cityList)
-    		this.setState({
-    			cities: cityList,
-    			countries: countryList
-    		});
-    	})
-    	.catch(err => 
-    		console.log(err)
-    	)
-    	// console.log(registerUser)
+      .then(response => {
+        // console.log(response)
+        const countryList = response.data.map(coun => ({
+          value: coun.id,
+          label: coun.name,
+        }))
+        const cityArray = response.data.map(coun =>
+          coun.cities.map(city => ({value: city.id, label: city.name})),
+        )
+        const cityList = [].concat(...cityArray)
+        // console.log(cityList)
+        this.setState({
+          cities: cityList,
+          countries: countryList,
+        })
+      })
+      .catch(err => console.log(err))
+    // console.log(registerUser)
   }
 
   componentWillUnmount() {
@@ -106,21 +104,28 @@ class Signup extends Component {
    * @param {object} values Values to be submitted
    */
   handleValidSubmit = () => {
-  	// console.log(event, values)
-  	console.log(this.state.inputs)
-  	const data = {...this.state.inputs}
-  	data.ssn = data.ssn.replace(/-/g, '')
-  	data.dob = String(data.dob)
-  	data.first_name = String(data.firstname)
-  	data.last_name = String(data.lastname)
-  	data.zip_code = String(data.zipcode)
-  	data.city_id = String(data.city.value)
-  	data.country_id = String(data.country.value)
-  	Object.keys(data).forEach(
-  		key => (key === 'firstname' || key === 'lastname' || key === 'zipcode' || key === 'city' || key === 'country') && delete data[key]
-  	)
-  	console.log(data)
-    this.props.registerUser(data)
+    // console.log(event, values)
+    // console.log(this.state.inputs)
+    const data = {...this.state.inputs}
+    const {history} = this.props
+    data.ssn = data.ssn.replace(/-/g, '')
+    data.dob = String(data.dob)
+    data.first_name = String(data.firstname)
+    data.last_name = String(data.lastname)
+    data.zip_code = String(data.zipcode)
+    data.city_id = String(data.city.value)
+    data.country_id = String(data.country.value)
+    Object.keys(data).forEach(
+      key =>
+        (key === 'firstname' ||
+          key === 'lastname' ||
+          key === 'zipcode' ||
+          key === 'city' ||
+          key === 'country') &&
+        delete data[key],
+    )
+    // console.log(data)
+    this.props.registerUser(data, history)
   }
 
   activateField = e => {
@@ -147,7 +152,6 @@ class Signup extends Component {
   }
 
   updateInputValue = e => {
-  	// e.persist()
     // console.log(e.target)
     e.preventDefault()
     const {name, value} = e.target
@@ -162,13 +166,21 @@ class Signup extends Component {
     // this.activateField(e);
   }
 
+  updateTerms = e => {
+    const {value} = e.target
+    // console.log(value)
+    this.setState({
+      terms: value,
+    })
+  }
+
   /**
    * Redirect to root
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
     if (isAuthTokenValid) {
-      return <Redirect to="/" />
+      return <Redirect to="/dashboard" />
     }
   }
 
@@ -181,6 +193,7 @@ class Signup extends Component {
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
+    const {terms} = this.state
     const {
       firstname,
       lastname,
@@ -192,7 +205,7 @@ class Signup extends Component {
       address,
       zipcode,
       city,
-      country
+      country,
     } = this.state.inputs
     return (
       <Fragment>
@@ -238,10 +251,6 @@ class Signup extends Component {
                         </div>
                       </div>
                       <h6 className="h5 mb-0 mt-4"></h6>
-                      <p className="text-muted mt-1 mb-4">
-                        Enter your email address and password to access admin
-                        panel.
-                      </p>
 
                       {this.props.error && (
                         <Alert color="danger" isOpen={this.props.error}>
@@ -268,7 +277,7 @@ class Signup extends Component {
                                 onChange={this.updateInputValue}
                                 validate={{
                                   pattern: {
-                                    value: '^[A-Za-z]+$',
+                                    value: '^[A-Za-z ]+$',
                                     errorMessage:
                                       'Your name must be composed only with letters',
                                   },
@@ -434,7 +443,8 @@ class Signup extends Component {
                                 onChange={this.updateInputValue}
                                 validate={{
                                   pattern: {
-                                    value: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
+                                    value:
+                                      '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
                                     errorMessage:
                                       'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
                                   },
@@ -451,7 +461,10 @@ class Signup extends Component {
                                 }}
                                 required
                               />
-                              <AvFeedback>Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters</AvFeedback>
+                              <AvFeedback>
+                                Password must contain at least 1 lowercase, 1
+                                uppercase, 1 number and 8 characters
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={12}>
@@ -555,7 +568,7 @@ class Signup extends Component {
                                     ...prevState,
                                     inputs: {
                                       ...prevState.inputs,
-                                      city: val
+                                      city: val,
                                     },
                                   }))
                                 }
@@ -575,7 +588,7 @@ class Signup extends Component {
                                     ...prevState,
                                     inputs: {
                                       ...prevState.inputs,
-                                      country: val
+                                      country: val,
                                     },
                                   }))
                                 }
@@ -589,6 +602,9 @@ class Signup extends Component {
                               <CustomInput
                                 type="checkbox"
                                 id="terms"
+                                // value={terms}
+                                checked={terms}
+                                onChange={this.updateTerms}
                                 className="pl-1 mb-2"
                                 label="By using our services, you agree to Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy"
                               />

@@ -18,7 +18,7 @@
 		  border: none;
 		  border-radius: 0;
 		  outline: 0;
-		  margin: 10px 0 0px;
+		  margin: 5px 0 0px;
 		}
 	}
 	.float-container.n1 {
@@ -109,4 +109,13 @@
 	.btn-blue {
 		background-color: $avenir-blue;
 	}
+}
+
+// Verify
+.bank-verify-info {
+	background-color: $avenir-light-gray;
+}
+
+.m-xy-auto {
+	margin: auto;
 }

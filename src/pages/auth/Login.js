@@ -60,9 +60,9 @@ class Login extends Component {
    * Handles the submit
    */
   handleValidSubmit = (event, values) => {
-  	const {history} = this.props
-  	// console.log(values)
-  	// console.log(history)
+    const {history} = this.props
+    // console.log(values)
+    // console.log(history)
     this.props.loginUser(values, history)
   }
 
@@ -183,12 +183,17 @@ class Login extends Component {
                                 </Button>
                               </Col>
                               <Col md={4}>
-                                <Button
-                                  color="blue-inverted"
-                                  className="btn-block"
+                                <Link
+                                  to="/account/signup"
+                                  // className="blue-text font-weight-bold ml-1"
                                 >
-                                  Sign Up
-                                </Button>
+                                  <Button
+                                    color="blue-inverted"
+                                    className="btn-block"
+                                  >
+                                    Sign Up
+                                  </Button>
+                                </Link>
                               </Col>
                             </Row>
                           </Container>
