@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import classNames from 'classnames'
 import MetisMenu from 'metismenujs/dist/metismenujs'
 
-// import { initMenu, changeActiveMenuFromLocation } from '../redux/actions';
+import { initMenu, changeActiveMenuFromLocation } from '../redux/actions';
 
 const MenuItemWithChildren = ({
   item,
@@ -113,8 +113,8 @@ class AppMenu extends Component {
   }
 
   componentDidMount = () => {
-    // if (!this.props.menu.menuItems) this.props.initMenu();
-    // else this.initMenu();
+    if (!this.props.menu.menuItems) this.props.initMenu();
+    else this.initMenu();
 
     this.props.history.listen((location, action) => {
       this.props.changeActiveMenuFromLocation()
@@ -209,6 +209,6 @@ const mapStateToProps = state => {
 export default withRouter(
   connect(
     mapStateToProps,
-    // { initMenu, changeActiveMenuFromLocation }
+    { initMenu, changeActiveMenuFromLocation }
   )(AppMenu),
 )

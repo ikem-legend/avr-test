@@ -1,9 +1,13 @@
 // Login
 .login-bg {
-	background: transparent url('../../../images/login-bg.svg') 0% 0% no-repeat padding-box;
+	background: transparent url('../../../images/login-bg-2.svg') 0% 0% no-repeat padding-box;
 	background-size: cover;
 	transform: matrix(0.98, 0.19, -0.19, 0.98, 0, 0);
 	opacity: 1;
+	// top: -211.701171875px;
+	// left: 848px;
+	// width: 1732px;
+	// height: 1428px;
 }
 
 .account-pages {
@@ -14,7 +18,7 @@
 		  border: none;
 		  border-radius: 0;
 		  outline: 0;
-		  margin: 10px 0 0px;
+		  margin: 5px 0 0px;
 		}
 	}
 	.float-container.n1 {
@@ -61,6 +65,13 @@
 }
 
 // Signup
+.login-bg {
+	background: transparent url('../../../images/login-bg.svg') 0% 0% no-repeat padding-box;
+	background-size: cover;
+	// transform: matrix(0.98, 0.19, -0.19, 0.98, 0, 0);
+	opacity: 1;
+}
+
 .account-pages {
 	.lead {
 		font-size: 12px;
@@ -82,6 +93,7 @@
 		input {
 	    width: 95%;
 	    height: 4rem;
+	    font-size: 1rem;
 	    background-color: $white;
 		}
 	}
@@ -97,4 +109,13 @@
 	.btn-blue {
 		background-color: $avenir-blue;
 	}
+}
+
+// Verify
+.bank-verify-info {
+	background-color: $avenir-light-gray;
+}
+
+.m-xy-auto {
+	margin: auto;
 }
