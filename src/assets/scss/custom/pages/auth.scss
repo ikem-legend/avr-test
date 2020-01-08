@@ -119,3 +119,20 @@
 .m-xy-auto {
 	margin: auto;
 }
+
+.verified {
+	.modal-content {
+		border-radius: 50%;
+    width: 75%;
+    margin: auto;
+    text-align: center;
+	}
+}
+
+// Connect
+.btn-transp {
+  font-weight: 400;
+  color: $avenir-blue;
+  background-color: transparent;
+  cursor: pointer;
+}

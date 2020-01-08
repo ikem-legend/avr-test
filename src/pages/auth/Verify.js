@@ -1,13 +1,14 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
-import {Redirect} from 'react-router-dom'
+import {Redirect, withRouter} from 'react-router-dom'
 
-import {Container, Row, Col, Alert} from 'reactstrap'
+import {Container, Row, Col, Alert, Modal, ModalHeader, ModalBody} from 'reactstrap'
 
 import {callApi} from '../../helpers/api'
 import {registerUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
+import Verified from '../../assets/images/verified.png'
 // import logo from '../../assets/images/logo.png';
 
 class Verify extends Component {
@@ -17,6 +18,7 @@ class Verify extends Component {
     super(props)
     this.state = {
       name: '',
+      verifyModal: false
     }
   }
 
@@ -45,6 +47,11 @@ class Verify extends Component {
     this.setState({
       name: user.myFirstName,
     })
+    setTimeout(() => {
+      this.setState({
+        verifyModal: true
+      })
+    }, 5000)
   }
 
   componentWillUnmount() {
@@ -52,12 +59,18 @@ class Verify extends Component {
     document.body.classList.remove('authentication-bg')
   }
 
-  updateTerms = e => {
-    const {value} = e.target
-    console.log(value)
+  toggle = () => {
+    const {verifyModal} = this.state
+    // console.log(verifyModal)
     this.setState({
-      terms: value,
+      verifyModal: !verifyModal,
     })
+  }
+
+  proceed = () => {
+    // Take user details from local storage and set session then possibly clear local storage
+    console.log("Proceeding...")
+    this.props.history.push('/account/account-connect')
   }
 
   /**
@@ -82,8 +95,8 @@ class Verify extends Component {
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
-    const {name} = this.state
-    console.log(name)
+    const {name, verifyModal} = this.state
+    // console.log(name)
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
@@ -140,6 +153,12 @@ class Verify extends Component {
                 </Col>
               </Row>
             </Container>
+            <Modal isOpen={verifyModal} toggle={this.toggle} centered className="verified" onClosed={this.proceed}>
+              <ModalBody>
+                <h5 className="modal-title font-weight-bold">Verified</h5>
+                <img src={Verified} alt="Verified" />
+              </ModalBody>
+            </Modal>
           </div>
         )}
       </Fragment>
@@ -152,5 +171,5 @@ class Verify extends Component {
 // return { user, loading, error };
 // };
 
-export default connect(null, {registerUser})(Verify)
+export default connect(null, {registerUser})(withRouter(Verify))
 // export default connect(mapStateToProps, { registerUser })(Verify);

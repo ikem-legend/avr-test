@@ -60,6 +60,7 @@ class Signup extends Component {
         // {value: 'singapore', label: 'Singapore'},
       ],
       terms: false,
+      signupError: ''
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
@@ -90,7 +91,6 @@ class Signup extends Component {
         })
       })
       .catch(err => console.log(err))
-    // console.log(registerUser)
   }
 
   componentWillUnmount() {
@@ -167,10 +167,10 @@ class Signup extends Component {
   }
 
   updateTerms = e => {
-    const {value} = e.target
-    // console.log(value)
+    const {checked} = e.target
+    // console.log(checked)
     this.setState({
-      terms: value,
+      terms: checked,
     })
   }
 
@@ -253,8 +253,10 @@ class Signup extends Component {
                       <h6 className="h5 mb-0 mt-4"></h6>
 
                       {this.props.error && (
-                        <Alert color="danger" isOpen={this.props.error}>
-                          <div>{this.props.error}</div>
+                        <Alert color="danger" isOpen={typeof(this.props.error) === 'object'}>
+                          <div>
+                          	{this.props.error.message === 'Network Error' ? 'Network Error. Please check your internet connection' : this.props.error.message}
+                          </div>
                         </Alert>
                       )}
 
@@ -644,10 +646,10 @@ class Signup extends Component {
   }
 }
 
-// const mapStateToProps = (state) => {
-// const { user, loading, error } = state.Auth;
-// return { user, loading, error };
-// };
+const mapStateToProps = (state) => {
+	const { user, loading, error } = state.Auth;
+	return { user, loading, error };
+};
 
-export default connect(null, {registerUser})(Signup)
-// export default connect(mapStateToProps, { registerUser })(Signup);
+// export default connect(null, {registerUser})(Signup)
+export default connect(mapStateToProps, { registerUser })(Signup);
