@@ -176,7 +176,10 @@ class Login extends Component {
                           <Container>
                             <Row>
                               <Col md={{offset: 4, size: 4}}>
-                                <Button color="blue" className="btn-block">
+                                <Button 
+                                	color="blue" 
+                                	block
+                                	className="mb-1">
                                   Login
                                 </Button>
                               </Col>
@@ -187,7 +190,8 @@ class Login extends Component {
                                 >
                                   <Button
                                     color="blue-inverted"
-                                    className="btn-block"
+                                    block
+                                    className="mb-1"
                                   >
                                     Sign Up
                                   </Button>
