@@ -22,31 +22,8 @@ class AccountConnect extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      inputs: {
-        firstname: '',
-        lastname: '',
-        phone: '',
-        dob: new Date('2004-01-01').getTime(),
-        email: '',
-        password: '',
-        ssn: '',
-        address: '',
-        zipcode: '',
-        city: '',
-        country: '',
-      },
-      cities: [
-        // {value: 'new york', label: 'New York'},
-        // {value: 'la', label: 'Los Angeles'},
-        // {value: 'atl', label: 'Atlanta'},
-      ],
-      countries: [
-        // {value: 'usa', label: 'USA'},
-        // {value: 'uk', label: 'UK'},
-        // {value: 'singapore', label: 'Singapore'},
-      ],
-      terms: false,
-      signupError: ''
+      name: ''
+      // connectError: ''
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
@@ -77,6 +54,12 @@ class AccountConnect extends Component {
         })
       })
       .catch(err => console.log(err))
+
+    const user = JSON.parse(localStorage.getItem('avenir'))
+    console.log(user.myFirstName)
+    this.setState({
+      name: user.myFirstName,
+    })
   }
 
   componentWillUnmount() {
@@ -179,6 +162,7 @@ class AccountConnect extends Component {
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
+    const {name} = this.state
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
@@ -225,7 +209,7 @@ class AccountConnect extends Component {
                       </div>
                       <div className="bank-verify-info mt-4 p-3">
                         <p className="mb-0">
-                          I, Paulin, authorize Avenir Inc. to debit the account indicated for the recurring transactions according to the terms of use and my agreement with Avenir Inc. 
+                          I, {name ? name : ''}, authorize Avenir Inc. to debit the account indicated for the recurring transactions according to the terms of use and my agreement with Avenir Inc. 
                           I will not dispute Avenir Inc. so long as the transactions correspond to the terms of use and my agreement with Avenir Inc.                         
                         </p>
                         <p className="mb-0 mt-4">

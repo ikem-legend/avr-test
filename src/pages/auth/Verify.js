@@ -1,11 +1,11 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
-import {Redirect, withRouter} from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 
-import {Container, Row, Col, Alert, Modal, ModalHeader, ModalBody} from 'reactstrap'
+import {Container, Row, Col, Alert, Modal, ModalBody} from 'reactstrap'
 
 import {callApi} from '../../helpers/api'
-import {registerUser} from '../../redux/actions'
+import {loginUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 import Verified from '../../assets/images/verified.png'
@@ -25,11 +25,6 @@ class Verify extends Component {
   async componentDidMount() {
     this._isMounted = true
     document.body.classList.add('authentication-bg')
-    const {firstname, lastname} = this.state
-    // Another possible solution is to use an array to loop through the state then update field styling
-    if (firstname && lastname) {
-      document.querySelectorAll('.float-container').classList.add('active')
-    }
     await callApi('/data/countries', null, 'GET')
       .then(response => {
         // console.log(response)
@@ -69,8 +64,10 @@ class Verify extends Component {
 
   proceed = () => {
     // Take user details from local storage and set session then possibly clear local storage
-    console.log("Proceeding...")
-    this.props.history.push('/account/account-connect')
+    // console.log("Proceeding...")
+    const user = JSON.parse(localStorage.getItem('avenir'))
+    this.props.loginUser(user, this.props.history)
+    // this.props.history.push('/account/account-connect')
   }
 
   /**
@@ -171,5 +168,5 @@ class Verify extends Component {
 // return { user, loading, error };
 // };
 
-export default connect(null, {registerUser})(withRouter(Verify))
-// export default connect(mapStateToProps, { registerUser })(Verify);
+export default connect(null, {loginUser})(Verify)
+// export default connect(mapStateToProps, { loginUser })(Verify);
