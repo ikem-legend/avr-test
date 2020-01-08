@@ -130,7 +130,7 @@ class Login extends Component {
 
                       {this.props.error && (
                         <Alert color="danger" isOpen={this.props.error}>
-                          <div>{this.props.error}</div>
+                          <div>{this.props.error.message}</div>
                         </Alert>
                       )}
 
@@ -144,13 +144,12 @@ class Login extends Component {
                             type="email"
                             name="email"
                             id="email"
-                            // placeholder="hello@avenir.com"
                             value={this.state.email}
                             onFocus={this.activateField}
                             onBlur={this.deactivateField}
                             required
                           />
-                          <AvFeedback>This field is invalid</AvFeedback>
+                          <AvFeedback>Email is invalid</AvFeedback>
                         </AvGroup>
 
                         <AvGroup className="mb-5 float-container">
@@ -159,7 +158,6 @@ class Login extends Component {
                             type="password"
                             name="password"
                             id="password"
-                            // placeholder="Enter your password"
                             value={this.state.password}
                             onFocus={this.activateField}
                             onBlur={this.deactivateField}
@@ -239,13 +237,10 @@ class Login extends Component {
   }
 }
 
-// const mapStateToProps = state => {
-// const { user, loading, error } = state.Auth;
-// const { loading, error } = state.Auth;
-// return { user, loading, error };
-// return { loading, error };
-// }
+const mapStateToProps = state => {
+	const { user, loading, error } = state.Auth;
+	return { user, loading, error };
+}
 
-// export default connect(mapStateToProps)(Login)
-export default connect(null, {loginUser})(withRouter(Login))
-// export default connect(mapStateToProps, { loginUser })(Login);
+export default connect(mapStateToProps, {loginUser})(withRouter(Login))
+// export default connect(null, {loginUser})(withRouter(Login))

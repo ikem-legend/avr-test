@@ -10,6 +10,7 @@ const Login = React.lazy(() => import('../pages/auth/Login'))
 // const Logout = React.lazy(() => import('../pages/auth/Logout'));
 const Signup = React.lazy(() => import('../pages/auth/Signup'))
 const Verify = React.lazy(() => import('../pages/auth/Verify'))
+const AccountConnect = React.lazy(() => import('../pages/auth/AccountConnect'))
 const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
 // dashboard
 const Dashboard = React.lazy(() => import('../pages/dashboard'))
@@ -83,6 +84,12 @@ const authRoutes = {
       path: '/account/verify',
       name: 'Verify',
       component: Verify,
+      route: Route,
+    },
+    {
+      path: '/account/account-connect',
+      name: 'AccountConnect',
+      component: AccountConnect,
       route: Route,
     },
     // {
