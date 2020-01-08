@@ -99,7 +99,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "jest": "^24.9.0",
     "jest-axe": "^3.2.0",
     "kcd-scripts": "^1.14.0"
   }
