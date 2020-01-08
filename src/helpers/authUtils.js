@@ -20,16 +20,17 @@ const isUserAuthenticated = () => {
   if (!user) {
     return false
   }
-  const decoded = jwtDecode(user.token)
-  // console.log(decoded)
-  const currentTime = Date.now() / 1000
-  // console.log(decoded.exp < currentTime)
-  if (decoded.exp < currentTime) {
-    console.warn('access token expired')
-    return false
-  } else {
-    return true
-  }
+  return true
+  // const decoded = jwtDecode(user.token)
+  // // console.log(decoded)
+  // const currentTime = Date.now() / 1000
+  // // console.log(decoded.exp < currentTime)
+  // if (decoded.exp < currentTime) {
+  //   console.warn('access token expired')
+  //   return false
+  // } else {
+  //   return true
+  // }
 }
 
 export {isUserAuthenticated, getLoggedInUser}
