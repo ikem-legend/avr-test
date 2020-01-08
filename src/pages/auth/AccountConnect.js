@@ -2,13 +2,7 @@ import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
 
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Alert,
-} from 'reactstrap'
+import {Container, Row, Col, Button, Alert} from 'reactstrap'
 
 import {callApi} from '../../helpers/api'
 import {registerUser} from '../../redux/actions'
@@ -22,7 +16,7 @@ class AccountConnect extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      name: ''
+      name: '',
       // connectError: ''
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
@@ -148,16 +142,9 @@ class AccountConnect extends Component {
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
-    if (isAuthTokenValid) {
-      return <Redirect to="/dashboard" />
+    if (!isAuthTokenValid) {
+      return <Redirect to="/account/login" />
     }
-  }
-
-  /**
-   * Redirect to confirm
-   */
-  renderRedirectToConfirm = () => {
-    return <Redirect to="/account/confirm" />
   }
 
   render() {
@@ -166,9 +153,6 @@ class AccountConnect extends Component {
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
-
-        {Object.keys(this.props.user || {}).length > 0 &&
-          this.renderRedirectToConfirm()}
 
         {(this._isMounted || !isAuthTokenValid) && (
           <div className="account-pages mt-5 mb-5">
@@ -179,9 +163,7 @@ class AccountConnect extends Component {
                     <Col md={6} className="d-none d-md-inline-block">
                       <div className="auth-page-sidebar">
                         <div className="auth-user-testimonial">
-                          <p className="lead font-weight-bold">
-                            Funding
-                          </p>
+                          <p className="lead font-weight-bold">Funding</p>
                           <p className="font-size-24 font-weight-bold mb-1">
                             Connect your bank account
                           </p>
@@ -197,10 +179,12 @@ class AccountConnect extends Component {
                         <div className="overlay"></div>
                         <div className="auth-user-testimonial">
                           <p className="verify-info font-weight-bold text-muted mb-0">
-                            This bank account will be used for your weekly round-up deposits, one-time investments, 
+                            This bank account will be used for your weekly
+                            round-up deposits, one-time investments,
                           </p>
                           <p className="verify-info font-weight-bold text-muted mb-0">
-                            and is the destination for your funds withdrawals. Please read the Avenir debit authorization 
+                            and is the destination for your funds withdrawals.
+                            Please read the Avenir debit authorization
                           </p>
                           <p className="verify-info font-weight-bold text-muted mb-0">
                             and $5 processing fee below.
@@ -209,26 +193,47 @@ class AccountConnect extends Component {
                       </div>
                       <div className="bank-verify-info mt-4 p-3">
                         <p className="mb-0">
-                          I, {name ? name : ''}, authorize Avenir Inc. to debit the account indicated for the recurring transactions according to the terms of use and my agreement with Avenir Inc. 
-                          I will not dispute Avenir Inc. so long as the transactions correspond to the terms of use and my agreement with Avenir Inc.                         
+                          I, {name ? name : ''}, authorize Avenir Inc. to debit
+                          the account indicated for the recurring transactions
+                          according to the terms of use and my agreement with
+                          Avenir Inc. I will not dispute Avenir Inc. so long as
+                          the transactions correspond to the terms of use and my
+                          agreement with Avenir Inc.
                         </p>
                         <p className="mb-0 mt-4">
-                          This payment authorization is valid and will remain effective unless I cancel this authorization by unlinking my bank account on my settings page before your round-up milestone is completed. I will not dispute Avenir Inc. so long as the transactions correspond to the terms of use and my agreement with Avenir Inc. This payment authorization is valid and will remain effective unless I cancel this authorization.
+                          This payment authorization is valid and will remain
+                          effective unless I cancel this authorization by
+                          unlinking my bank account on my settings page before
+                          your round-up milestone is completed. I will not
+                          dispute Avenir Inc. so long as the transactions
+                          correspond to the terms of use and my agreement with
+                          Avenir Inc. This payment authorization is valid and
+                          will remain effective unless I cancel this
+                          authorization.
                         </p>
                       </div>
                       <div className="mt-3">
-                        <Button color="blue" block>Connect my Funding Account</Button>
+                        <Button color="blue" block>
+                          Connect my Funding Account
+                        </Button>
                       </div>
                       <div className="mt-3">
                         <Link to="/dashboard">
-                          <Button color="transp" className="float-right">Skip Round-Up Settings for now</Button>
+                          <Button color="transp" className="float-right">
+                            Skip Round-Up Settings for now
+                          </Button>
                         </Link>
                       </div>
 
                       {this.props.error && (
-                        <Alert color="danger" isOpen={typeof(this.props.error) === 'object'}>
+                        <Alert
+                          color="danger"
+                          isOpen={typeof this.props.error === 'object'}
+                        >
                           <div>
-                          	{this.props.error.message === 'Network Error' ? 'Network Error. Please check your internet connection' : this.props.error.message}
+                            {this.props.error.message === 'Network Error'
+                              ? 'Network Error. Please check your internet connection'
+                              : this.props.error.message}
                           </div>
                         </Alert>
                       )}
@@ -244,10 +249,10 @@ class AccountConnect extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const { user, loading, error } = state.Auth;
-  return { user, loading, error };
-};
+const mapStateToProps = state => {
+  const {user, loading, error} = state.Auth
+  return {user, loading, error}
+}
 
 // export default connect(null, {registerUser})(AccountConnect)
-export default connect(mapStateToProps, { registerUser })(AccountConnect);
+export default connect(mapStateToProps, {registerUser})(AccountConnect)
