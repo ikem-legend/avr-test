@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
+import PlaidLink from 'react-plaid-link'
 
 import {Container, Row, Col, Button, Alert} from 'reactstrap'
 
@@ -50,7 +51,7 @@ class AccountConnect extends Component {
       .catch(err => console.log(err))
 
     const user = JSON.parse(localStorage.getItem('avenir'))
-    console.log(user.myFirstName)
+    // console.log(user.myFirstName)
     this.setState({
       name: user.myFirstName,
     })
@@ -137,6 +138,16 @@ class AccountConnect extends Component {
     })
   }
 
+  handleOnSuccess = (token, metadata) => {
+    // send token to client server
+    console.log(token)
+    console.log(metadata)
+  }
+  handleOnExit = () => {
+    // handle the case when your user exits Link
+    console.log('Exited')
+  }
+
   /**
    * Redirect to root
    */
@@ -213,9 +224,17 @@ class AccountConnect extends Component {
                         </p>
                       </div>
                       <div className="mt-3">
-                        <Button color="blue" block>
+                        <PlaidLink
+                          clientName="Avenir app"
+                          env="sandbox"
+                          product={['auth', 'transactions']}
+                          publicKey="3c3d222fa56168931abed2dc785bc2"
+                          onExit={this.handleOnExit}
+                          onSuccess={this.handleOnSuccess}
+                          className="btn btn-blue btn-block btn-plaid"
+                        >
                           Connect my Funding Account
-                        </Button>
+                        </PlaidLink>
                       </div>
                       <div className="mt-3">
                         <Link to="/dashboard">

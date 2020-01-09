@@ -107,7 +107,7 @@
 		}
 	}
 	.btn-blue {
-		background-color: $avenir-blue;
+		background-color: $avenir-blue !important;
 	}
 }
 
@@ -135,4 +135,8 @@
   color: $avenir-blue;
   background-color: transparent;
   cursor: pointer;
+}
+
+.btn-plaid {
+	border: 0 !important;
 }

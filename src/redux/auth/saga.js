@@ -37,29 +37,34 @@ const setSession = user => {
 function* login({payload: {user, history}}) {
   // console.log(user, history)
   try {
-  	if (!user.token) {
-	    const result = yield call(callApi, '/auth/signin', user, 'POST')
-	    const response = yield call(callApi, '/auth/me', user, 'GET', result.token)
-	    // console.log(response)
-	    const {
-	      data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
-	    } = response
-	    const userObj = {}
-	    Object.assign(
-	      userObj,
-	      {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
-	      {token: result.token},
-	    )
-	    // console.log(userObj)
-	    setSession(userObj)
-	    yield put(loginUserSuccess(userObj))
-	    yield call(() => history.push('/dashboard'))
-	  } else {
-	  	console.log('Here')
-	  	setSession(user)
-	    yield put(loginUserSuccess(user))
-	    history.push('/account/account-connect')
-	  }
+    if (!user.token) {
+      const result = yield call(callApi, '/auth/signin', user, 'POST')
+      const response = yield call(
+        callApi,
+        '/auth/me',
+        user,
+        'GET',
+        result.token,
+      )
+      // console.log(response)
+      const {
+        data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+      } = response
+      const userObj = {}
+      Object.assign(
+        userObj,
+        {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+        {token: result.token},
+      )
+      // console.log(userObj)
+      setSession(userObj)
+      yield put(loginUserSuccess(userObj))
+      yield call(() => history.push('/dashboard'))
+    } else {
+      setSession(user)
+      yield put(loginUserSuccess(user))
+      history.push('/account/account-connect')
+    }
   } catch (error) {
     let message
     switch (error.status) {
