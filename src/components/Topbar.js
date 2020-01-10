@@ -5,14 +5,13 @@ import {Container} from 'reactstrap'
 import {
   Menu,
   X,
-  Search,
+  // Search,
   Settings,
   // User,
   // HelpCircle,
   // Lock,
-  // LogOut,
+  LogOut,
 } from 'react-feather'
-
 import logo from '../assets/images/logo.png'
 // import profilePic from '../assets/images/users/avatar-7.jpg'
 import {showRightSidebar} from '../redux/actions'
@@ -124,18 +123,12 @@ class Topbar extends Component {
             </ul>
 
             <ul className="navbar-nav flex-row ml-auto d-flex list-unstyled topnav-menu float-right mb-0">
-              <li className="d-none d-sm-block">
-                <div className="app-search">
-                  <form>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Search..."
-                      />
-                      <Search />
-                    </div>
-                  </form>
+              <li className="">
+                 <div className="nav-link right-bar-toggle">
+                  <Link to="/account/logout" className="dropdown-item notify-item">
+                    <LogOut className="icon-dual icon-xs mr-2" />
+                    <span>Logout</span>
+                  </Link>
                 </div>
               </li>
 

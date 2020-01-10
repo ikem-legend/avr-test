@@ -7,7 +7,7 @@ import {isUserAuthenticated} from '../helpers/authUtils'
 
 // auth
 const Login = React.lazy(() => import('../pages/auth/Login'))
-// const Logout = React.lazy(() => import('../pages/auth/Logout'));
+const Logout = React.lazy(() => import('../pages/auth/Logout'));
 const Signup = React.lazy(() => import('../pages/auth/Signup'))
 const Verify = React.lazy(() => import('../pages/auth/Verify'))
 const AccountConnect = React.lazy(() => import('../pages/auth/AccountConnect'))
@@ -59,7 +59,8 @@ const dashboardRoutes = {
 
 // transactions
 const transactionRoutes = {
-  path: '/transactions',
+  path: '#',
+  // path: '/transactions',
   name: 'Transactions',
   icon: FeatherIcon.CreditCard,
   // header: 'Navigation',
@@ -73,7 +74,8 @@ const transactionRoutes = {
 
 // referrals
 const referralRoutes = {
-  path: '/referral',
+  path: '#',
+  // path: '/referral',
   name: 'Referral',
   icon: FeatherIcon.Share2,
   // header: 'Navigation',
@@ -88,7 +90,8 @@ const referralRoutes = {
 
 // accounts
 const accountRoutes = {
-  path: '/account',
+  path: '#',
+  // path: '/account',
   name: 'My Account',
   icon: FeatherIcon.User,
   // header: 'Navigation',
@@ -103,7 +106,8 @@ const accountRoutes = {
 
 // learn
 const learnRoutes = {
-  path: '/learn',
+  path: '#',
+  // path: '/learn',
   name: 'Learn',
   icon: FeatherIcon.MessageCircle,
   // header: 'Navigation',
@@ -118,7 +122,8 @@ const learnRoutes = {
 
 // faq
 const faqRoutes = {
-  path: '/faq',
+  path: '#',
+  // path: '/faq',
   name: 'FAQ and Support',
   icon: FeatherIcon.MessageSquare,
   // header: 'Navigation',
@@ -142,12 +147,12 @@ const authRoutes = {
       component: Login,
       route: Route,
     },
-    // {
-    //     path: '/account/logout',
-    //     name: 'Logout',
-    //     component: Logout,
-    //     route: Route,
-    // },
+    {
+        path: '/account/logout',
+        name: 'Logout',
+        component: Logout,
+        route: Route,
+    },
     {
       path: '/account/signup',
       name: 'Signup',

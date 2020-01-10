@@ -1,5 +1,5 @@
 // @flow
-import jwtDecode from 'jwt-decode'
+// import jwtDecode from 'jwt-decode'
 import {Cookies} from 'react-cookie'
 
 /**
@@ -16,6 +16,7 @@ const getLoggedInUser = () => {
  * Checks if user is authenticated
  */
 const isUserAuthenticated = () => {
+  // Add condtion for other pages before dashboard like account and credit card linking
   const user = getLoggedInUser()
   if (!user) {
     return false
