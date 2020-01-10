@@ -59,7 +59,7 @@ const dashboardRoutes = {
 
 // transactions
 const transactionRoutes = {
-  // path: '/transactions',
+  path: '/transactions',
   name: 'Transactions',
   icon: FeatherIcon.CreditCard,
   // header: 'Navigation',

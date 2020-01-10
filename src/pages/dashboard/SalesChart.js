@@ -12,7 +12,8 @@ const SalesChart = () => {
             },
             parentHeightOffset: 0,
         },
-        colors: ["#5369f8", "#43d39e", "#f77e53", "#ffbe0b"],
+        colors: ["#5369f8", "#ffbe0b"],
+        // colors: ["#5369f8", "#43d39e", "#f77e53", "#ffbe0b"],
         grid: {
             borderColor: '#f1f3fa',
             padding: {
@@ -30,14 +31,15 @@ const SalesChart = () => {
         },
         legend: {
             show: true,
-            position: 'right',
+            position: 'bottom',
             horizontalAlign: 'left',
             itemMargin: {
                 horizontal: 6,
                 vertical: 3
             }
         },
-        labels: ['Clothes 44k', 'Smartphons 55k', 'Electronics 41k', 'Other 17k'],
+        labels: ['Bitcoin $2000, 70%', 'Ethereum $570, 30%'],
+        // labels: ['Clothes 44k', 'Smartphons 55k', 'Electronics 41k', 'Other 17k'],
         responsive: [{
             breakpoint: 480,
             options: {
@@ -54,12 +56,12 @@ const SalesChart = () => {
         }
     };
 
-    const data = [44, 55, 41, 17];
+    const data = [55, 54];
 
     return (
         <Card>
             <CardBody className="">
-                <h5 className="card-title mt-0 mb-0 header-title">Sales By Category</h5>
+                <h5 className="card-title mt-0 mb-0 header-title">Investment Distribution</h5>
 
                 <Chart
                     options={options}

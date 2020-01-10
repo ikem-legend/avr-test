@@ -1,15 +1,12 @@
 import React, { Component, Fragment } from 'react'
 import {Redirect} from 'react-router-dom'
 import { Row, Col } from 'reactstrap'
-import { Users, Image, ShoppingBag } from 'react-feather'
 
 import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-import OverviewWidget from '../../components/OverviewWidget'
 
 import Statistics from './Statistics'
 import RevenueChart from './RevenueChart'
-import TargetChart from './TargetChart'
 import SalesChart from './SalesChart'
 
 
@@ -57,25 +54,10 @@ class Dashboard extends Component {
 
                     {/* charts */}
                     <Row>
-                        <Col xl={3}>
-                            <OverviewWidget items={[
-                                { title: '121,000', description: 'Total Visitors', icon: Users },
-                                { title: '21,000', description: 'Product Views', icon: Image },
-                                { title: '$21.5', description: 'Revenue Per Visitor', icon: ShoppingBag }
-                            ]}></OverviewWidget>
-                        </Col>
-
                         <Col xl={6}>
                             <RevenueChart />
                         </Col>
-                        <Col xl={3}>
-                            <TargetChart />
-                        </Col>
-                    </Row>
-
-                    {/* charts */}
-                    <Row>
-                        <Col xl={5}>
+                        <Col xl={6}>
                             <SalesChart />
                         </Col>
                     </Row>
