@@ -8,55 +8,42 @@ const Statistics = () => {
     return (
         <React.Fragment>
             <Row>
-                <Col md={6} xl={3}>
+                <Col md={6} xl={4}>
                     <StatisticsChartWidget
-                        description="Today Revenue"
-                        title="$2100"
+                        description="Total Wallet Balance"
+                        title="$10,273"
                         data={[25, 66, 41, 85, 63, 25, 44, 12, 36, 9, 54]}
                         trend={{
                             textClass: 'text-success',
                             icon: 'uil uil-arrow-up',
-                            value: '10.21%'
-                        }}></StatisticsChartWidget>
+                            value: '25.16%'
+                        }} />
                 </Col>
 
-                <Col md={6} xl={3}>
+                <Col md={6} xl={4}>
                     <StatisticsChartWidget
-                        description="Product Sold"
-                        title="1065"
+                        description="Bitcoin Wallet Balance"
+                        title="$7,083"
+                        colors={['#43d39e']}
+                        data={[25, 66, 41, 85, 63, 25, 44, 12, 36, 9, 54]}
+                        trend={{
+                            textClass: 'text-success',
+                            icon: 'uil uil-arrow-up',
+                            value: '42.75%'
+                        }} />
+                </Col>
+
+                <Col md={6} xl={4}>
+                    <StatisticsChartWidget
+                        description="Ethereum Wallet Balance"
+                        title="$3,390"
                         colors={['#f77e53']}
                         data={[25, 66, 41, 85, 63, 25, 44, 12, 36, 9, 54]}
                         trend={{
                             textClass: 'text-danger',
                             icon: 'uil uil-arrow-down',
                             value: '5.05%'
-                        }}></StatisticsChartWidget>
-                </Col>
-
-                <Col md={6} xl={3}>
-                    <StatisticsChartWidget
-                        description="New Customers"
-                        title="11"
-                        colors={['#43d39e']}
-                        data={[25, 66, 41, 85, 63, 25, 44, 12, 36, 9, 54]}
-                        trend={{
-                            textClass: 'text-success',
-                            icon: 'uil uil-arrow-up',
-                            value: '25.16%'
-                        }}></StatisticsChartWidget>
-                </Col>
-
-                <Col md={6} xl={3}>
-                    <StatisticsChartWidget
-                        description="New Visitors"
-                        title="750"
-                        colors={['#ffbe0b']}
-                        data={[25, 66, 41, 85, 63, 25, 44, 12, 36, 9, 54]}
-                        trend={{
-                            textClass: 'text-danger',
-                            icon: 'uil uil-arrow-down',
-                            value: '5.05%'
-                        }}></StatisticsChartWidget>
+                        }} />
                 </Col>
             </Row>
         </React.Fragment>

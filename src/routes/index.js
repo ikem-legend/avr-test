@@ -47,11 +47,85 @@ const dashboardRoutes = {
   path: '/dashboard',
   name: 'Dashboard',
   icon: FeatherIcon.Home,
-  header: 'Navigation',
-  badge: {
-    variant: 'success',
-    text: '1',
-  },
+  // header: 'Navigation',
+  // badge: {
+  //   variant: 'success',
+  //   text: '1',
+  // },
+  component: Dashboard,
+  // roles: ['Admin'],
+  route: PrivateRoute,
+}
+
+// transactions
+const transactionRoutes = {
+  path: '/transactions',
+  name: 'Transactions',
+  icon: FeatherIcon.CreditCard,
+  // header: 'Navigation',
+  // badge: {
+  //   variant: 'success',
+  //   text: '1',
+  // },
+  component: Dashboard,
+  route: PrivateRoute,
+}
+
+// referrals
+const referralRoutes = {
+  path: '/referral',
+  name: 'Referral',
+  icon: FeatherIcon.Share2,
+  // header: 'Navigation',
+  // badge: {
+  //   variant: 'success',
+  //   text: '1',
+  // },
+  component: Dashboard,
+  // roles: ['Admin'],
+  route: PrivateRoute,
+}
+
+// accounts
+const accountRoutes = {
+  path: '/account',
+  name: 'My Account',
+  icon: FeatherIcon.User,
+  // header: 'Navigation',
+  // badge: {
+  //   variant: 'success',
+  //   text: '1',
+  // },
+  component: Dashboard,
+  // roles: ['Admin'],
+  route: PrivateRoute,
+}
+
+// learn
+const learnRoutes = {
+  path: '/learn',
+  name: 'Learn',
+  icon: FeatherIcon.MessageCircle,
+  // header: 'Navigation',
+  // badge: {
+  //   variant: 'success',
+  //   text: '1',
+  // },
+  component: Dashboard,
+  // roles: ['Admin'],
+  route: PrivateRoute,
+}
+
+// faq
+const faqRoutes = {
+  path: '/faq',
+  name: 'FAQ and Support',
+  icon: FeatherIcon.MessageSquare,
+  // header: 'Navigation',
+  // badge: {
+  //   variant: 'success',
+  //   text: '1',
+  // },
   component: Dashboard,
   // roles: ['Admin'],
   route: PrivateRoute,
@@ -124,7 +198,7 @@ const flattenRoutes = routes => {
 
 // All routes
 const allRoutes = [authRoutes, dashboardRoutes]
-const authProtectedRoutes = [dashboardRoutes]
+const authProtectedRoutes = [dashboardRoutes, transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
 const allFlattenRoutes = flattenRoutes(allRoutes)
 
 export {allFlattenRoutes, authProtectedRoutes}

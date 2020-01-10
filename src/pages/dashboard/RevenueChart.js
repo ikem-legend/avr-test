@@ -4,11 +4,11 @@ import { Card, CardBody, Nav, NavItem, NavLink } from 'reactstrap';
 
 const RevenueChart = () => {
     const getDaysInMonth = (month, year) => {
-        var date = new Date(year, month, 1);
-        var days = [];
-        var idx = 0;
+        const date = new Date(year, month, 1);
+        const days = [];
+        let idx = 0;
         while (date.getMonth() === month && idx < 15) {
-            var d = new Date(date);
+            const d = new Date(date);
             days.push(d.getDate() + " " + d.toLocaleString('en-us', { month: 'short' }));
             date.setDate(date.getDate() + 1);
             idx += 1;
@@ -16,8 +16,8 @@ const RevenueChart = () => {
         return days;
     }
 
-    var now = new Date();
-    var labels = getDaysInMonth(now.getMonth(), now.getFullYear());
+    const now = new Date();
+    const labels = getDaysInMonth(now.getMonth(), now.getFullYear());
 
     const apexLineChartWithLables = {
         chart: {
@@ -84,7 +84,7 @@ const RevenueChart = () => {
     };
 
     const apexLineChartWithLablesData = [{
-        name: 'Revenue',
+        name: 'Balance History',
         data: [10, 20, 5, 15, 10, 20, 15, 25, 20, 30, 25, 40, 30, 50, 35]
     }];
 
@@ -109,7 +109,7 @@ const RevenueChart = () => {
                     </NavItem>
                 </Nav>
 
-                <h5 className="card-title mb-0 header-title">Revenue</h5>
+                <h5 className="card-title mb-0 header-title">Balance History</h5>
 
                 <Chart
                     options={apexLineChartWithLables}
