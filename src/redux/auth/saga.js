@@ -37,7 +37,11 @@ const setSession = user => {
 function* login({payload: {user, history}}) {
   // console.log(user, history)
   try {
-    if (!user.token) {
+    if (user.token) {
+      setSession(user)
+      yield put(loginUserSuccess(user))
+      history.push('/account/account-connect')
+    } else {
       const result = yield call(callApi, '/auth/signin', user, 'POST')
       const response = yield call(
         callApi,
@@ -60,10 +64,6 @@ function* login({payload: {user, history}}) {
       setSession(userObj)
       yield put(loginUserSuccess(userObj))
       yield call(() => history.push('/dashboard'))
-    } else {
-      setSession(user)
-      yield put(loginUserSuccess(user))
-      history.push('/account/account-connect')
     }
   } catch (error) {
     let message

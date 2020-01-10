@@ -13,6 +13,7 @@ import {
   DropdownItem,
 } from 'reactstrap'
 import * as FeatherIcon from 'react-feather'
+import {getLoggedInUser} from '../helpers/authUtils'
 
 import AppMenu from './AppMenu'
 import profilePic from '../assets/images/users/avatar-7.jpg'
@@ -21,6 +22,8 @@ import profilePic from '../assets/images/users/avatar-7.jpg'
  * User Widget
  */
 const UserProfile = () => {
+  const user = getLoggedInUser()
+  // console.log(user)
   return (
     <React.Fragment>
       <div className="media user-profile mt-2 mb-2">
@@ -36,7 +39,7 @@ const UserProfile = () => {
         />
 
         <div className="media-body">
-          <h6 className="pro-user-name mt-2 mb-0">Avenir User</h6>
+          <h6 className="pro-user-name mt-2 mb-0">{user.myFirstName} {user.myLastName}</h6>
         </div>
 
         <UncontrolledDropdown className="align-self-center profile-dropdown-menu">
