@@ -143,6 +143,7 @@ class AccountConnect extends Component {
     console.log(token)
     console.log(metadata)
   }
+  
   handleOnExit = () => {
     // handle the case when your user exits Link
     console.log('Exited')

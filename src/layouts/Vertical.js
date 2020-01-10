@@ -75,7 +75,7 @@ class VerticalLayout extends Component {
             />
           </Suspense>
 
-          <div className="content-page">
+          <div className="content-page dashboard">
             <div className="content">
               <Container fluid>
                 <Suspense fallback={loading()}>{children}</Suspense>
