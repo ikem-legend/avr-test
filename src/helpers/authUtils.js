@@ -18,7 +18,12 @@ const getLoggedInUser = () => {
 const isUserAuthenticated = () => {
   // Add condtion for other pages before dashboard like account and credit card linking
   const user = getLoggedInUser()
+  const userInStorage = localStorage.getItem('avenir')
   if (!user) {
+    return false
+  }
+  if (user && userInStorage) {
+    // This is done to prevent auth layout during the account and credit card connection pages
     return false
   }
   return true

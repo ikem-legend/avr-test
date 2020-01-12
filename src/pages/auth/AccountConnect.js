@@ -5,7 +5,7 @@ import PlaidLink from 'react-plaid-link'
 
 import {Container, Row, Col, Button, Alert} from 'reactstrap'
 
-import {callApi} from '../../helpers/api'
+// import {callApi} from '../../helpers/api'
 import {registerUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -23,7 +23,7 @@ class AccountConnect extends Component {
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this._isMounted = true
     document.body.classList.add('authentication-bg')
     const {firstname, lastname} = this.state
@@ -31,24 +31,24 @@ class AccountConnect extends Component {
     if (firstname && lastname) {
       document.querySelectorAll('.float-container').classList.add('active')
     }
-    await callApi('/data/countries', null, 'GET')
-      .then(response => {
-        // console.log(response)
-        const countryList = response.data.map(coun => ({
-          value: coun.id,
-          label: coun.name,
-        }))
-        const cityArray = response.data.map(coun =>
-          coun.cities.map(city => ({value: city.id, label: city.name})),
-        )
-        const cityList = [].concat(...cityArray)
-        // console.log(cityList)
-        this.setState({
-          cities: cityList,
-          countries: countryList,
-        })
-      })
-      .catch(err => console.log(err))
+    // await callApi('/data/countries', null, 'GET')
+    //   .then(response => {
+    //     // console.log(response)
+    //     const countryList = response.data.map(coun => ({
+    //       value: coun.id,
+    //       label: coun.name,
+    //     }))
+    //     const cityArray = response.data.map(coun =>
+    //       coun.cities.map(city => ({value: city.id, label: city.name})),
+    //     )
+    //     const cityList = [].concat(...cityArray)
+    //     // console.log(cityList)
+    //     this.setState({
+    //       cities: cityList,
+    //       countries: countryList,
+    //     })
+    //   })
+    //   .catch(err => console.log(err))
 
     const user = JSON.parse(localStorage.getItem('avenir'))
     // console.log(user.myFirstName)
@@ -60,6 +60,8 @@ class AccountConnect extends Component {
   componentWillUnmount() {
     this._isMounted = false
     document.body.classList.remove('authentication-bg')
+    // Ensure that you can navigate to other auth parts by removing localStorage user details
+    localStorage.removeItem('avenir')
   }
 
   /**
@@ -151,9 +153,14 @@ class AccountConnect extends Component {
 
   /**
    * Redirect to root
+   * @returns {object} Redirect component
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
+    const userInStorage = localStorage.getItem('avenir')
+    if (!isAuthTokenValid && userInStorage) {
+      return false
+    }
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
     }
