@@ -12,7 +12,7 @@ const SalesChart = () => {
             },
             parentHeightOffset: 0,
         },
-        colors: ["#5369f8", "#ffbe0b"],
+        colors: ['#00a4ae', '#25c2e3'],
         // colors: ["#5369f8", "#43d39e", "#f77e53", "#ffbe0b"],
         grid: {
             borderColor: '#f1f3fa',
@@ -38,7 +38,7 @@ const SalesChart = () => {
                 vertical: 3
             }
         },
-        labels: ['Bitcoin $2000, 70%', 'Ethereum $570, 30%'],
+        labels: ['Bitcoin $2000, 50%', 'Ethereum $1970, 50%'],
         // labels: ['Clothes 44k', 'Smartphons 55k', 'Electronics 41k', 'Other 17k'],
         responsive: [{
             breakpoint: 480,
@@ -51,18 +51,18 @@ const SalesChart = () => {
         }],
         tooltip: {
             y: {
-                formatter: function(value) { return value + "k" }
+                formatter: function(value) { return `$${value}` }
             },
         }
     };
 
-    const data = [55, 54];
+    const data = [2000, 1970];
 
     return (
         <Card>
             <CardBody className="">
                 <h5 className="card-title mt-0 mb-0 header-title">Investment Distribution</h5>
-
+                <p>Manage your investment across various cryptocurrencies. Easily adjust the ratio to suit your preference</p>
                 <Chart
                     options={options}
                     series={data}

@@ -16,7 +16,7 @@ const Statistics = () => {
                         trend={{
                             textClass: 'text-success',
                             icon: 'uil uil-arrow-up',
-                            value: '25.16%'
+                            value: '25.16% (+$3,570)'
                         }} />
                 </Col>
 
@@ -29,7 +29,7 @@ const Statistics = () => {
                         trend={{
                             textClass: 'text-success',
                             icon: 'uil uil-arrow-up',
-                            value: '42.75%'
+                            value: '42.75% (+$2,000)'
                         }} />
                 </Col>
 
@@ -42,7 +42,7 @@ const Statistics = () => {
                         trend={{
                             textClass: 'text-danger',
                             icon: 'uil uil-arrow-down',
-                            value: '5.05%'
+                            value: '5.05% (-$522)'
                         }} />
                 </Col>
             </Row>
