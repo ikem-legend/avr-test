@@ -547,11 +547,11 @@ class Signup extends Component {
                                 onChange={this.updateInputValue}
                                 validate={{
                                   pattern: {
-                                    value: '^[0-9]{6}$',
+                                    value: '^[0-9]{5}$',
                                     errorMessage:
                                       'Your zipcode must be composed only with numbers',
                                   },
-                                  maxLength: {value: 6},
+                                  maxLength: {value: 5},
                                 }}
                                 required
                               />
