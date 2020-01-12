@@ -1,6 +1,6 @@
 // @flow
 import {Cookies} from 'react-cookie'
-import {all, call, fork, put, takeEvery} from 'redux-saga/effects'
+import {all, call, fork, put, takeLatest} from 'redux-saga/effects'
 
 import {callApi} from '../../helpers/api'
 
@@ -22,10 +22,10 @@ import {
 
 /**
  * Sets the session
- * @param {object} user
+ * @param {object} user User object
  */
 const setSession = user => {
-  let cookies = new Cookies()
+  const cookies = new Cookies()
   // console.log(cookies, user)
   if (user) cookies.set('user', JSON.stringify(user), {path: '/'})
   else cookies.remove('user', {path: '/'})
@@ -122,7 +122,7 @@ function* register({payload: {user, history}}) {
       {token: result.data.message.token},
     )
     yield put(registerUserSuccess(userObj))
-    console.log(userObj)
+    // console.log(userObj)
     // Save user object in local storage for the meantime then if validation successful set cookie and/else delete from local storage
     localStorage.setItem('avenir', JSON.stringify(userObj))
     // console.log(localStorage.getItem('avenir'))
@@ -174,19 +174,19 @@ function* forgetPassword({payload: {username}}) {
 }
 
 export function* watchLoginUser() {
-  yield takeEvery(LOGIN_USER, login)
+  yield takeLatest(LOGIN_USER, login)
 }
 
 export function* watchLogoutUser() {
-  yield takeEvery(LOGOUT_USER, logout)
+  yield takeLatest(LOGOUT_USER, logout)
 }
 
 export function* watchRegisterUser() {
-  yield takeEvery(REGISTER_USER, register)
+  yield takeLatest(REGISTER_USER, register)
 }
 
 export function* watchForgetPassword() {
-  yield takeEvery(FORGET_PASSWORD, forgetPassword)
+  yield takeLatest(FORGET_PASSWORD, forgetPassword)
 }
 
 function* authSaga() {

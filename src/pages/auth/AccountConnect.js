@@ -151,9 +151,14 @@ class AccountConnect extends Component {
 
   /**
    * Redirect to root
+   * @returns {object} Redirect component
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
+    const userInStorage = localStorage.getItem('avenir')
+    if (!isAuthTokenValid && userInStorage) {
+      return false
+    }
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
     }

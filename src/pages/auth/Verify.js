@@ -4,7 +4,7 @@ import {Redirect} from 'react-router-dom'
 
 import {Container, Row, Col, Alert, Modal, ModalBody} from 'reactstrap'
 
-import {callApi} from '../../helpers/api'
+// import {callApi} from '../../helpers/api'
 import {loginUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -22,31 +22,37 @@ class Verify extends Component {
     }
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this._isMounted = true
     document.body.classList.add('authentication-bg')
-    await callApi('/data/countries', null, 'GET')
-      .then(response => {
-        // console.log(response)
-        const countryList = response.data.map(coun => ({
-          value: coun.id,
-          label: coun.name,
-        }))
-        this.setState({
-          countries: countryList,
-        })
-      })
-      .catch(err => console.log(err))
-    const user = JSON.parse(localStorage.getItem('avenir'))
-    // console.log(user.myFirstName)
-    this.setState({
-      name: user.myFirstName,
-    })
+    // await callApi('/data/countries', null, 'GET')
+    //   .then(response => {
+    //     // console.log(response)
+    //     const countryList = response.data.map(coun => ({
+    //       value: coun.id,
+    //       label: coun.name,
+    //     }))
+    //     this.setState({
+    //       countries: countryList,
+    //     })
+    //   })
+    //   .catch(err => console.log(err))
+    // const user = JSON.parse(localStorage.getItem('avenir'))
+    // // console.log(user.myFirstName)
+    // this.setState({
+    //   name: user.myFirstName,
+    // })
     setTimeout(() => {
       this.setState({
         verifyModal: true
       })
     }, 5000)
+    setTimeout(() => {
+      // Take user details from local storage and set session then possibly clear local storage
+      const userInStorage = JSON.parse(localStorage.getItem('avenir'))
+      console.log(this.props.history)
+      this.props.loginUser(userInStorage, this.props.history)
+    }, 12000)
   }
 
   componentWillUnmount() {
@@ -62,16 +68,9 @@ class Verify extends Component {
     })
   }
 
-  proceed = () => {
-    // Take user details from local storage and set session then possibly clear local storage
-    // console.log("Proceeding...")
-    const user = JSON.parse(localStorage.getItem('avenir'))
-    this.props.loginUser(user, this.props.history)
-    // this.props.history.push('/account/account-connect')
-  }
-
   /**
    * Redirect to root
+   * @returns {object} Redirect component
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
@@ -79,15 +78,8 @@ class Verify extends Component {
     // Means user is redirected if not logged in
     if (isAuthTokenValid) {
       // console.log("aha")
-      return <Redirect to="/" />
+      return <Redirect to="/dashboard" />
     }
-  }
-
-  /**
-   * Redirect to confirm
-   */
-  renderRedirectToConfirm = () => {
-    return <Redirect to="/account/confirm" />
   }
 
   render() {
@@ -97,9 +89,6 @@ class Verify extends Component {
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
-
-        {Object.keys(this.props.user || {}).length > 0 &&
-          this.renderRedirectToConfirm()}
 
         {(this._isMounted || !isAuthTokenValid) && (
           <div className="account-pages mt-5 mb-5">
@@ -150,7 +139,7 @@ class Verify extends Component {
                 </Col>
               </Row>
             </Container>
-            <Modal isOpen={verifyModal} toggle={this.toggle} centered className="verified" onClosed={this.proceed}>
+            <Modal isOpen={verifyModal} toggle={this.toggle} centered className="verified">
               <ModalBody>
                 <h5 className="modal-title font-weight-bold">Verified</h5>
                 <img src={Verified} alt="Verified" />
