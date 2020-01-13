@@ -11,6 +11,10 @@
 	padding: 10px;
 }
 
+.top-heading {
+	color: $avenir-blue;
+}
+
 .btn-red {
 	background-color: $avenir-red;
 	font-weight: bold;
@@ -19,4 +23,16 @@
 	background-color: $white;
 	color: $avenir-red;
 	border: 1px solid $avenir-red;
+}
+
+.bg-blue {
+	background-color: $avenir-blue;
+}
+
+.btn-light-blue {
+	background-color: #7dc5d5;
+}
+
+.btn-deep-blue {
+	background-color: $avenir-deep-blue;
 }
