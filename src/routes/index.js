@@ -12,8 +12,10 @@ const Signup = React.lazy(() => import('../pages/auth/Signup'))
 const Verify = React.lazy(() => import('../pages/auth/Verify'))
 const AccountConnect = React.lazy(() => import('../pages/auth/AccountConnect'))
 const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
+
 // dashboard
 const Dashboard = React.lazy(() => import('../pages/dashboard'))
+const Transactions = React.lazy(() => import('../pages/transactions'))
 
 // handle auth and authorization
 const PrivateRoute = ({component: Component, roles, ...rest}) => (
@@ -59,8 +61,7 @@ const dashboardRoutes = {
 
 // transactions
 const transactionRoutes = {
-  path: '#',
-  // path: '/transactions',
+  path: '/transactions',
   name: 'Transactions',
   icon: FeatherIcon.CreditCard,
   // header: 'Navigation',
@@ -68,7 +69,7 @@ const transactionRoutes = {
   //   variant: 'success',
   //   text: '1',
   // },
-  component: Dashboard,
+  component: Transactions,
   route: PrivateRoute,
 }
 
@@ -186,6 +187,8 @@ const authRoutes = {
   ],
 }
 
+const appRoutes = [transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
+
 // flatten the list of all nested routes
 const flattenRoutes = routes => {
   let flatRoutes = []
@@ -202,7 +205,7 @@ const flattenRoutes = routes => {
 }
 
 // All routes
-const allRoutes = [authRoutes, dashboardRoutes]
+const allRoutes = [authRoutes, dashboardRoutes, ...appRoutes]
 const authProtectedRoutes = [dashboardRoutes, transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
 const allFlattenRoutes = flattenRoutes(allRoutes)
 
