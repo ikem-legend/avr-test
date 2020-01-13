@@ -1,5 +1,22 @@
-// Login
+// Dashboard
 .btn-inv-blue {
 	background-color: $avenir-deep-blue;
 	border-radius: 0 !important;
+}
+
+// Transactions
+.top-up {
+	background-color: $white;
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.btn-red {
+	background-color: $avenir-red;
+	font-weight: bold;
+}
+.btn-red:hover {
+	background-color: $white;
+	color: $avenir-red;
+	border: 1px solid $avenir-red;
 }

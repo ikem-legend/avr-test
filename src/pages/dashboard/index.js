@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react'
 import {Redirect} from 'react-router-dom'
 import { Row, Col, Button } from 'reactstrap'
 
-import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
+import { isUserAuthenticated } from '../../helpers/authUtils'
+// import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 
 import WalletStatistics from './WalletStatistics'
@@ -15,12 +16,8 @@ class Dashboard extends Component {
 	constructor(props) {
 		super(props);
 
-		var oneWeekAgo = new Date();
-		oneWeekAgo.setDate(oneWeekAgo.getDate() - 15);
-
 		this.state = {
-			user: getLoggedInUser(),
-			filterDate: [oneWeekAgo, new Date()]
+			// user: getLoggedInUser(),
 		};
 	}
 
