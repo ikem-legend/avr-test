@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import {Redirect} from 'react-router-dom'
+import {Redirect, Link} from 'react-router-dom'
 import { Row, Col, Button } from 'reactstrap'
 
 import { isUserAuthenticated } from '../../helpers/authUtils'
@@ -55,7 +55,7 @@ class Dashboard extends Component {
 						<Col xl={7}>
 							<Row>
 								<Col className="text-center">
-									<Button color="inv-blue" block className="mr-1 mb-4">View Rounds-Ups</Button>
+									<Link to="/transactions" block className="mr-1 mb-4 btn btn-inv-blue">View Rounds-Ups</Link>
 								</Col>
 								<Col className="text-center">
 									<Button color="inv-blue" block className="mr-1 mb-4">Quick Wallet Top-Up</Button>
