@@ -1,14 +1,14 @@
-import React, {Component} from 'react'
+import React, {Component, Fragment} from 'react'
 import {Row, Col, Card, CardBody, Input} from 'reactstrap'
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit'
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
-class TransactionTables extends Component {
+class RoundUpsTable extends Component {
   constructor() {
     super()
     this.state = {
-      txns: [
+      roundups: [
         {
           date: '12-02-2020',
           transaction: 'Roundup Transaction',
@@ -117,73 +117,74 @@ class TransactionTables extends Component {
     }
   }
   render() {
-    const {txns, columns} = this.state
+    const {roundups, columns} = this.state
     const { SearchBar } = Search;
     const { ExportCSVButton } = CSVExport;
 
     const defaultSorted = [
-        {
-            dataField: 'id',
-            order: 'asc',
-        },
+      {
+        dataField: 'id',
+        order: 'asc',
+      },
     ];
 
     const sizePerPageRenderer = ({ options, currSizePerPage, onSizePerPageChange }) => (
-        <React.Fragment>
-            <label className="d-inline mr-1">Show</label>
-            <Input type="select" name="select" id="no-entries" className="custom-select custom-select-sm d-inline col-1"
-                defaultValue={currSizePerPage}
-                onChange={(e) => onSizePerPageChange(e.target.value)}>
-                {options.map((option, idx) => {
-                    return <option key={idx}>{option.text}</option>
-                })}
-            </Input>
-            <label className="d-inline ml-1">entries</label>
-        </React.Fragment>
+      <Fragment>
+        <label className="d-inline mr-1">Show</label>
+        <Input
+          type="select" 
+          name="select" 
+          id="no-entries" 
+          className="custom-select custom-select-sm d-inline col-1"
+          defaultValue={currSizePerPage}
+          onChange={(e) => onSizePerPageChange(e.target.value)}>
+          {options.map((option, idx) => {
+            return <option key={idx}>{option.text}</option>
+          })}
+        </Input>
+        <span className="d-inline ml-1">entries</span>
+      </Fragment>
     );
 
     return (
       <Col md={12}>
         <Card>
-            <CardBody>
-                <h4 className="header-title mt-0 mb-1">Roundups</h4>
-                <p className="sub-header"></p>
+          <CardBody>
+            <ToolkitProvider
+              bootstrap4
+              keyField="id"
+              data={roundups}
+              columns={columns}
+              search
+              exportCSV={{onlyExportFiltered: true, exportAll: false}}>
+              {props => (
+                <Fragment>
+                  <Row>
+                    <Col md={6}>
+                      <SearchBar {...props.searchProps} placeholder="Search round-ups, top-ups or withdrawal" style={{'width': '300px'}} />
+                    </Col>
+                    <Col className="text-right" md={{offset: 4, size: 2}}>
+                      <ExportCSVButton {...props.csvProps} className="btn btn-light-gray">
+                        Export CSV
+                      </ExportCSVButton>
+                    </Col>
+                  </Row>
 
-                <ToolkitProvider
-                    bootstrap4
-                    keyField="id"
-                    data={txns}
-                    columns={columns}
-                    search
-                    exportCSV={{ onlyExportFiltered: true, exportAll: false }}>
-                    {props => (
-                        <React.Fragment>
-                            <Row>
-                                <Col md={6}>
-                                    <SearchBar {...props.searchProps} placeholder="Search round-ups, top-ups or withdrawal" style={{'width': '300px'}} />
-                                </Col>
-                                <Col className="text-right" md={{offset:4, size: 2}}>
-                                    <ExportCSVButton {...props.csvProps} className="btn btn-primary">
-                                        Export CSV
-                                    </ExportCSVButton>
-                                </Col>
-                            </Row>
-
-                            <BootstrapTable
-                                {...props.baseProps}
-                                bordered={false}
-                                defaultSorted={defaultSorted}
-                                pagination={paginationFactory({ sizePerPage: 5, sizePerPageRenderer: sizePerPageRenderer, sizePerPageList: [{ text: '5', value: 5, }, { text: '10', value: 10 }, { text: '25', value: 25 }, { text: 'All', value: txns.length }] })}
-                                wrapperClasses="table-responsive"
-                            />
-                        </React.Fragment>
-                    )}
-                </ToolkitProvider>
-            </CardBody>
+                  <BootstrapTable
+                    {...props.baseProps}
+                    bordered={false}
+                    defaultSorted={defaultSorted}
+                    pagination={paginationFactory({ sizePerPage: 5, sizePerPageRenderer, sizePerPageList: [{ text: '5', value: 5, }, { text: '10', value: 10 }, { text: '25', value: 25 }, { text: 'All', value: roundups.length }] })}
+                    wrapperClasses="table-responsive roundups-table text-center"
+                  />
+                </Fragment>
+              )}
+            </ToolkitProvider>
+          </CardBody>
         </Card>
       </Col>
     )
   }
 }
 
-export default TransactionTables
+export default RoundUpsTable
