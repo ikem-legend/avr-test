@@ -4,6 +4,20 @@
 	border-radius: 0 !important;
 }
 
+
+// Roundup settings
+.custom-control-input:checked ~ .custom-control-label::before {
+	background-color: $avenir-deep-blue;
+	border-color: $avenir-deep-blue;
+}
+
+.roundup-milestone {
+	span {
+		margin-right: 5px;
+	}
+}
+
+
 // Transactions
 .top-up {
 	background-color: $white;
@@ -35,4 +49,79 @@
 
 .btn-deep-blue {
 	background-color: $avenir-deep-blue;
+}
+
+.roundup-bar {
+	height: 1.25rem;
+  border-radius: .5rem;
+}
+
+.tab-content {
+	padding: 1px;
+}
+
+.nav-tabs {
+	.nav-link {
+		border-radius: 0;
+	}
+	.nav-item {
+		margin-right: 5px;
+	}
+	.nav-link.active {
+		background-color: $avenir-deep-blue;
+		color: $white;
+	}
+
+	li {
+		a {
+			background-color: $white;
+		}
+		a.active {
+			border-bottom: 0 !important;
+		}
+	}
+}
+
+.btn-light-gray {
+	background-color: $avenir-light-gray;
+	color: #4B4B5A;
+}
+
+.roundups-table {
+	tbody {
+		tr {
+			td:nth-child(4) {
+				background-color: $avenir-light-gray;
+			}
+		}
+	}
+}
+
+.topups-table {
+	tbody {
+		tr {
+			td:nth-child(3) {
+				background-color: $avenir-light-gray;
+			}
+		}
+	}
+}
+
+.withdrawal-table {
+	tbody {
+		tr {
+			td:nth-child(4) {
+				background-color: $avenir-light-gray;
+			}
+		}
+	}
+}
+
+.page-link {
+	color: $avenir-deep-blue;
+}
+
+.page-item.active .page-link {
+	background-color: $avenir-deep-blue;
+	border-color: $avenir-deep-blue;
 }

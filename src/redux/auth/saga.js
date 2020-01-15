@@ -27,8 +27,8 @@ import {
 const setSession = user => {
   const cookies = new Cookies()
   // console.log(cookies, user)
-  if (user) cookies.set('user', JSON.stringify(user), {path: '/'})
-  else cookies.remove('user', {path: '/'})
+  if (user) cookies.set('avenirUser', JSON.stringify(user), {path: '/'})
+  else cookies.remove('avenirUser', {path: '/'})
 }
 /**
  * Login the user
