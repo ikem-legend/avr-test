@@ -7,7 +7,7 @@ import {Cookies} from 'react-cookie'
  */
 const getLoggedInUser = () => {
   const cookies = new Cookies()
-  const user = cookies.get('user')
+  const user = cookies.get('avenirUser')
   // console.log(user)
   return user ? (typeof user == 'object' ? user : JSON.parse(user)) : null
 }
