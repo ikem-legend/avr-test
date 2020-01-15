@@ -68,7 +68,7 @@ class RoundUps extends Component {
                 <Button color="light-blue">10x</Button>
               </Col>
               <Col md={4}>
-                <Button color="light-blue block">SAVE</Button>
+                <Button color="deep-blue block">SAVE</Button>
               </Col>
             </Row>
           </Col>
