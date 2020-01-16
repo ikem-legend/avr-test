@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="223.561" height="57" viewBox="0 0 223.561 57">
+  <g id="Logo" transform="translate(0.561 11)">
+    <text id="avenir" transform="translate(66 32)" fill="#00a4ab" font-size="60" font-family="Bauhaus"><tspan x="0" y="0">avenir</tspan></text>
+    <path id="Path_2" data-name="Path 2" d="M9.023,36.373a5.333,5.333,0,0,1-4.365-8.4l16-22.824a5.33,5.33,0,0,1,8.676-.075L45.925,27.9a5.333,5.333,0,0,1-4.311,8.471Z" transform="translate(-3.683 -2.882)" fill="none" stroke="#00a4ab" stroke-miterlimit="10" stroke-width="1"/>
+    <path id="Path_2-2" data-name="Path 2" d="M9,24.365A5.334,5.334,0,0,1,4.627,15.98L12.149,5.189a5.327,5.327,0,0,1,8.689-.075l7.8,10.792a5.334,5.334,0,0,1-4.318,8.46Z" transform="translate(13.643 -2.874)" fill="#00a4ab"/>
+  </g>
+</svg>

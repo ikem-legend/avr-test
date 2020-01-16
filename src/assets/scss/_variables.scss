@@ -19,10 +19,11 @@ $gray-800: #343a40;
 $gray-900: #212529;
 $black:    #000;
 $avenir-blue: #1ca4a9;
-$avenir-red: #ff004e;
+$avenir-red: #ff003e;
 $avenir-light-blue: #e8f7f8;
-$avenir-light-gray: #f3f1f7;
-$avenir-deep-blue: #00a4ac;
+$avenir-deep-blue: #00a4ad;
+$avenir-deep-blue-hover: #53d0d6;
+$avenir-light-gray: #f3f1f8;
 
 $grays: ();
 // stylelint-disable-next-line scss/dollar-variable-default
@@ -282,11 +283,12 @@ $font-weight-medium: 500;
 $font-weight-semibold: 600;
 
 // stylelint-disable value-keyword-case
-$font-family-sans-serif:      'Nunito Sans', sans-serif;
+$font-family-sans-serif:      'Avenir', sans-serif;
+// $font-family-sans-serif:      'Nunito Sans', sans-serif;
 $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 $font-family-base:            $font-family-sans-serif;
 // Secondary font
-$font-family-secondary:       'Nunito Sans', sans-serif;
+$font-family-secondary:       'Avenir', sans-serif;
 
 // stylelint-enable value-keyword-case
 
