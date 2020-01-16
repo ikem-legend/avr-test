@@ -12,7 +12,7 @@ import {
   // Lock,
   LogOut,
 } from 'react-feather'
-import logo from '../assets/images/logo.png'
+import logo from '../assets/images/app-logo.svg'
 // import profilePic from '../assets/images/users/avatar-7.jpg'
 import {showRightSidebar} from '../redux/actions'
 // import NotificationDropdown from './NotificationDropdown';
@@ -102,7 +102,7 @@ class Topbar extends Component {
             <Link to="/" className="navbar-brand mr-0 mr-md-2 logo">
               <span className="logo-lg">
                 <img src={logo} alt="" height="24" />
-                <span className="d-inline h5 ml-2 text-logo">Avenir</span>
+                {/*<span className="d-inline h5 ml-2 text-logo">Avenir</span>*/}
               </span>
               <span className="logo-sm">
                 <img src={logo} alt="" height="24" />

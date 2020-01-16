@@ -20,7 +20,7 @@
         }
         .nav-link {
             padding: 0 15px;
-            color: $menu-item;
+            color: $avenir-deep-blue;
             min-width: 32px;
             display: block;
             line-height: $topbar-height;
@@ -31,16 +31,16 @@
             svg {
                 height: 20px;
                 width: 20px;
-                color: $menu-item;
-                fill: rgba($menu-item, 0.12);
+                color: $avenir-deep-blue;
+                fill: rgba($avenir-deep-blue, 0.12);
             }
 
             &:hover,
             &:focus,
             &:active {
                 svg {
-                    color: $menu-item-active;
-                    fill: rgba($menu-item-active, 0.10);
+                    color: $avenir-deep-blue-hover;
+                    fill: rgba($avenir-deep-blue-hover, 0.10);
                 }
             }
         }

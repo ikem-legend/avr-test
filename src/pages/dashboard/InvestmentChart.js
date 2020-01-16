@@ -12,7 +12,8 @@ const SalesChart = () => {
             },
             parentHeightOffset: 0,
         },
-        colors: ['#00a4ae', '#25c2e3'],
+        colors: ['#00a4ad', '#65dbe1'],
+        // colors: ['#00a4ad78', '#25c2e3'],
         // colors: ["#5369f8", "#43d39e", "#f77e53", "#ffbe0b"],
         grid: {
             borderColor: '#f1f3fa',
@@ -61,7 +62,7 @@ const SalesChart = () => {
     return (
         <Card>
             <CardBody className="">
-                <h5 className="card-title mt-0 mb-0 header-title">Investment Distribution</h5>
+                <h6 className="card-title mt-0 mb-4">INVESTMENT DISTRIBUTION</h6>
                 <p>Manage your investment across various cryptocurrencies. Easily adjust the ratio to suit your preference</p>
                 <Chart
                     options={options}
