@@ -3,8 +3,9 @@ import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
 import PlaidLink from 'react-plaid-link'
 
-import {Container, Row, Col, Button, Alert} from 'reactstrap'
+import {Container, Row, Col, Button, Modal, ModalHeader, ModalBody, Alert} from 'reactstrap'
 
+import AccountList from '../../components/AccountList'
 // import {callApi} from '../../helpers/api'
 import {registerUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
@@ -18,6 +19,8 @@ class AccountConnect extends Component {
     super(props)
     this.state = {
       name: '',
+      accountModal: false,
+      accounts: []
       // connectError: ''
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
@@ -50,11 +53,12 @@ class AccountConnect extends Component {
     //   })
     //   .catch(err => console.log(err))
 
-    const user = JSON.parse(localStorage.getItem('avenir'))
-    // console.log(user.myFirstName)
-    this.setState({
-      name: user.myFirstName,
-    })
+    // Commented temporarily
+    // const user = JSON.parse(localStorage.getItem('avenir'))
+    // // console.log(user.myFirstName)
+    // this.setState({
+    //   name: user.myFirstName,
+    // })
   }
 
   componentWillUnmount() {
@@ -140,10 +144,22 @@ class AccountConnect extends Component {
     })
   }
 
+  toggle = () => {
+    const {accountModal} = this.state
+    // console.log(accountModal)
+    this.setState({
+      accountModal: !accountModal,
+    })
+  }
+
   handleOnSuccess = (token, metadata) => {
     // send token to client server
     console.log(token)
     console.log(metadata)
+    this.setState({
+      accountModal: true,
+      accounts: metadata.accounts
+    });
   }
   
   handleOnExit = () => {
@@ -155,20 +171,25 @@ class AccountConnect extends Component {
    * Redirect to root
    * @returns {object} Redirect component
    */
+  // Commented temporarily
   renderRedirectToRoot = () => {
-    const isAuthTokenValid = isUserAuthenticated()
-    const userInStorage = localStorage.getItem('avenir')
-    if (!isAuthTokenValid && userInStorage) {
-      return false
-    }
-    if (!isAuthTokenValid) {
-      return <Redirect to="/account/login" />
-    }
+    // const isAuthTokenValid = isUserAuthenticated()
+    // const userInStorage = localStorage.getItem('avenir')
+    // if (!isAuthTokenValid && userInStorage) {
+    //   return false
+    // }
+    // if (!isAuthTokenValid) {
+    //   return <Redirect to="/account/login" />
+    // }
   }
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
-    const {name} = this.state
+    const {name, accounts, accountModal} = this.state
+
+    const accountList = accounts.map(acc => (
+      <AccountList details={acc} key={acc.id} />
+    ))
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
@@ -251,6 +272,14 @@ class AccountConnect extends Component {
                           </Button>
                         </Link>
                       </div>
+                      <Modal isOpen={accountModal} toggle={this.toggle}>
+                        <ModalHeader>Select accounts to be linked</ModalHeader>
+                        <ModalBody>
+                          <h4>Your account is now linked to Avenir. You can unlink an account by clicking on it.</h4>
+                          {accountList}
+                          <Button color="success" block>Continue</Button>
+                        </ModalBody>
+                      </Modal>
 
                       {this.props.error && (
                         <Alert
