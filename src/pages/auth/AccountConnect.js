@@ -20,7 +20,8 @@ class AccountConnect extends Component {
     this.state = {
       name: '',
       accountModal: false,
-      accounts: []
+      accounts: [],
+      accountsLinkedList: []
       // connectError: ''
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
@@ -92,7 +93,7 @@ class AccountConnect extends Component {
           key === 'zipcode' ||
           key === 'city' ||
           key === 'country') &&
-        delete data[key],
+        delete data[key]
     )
     // console.log(data)
     this.props.registerUser(data, history)
@@ -154,17 +155,43 @@ class AccountConnect extends Component {
 
   handleOnSuccess = (token, metadata) => {
     // send token to client server
-    console.log(token)
-    console.log(metadata)
+    // console.log(token)
+    // console.log(metadata)
+    // Deep copy is the best option
+    const accountList = JSON.parse(JSON.stringify(metadata))
+    const accountsLinkedList = accountList.accounts.map(acc => {
+      Object.keys(acc).forEach(key => 
+        (key !== 'id') && delete acc[key]
+      )
+      acc.value = false
+      return acc
+    })
+    // console.log(accountsLinkedList)
     this.setState({
       accountModal: true,
-      accounts: metadata.accounts
+      accounts: metadata.accounts,
+      accountsLinkedList
     });
   }
   
   handleOnExit = () => {
     // handle the case when your user exits Link
     console.log('Exited')
+  }
+
+  accountsLinked = (id, val) => {
+    console.log(id, val)
+    const {accountsLinkedList} = this.state
+    // const tempList = {...accountsLinkedList}
+    const tempList = accountsLinkedList.map(acc => {
+      if (acc.id === id) {
+        return {...acc, value: val}
+      }
+      return acc
+    })
+    this.setState({
+      accountsLinkedList: tempList
+    });
   }
 
   /**
@@ -188,7 +215,7 @@ class AccountConnect extends Component {
     const {name, accounts, accountModal} = this.state
 
     const accountList = accounts.map(acc => (
-      <AccountList details={acc} key={acc.id} />
+      <AccountList details={acc} key={acc.id} accountsLinked={this.accountsLinked} />
     ))
     return (
       <Fragment>

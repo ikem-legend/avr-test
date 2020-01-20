@@ -16,6 +16,8 @@ class AccountList extends Component {
 
   modify = () => {
     const {linked, linkText} = this.state
+    const {details, accountsLinked} = this.props
+    accountsLinked(details.id, !linked)
     this.setState({
       linked: !linked,
       linkText: linkText === 'Unlinked' ? 'Linked' : 'Unlinked'
@@ -26,7 +28,7 @@ class AccountList extends Component {
     const {linked, linkText} = this.state
     const {details} = this.props
     return (
-      <Card key={details.id}>
+      <Card>
         <CardBody className="account-list">
           <Row>
             <Col md={9} className="account-details">
