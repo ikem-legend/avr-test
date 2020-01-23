@@ -42,6 +42,7 @@
     "react-select": "^3.0.5",
     "react-sortablejs": "^1.5.1",
     "react-text-mask": "^5.4.3",
+    "react-toastify": "^5.5.0",
     "reactstrap": "^8.0.1",
     "redux": "^4.0.4",
     "redux-saga": "^1.1.1",

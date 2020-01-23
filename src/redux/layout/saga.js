@@ -10,6 +10,8 @@ import {
   TOGGLE_RIGHT_SIDEBAR,
   SHOW_RIGHT_SIDEBAR,
   HIDE_RIGHT_SIDEBAR,
+  // SHOW_FEEDBACK,
+  // HIDE_FEEDBACK
 } from './constants'
 import {
   changeSidebarTheme as changeLeftSidebarThemeAction,
@@ -162,6 +164,24 @@ function* hideRightSidebar() {
 }
 
 /**
+ * Shows the toastr
+ */
+// function* showFeedback({payload: {id, message, color}}) {
+//   try {
+//     yield call(manageBodyClass, 'right-bar-enabled', 'remove')
+//   } catch (error) {}
+// }
+
+/**
+ * Hides the toastr
+ */
+// function* hideFeedback() {
+//   try {
+//     yield call(manageBodyClass, 'right-bar-enabled', 'remove')
+//   } catch (error) {}
+// }
+
+/**
  * Watchers
  */
 export function* watchChangeLayoutType() {
@@ -201,6 +221,8 @@ function* LayoutSaga() {
     fork(watchToggleRightSidebar),
     fork(watchShowRightSidebar),
     fork(watchHideRightSidebar),
+    // fork(showFeedback),
+    // fork(hideFeedback)
   ])
 }
 

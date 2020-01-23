@@ -1,4 +1,5 @@
 // @flow
+import * as layoutConstants from '../../constants/layout'
 import {
   CHANGE_LAYOUT,
   CHANGE_LAYOUT_WIDTH,
@@ -7,9 +8,9 @@ import {
   TOGGLE_RIGHT_SIDEBAR,
   SHOW_RIGHT_SIDEBAR,
   HIDE_RIGHT_SIDEBAR,
+  SHOW_FEEDBACK,
+  HIDE_FEEDBACK
 } from './constants'
-
-import * as layoutConstants from '../../constants/layout'
 
 const INIT_STATE = {
   layoutType: layoutConstants.LAYOUT_VERTICAL,
@@ -17,6 +18,7 @@ const INIT_STATE = {
   leftSideBarTheme: layoutConstants.LEFT_SIDEBAR_THEME_DEFAULT,
   leftSideBarType: layoutConstants.LEFT_SIDEBAR_TYPE_FIXED,
   showRightSidebar: false,
+  feedbacks: []
 }
 
 const Layout = (state = INIT_STATE, action) => {
@@ -56,6 +58,18 @@ const Layout = (state = INIT_STATE, action) => {
         ...state,
         showRightSidebar: false,
       }
+    case SHOW_FEEDBACK:
+      console.log(action.payload)
+      const {message, id, color} = action.payload
+      return {
+        ...state,
+        feedbacks: [].concat({ message, id, color }),
+      };
+    case HIDE_FEEDBACK:
+      return {
+        ...state,
+        feedbacks: state.feedbacks.filter(error => error.id !== action.id),
+      };
     default:
       return state
   }
