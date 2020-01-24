@@ -106,26 +106,30 @@ class Signup extends Component {
   handleValidSubmit = () => {
     // console.log(event, values)
     // console.log(this.state.inputs)
-    const data = {...this.state.inputs}
-    const {history} = this.props
-    data.ssn = data.ssn.replace(/-/g, '')
-    data.dob = String(data.dob)
-    data.first_name = String(data.firstname)
-    data.last_name = String(data.lastname)
-    data.zip_code = String(data.zipcode)
-    data.city_id = String(data.city.value)
-    data.country_id = String(data.country.value)
-    Object.keys(data).forEach(
-      key =>
-        (key === 'firstname' ||
-          key === 'lastname' ||
-          key === 'zipcode' ||
-          key === 'city' ||
-          key === 'country') &&
-        delete data[key],
-    )
-    // console.log(data)
-    this.props.registerUser(data, history)
+    if (this.state.terms) {
+      const data = {...this.state.inputs}
+      const {history} = this.props
+      data.ssn = data.ssn.replace(/-/g, '')
+      data.dob = String(data.dob)
+      data.first_name = String(data.firstname)
+      data.last_name = String(data.lastname)
+      data.zip_code = String(data.zipcode)
+      data.city_id = String(data.city.value)
+      data.country_id = String(data.country.value)
+      Object.keys(data).forEach(
+        key =>
+          (key === 'firstname' ||
+            key === 'lastname' ||
+            key === 'zipcode' ||
+            key === 'city' ||
+            key === 'country') &&
+          delete data[key],
+      )
+      // console.log(data)
+      this.props.registerUser(data, history)
+    } else {
+      alert('Please agree to the terms and conditions')
+    }
   }
 
   activateField = e => {
@@ -170,25 +174,19 @@ class Signup extends Component {
     const {checked} = e.target
     // console.log(checked)
     this.setState({
-      terms: checked,
+      terms: checked
     })
   }
 
   /**
    * Redirect to root
+   * @returns {object} Redirect component
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
     if (isAuthTokenValid) {
       return <Redirect to="/dashboard" />
     }
-  }
-
-  /**
-   * Redirect to confirm
-   */
-  renderRedirectToConfirm = () => {
-    return <Redirect to="/account/confirm" />
   }
 
   render() {
@@ -205,14 +203,11 @@ class Signup extends Component {
       address,
       zipcode,
       city,
-      country,
+      country
     } = this.state.inputs
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
-
-        {Object.keys(this.props.user || {}).length > 0 &&
-          this.renderRedirectToConfirm()}
 
         {(this._isMounted || !isAuthTokenValid) && (
           <div className="account-pages mt-5 mb-5">

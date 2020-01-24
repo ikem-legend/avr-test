@@ -9,9 +9,9 @@ import {
   Button,
   TabPane,
   TabContent,
-   Nav, 
-   NavItem, 
-   NavLink
+  Nav, 
+  NavItem, 
+  NavLink
 } from 'reactstrap'
 import classnames from 'classnames'
 

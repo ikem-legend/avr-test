@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import {Redirect, Link} from 'react-router-dom'
 import { Row, Col } from 'reactstrap'
-// import { Row, Col, Button } from 'reactstrap'
 
 import { isUserAuthenticated } from '../../helpers/authUtils'
 // import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'

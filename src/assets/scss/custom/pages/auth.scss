@@ -143,3 +143,26 @@
 .btn-plaid {
 	border: 0 !important;
 }
+
+.account-list {
+	box-shadow: 0px 5px 10px 5px $avenir-light-gray;
+}
+.account-list:hover {
+	background-color: $avenir-light-gray;
+}
+
+.unlinked {
+	background-color: $avenir-red;
+	font-weight: bold;
+	:hover {
+		background-color: $avenir-red !important;
+	}
+}
+
+.linked {
+	background-color: $avenir-blue;
+	font-weight: bold;
+	:hover {
+		background-color: $avenir-blue !important;
+	}
+}
