@@ -4,25 +4,22 @@ import {Redirect} from 'react-router-dom'
 import {
   Row,
   Col,
-  Form,
-  FormGroup,
-  Input,
-  Button,
   Progress,
-  CustomInput,
-  //  Nav,
-  //  NavItem,
-  //  NavLink
+  CustomInput,  
+  TabPane,
+  TabContent,
+  Nav, 
+  NavItem, 
+  NavLink
 } from 'reactstrap'
-// import classnames from 'classnames'
+import classnames from 'classnames'
 
 import {isUserAuthenticated} from '../../helpers/authUtils'
 // import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-import TopUp from '../../assets/images/topups.svg'
 import profilePic from '../../assets/images/users/user-profile@2x.png'
 
-// import RoundUps from './RoundUps'
+import EditProfile from './EditProfile'
 // import RoundUpsTable from './RoundUpsTable'
 // import TopUpsTable from './TopUpsTable'
 // import WithdrawalTable from './WithdrawalTable'
@@ -33,13 +30,16 @@ class Account extends Component {
     super(props)
 
     this.state = {
-      roundup: '',
-      activeTab: '1',
-      // user: getLoggedInUser(),
+      stage1: true,
+      stage2: true,
+      stage3: true,
+      stage4: false,
+      activeTab: '1'
     }
   }
 
   updateValue = e => {
+    console.log(e.target.checked)
     this.setState({
       roundup: e.target.value,
     })
@@ -67,7 +67,7 @@ class Account extends Component {
   }
 
   render() {
-    const {roundup} = this.state
+    const {stage1, stage2, stage3, stage4, activeTab} = this.state
     const {user} = this.props
 
     return (
@@ -77,8 +77,8 @@ class Account extends Component {
           {/* preloader */}
           {this.props.loading && <Loader />}
 
-          <Row className="page-title align-items-center">
-            <Col md={4}>
+          <Row className="page-title">
+            <Col md={3}>
               <div className="account-profile">
                 <h6>My Account</h6>
                 <div className="media user-profile user-avatar mt-2">
@@ -106,20 +106,113 @@ class Account extends Component {
                 </div>
                 <Progress value="75" className="setup-level" />
                 <hr />
-                <CustomInput
-                  type="checkbox"
-                  id="exampleCustomCheckbox"
-                  label="Link my credit card(s)"
-                />
+                <div className="reg-status mb-2">
+                  <CustomInput
+                    type="checkbox"
+                    id="reg-stage-1"
+                    label="Link my bank account"
+                    checked={stage1}
+                    readOnly
+                  />
+                  <span className="ml-4 font-weight-bold complete">Complete</span>
+                </div>
+                <div className="reg-status mb-2">
+                  <CustomInput
+                    type="checkbox"
+                    id="reg-stage-2"
+                    label="Link my credit card(s)"
+                    checked={stage2}
+                    readOnly
+                  />
+                  <span className="ml-4 font-weight-bold complete">Complete</span>
+                </div>
+                <div className="reg-status mb-2">
+                  <CustomInput
+                    type="checkbox"
+                    id="reg-stage-3"
+                    label="Set a round-up multiplier"
+                    checked={stage3}
+                    readOnly
+                  />
+                  <span className="ml-4 font-weight-bold complete">Complete</span>
+                </div>
+                <div className="reg-status">
+                  <CustomInput
+                    type="checkbox"
+                    id="reg-stage-4"
+                    label="Make your first top-up"
+                    checked={stage4}
+                    readOnly
+                  />
+                  <span className="ml-4 font-weight-bold incomplete">Incomplete</span>
+                </div>
               </div>
             </Col>
-            <Col md={8}>
+            <Col md={9}>
+              <div className="account-settings">
+                <div className="nav-container">
+                  <Row>
+                    <Col md={12}>
+                      <Nav tabs>
+                        <Col md={3}>
+                          <NavItem>
+                            <NavLink
+                              className={classnames({ active: activeTab === '1' }, 'text-center')}
+                              onClick={() => { this.toggle('1'); }}
+                            >
+                              Edit Profile
+                            </NavLink>
+                          </NavItem>
+                        </Col>
+                        <Col md={3}>
+                          <NavItem>
+                            <NavLink
+                              className={classnames({ active: activeTab === '2' }, 'text-center')}
+                              onClick={() => { this.toggle('2'); }}
+                            >
+                              Account Settings
+                            </NavLink>
+                          </NavItem>
+                        </Col>
+                        <Col md={3}>
+                          <NavItem>
+                            <NavLink
+                              className={classnames({ active: activeTab === '3' }, 'text-center')}
+                              onClick={() => { this.toggle('3'); }}
+                            >
+                              Banks & Cards
+                            </NavLink>
+                          </NavItem>
+                        </Col>
+                        <Col md={3}>
+                          <NavItem>
+                            <NavLink
+                              className={classnames({ active: activeTab === '4' }, 'text-center')}
+                              onClick={() => { this.toggle('4'); }}
+                            >
+                              Security
+                            </NavLink>
+                          </NavItem>
+                        </Col>              
+                      </Nav>
+                    </Col>
+                  </Row> 
+                </div>
+                <div className="tab-container">
+                  <Row>
+                    <Col md={12}>
+                      <TabContent activeTab={activeTab}>
+                        <TabPane tabId="1">
+                          <div className="p-4">
+                            <EditProfile />
+                          </div>
+                        </TabPane>
+                      </TabContent>
+                    </Col>
+                  </Row>
+                </div>
+              </div>
             </Col>
-          </Row>
-
-          {/* table */}
-          <Row className="mt-4 mb-4">
-            <Col md={12}></Col>
           </Row>
         </div>
       </Fragment>
