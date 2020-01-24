@@ -161,7 +161,7 @@ class RoundUpsTable extends Component {
                 <Fragment>
                   <Row>
                     <Col md={6}>
-                      <SearchBar {...props.searchProps} placeholder="Search round-ups, top-ups or withdrawal" style={{'width': '300px'}} />
+                      <SearchBar {...props.searchProps} placeholder="Search round-ups, top-ups or withdrawal" style={{'width': '500px', 'border': '1px solid #eaeaea', 'borderRadius': '0.1rem', 'color': '#4b4b5a', 'fontSize': '0.8rem'}} />
                     </Col>
                     <Col className="text-right" md={{offset: 4, size: 2}}>
                       <ExportCSVButton {...props.csvProps} className="btn btn-light-gray">

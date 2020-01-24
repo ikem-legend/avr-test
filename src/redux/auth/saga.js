@@ -92,7 +92,9 @@ function* logout({payload: {history}}) {
     yield call(() => {
       history.push('/account/login')
     })
-  } catch (error) {}
+  } catch (error) {
+  	console.log(error)
+  }
 }
 
 /**
@@ -113,13 +115,13 @@ function* register({payload: {user, history}}) {
     )
     // console.log(response)
     const {
-      data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+      data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber}
     } = response
     const userObj = {}
     Object.assign(
       userObj,
       {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
-      {token: result.data.message.token},
+      {token: result.data.message.token}
     )
     yield put(registerUserSuccess(userObj))
     // console.log(userObj)
