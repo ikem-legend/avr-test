@@ -59,7 +59,7 @@ const Layout = (state = INIT_STATE, action) => {
         showRightSidebar: false,
       }
     case SHOW_FEEDBACK:
-      console.log(action)
+      // console.log(action)
       const {message, id, color} = action.payload
       return {
         ...state,
