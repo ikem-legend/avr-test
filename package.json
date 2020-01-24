@@ -45,6 +45,7 @@
     "react-toastify": "^5.5.0",
     "reactstrap": "^8.0.1",
     "redux": "^4.0.4",
+    "redux-logger": "^3.0.6",
     "redux-saga": "^1.1.1",
     "sortablejs": "^1.10.0"
   },

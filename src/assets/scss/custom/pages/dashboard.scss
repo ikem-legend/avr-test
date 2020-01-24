@@ -163,3 +163,24 @@
 	background-color: $avenir-deep-blue;
 	border-color: $avenir-deep-blue;
 }
+
+
+// Account
+.account-profile {
+	background-color: $white;
+	padding: 15px;
+	// border: 2px solid $avenir-light-gray;
+	border-radius: 10px;
+	.user-profile {
+		padding: 10px;
+	}
+	.setup {
+		color: $avenir-red;
+	}
+	.setup-level {
+		.progress-bar {
+			color: $avenir-light-gray;
+			background-color: $avenir-deep-blue;
+		}
+	}
+}

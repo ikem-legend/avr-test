@@ -1,13 +1,14 @@
 import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
 import * as FeatherIcon from 'react-feather'
+// import * as Unicons from '@iconscout/react-unicons'
 
 import {isUserAuthenticated} from '../helpers/authUtils'
 // import { isUserAuthenticated, getLoggedInUser } from '../helpers/authUtils';
 
 // auth
 const Login = React.lazy(() => import('../pages/auth/Login'))
-const Logout = React.lazy(() => import('../pages/auth/Logout'));
+const Logout = React.lazy(() => import('../pages/auth/Logout'))
 const Signup = React.lazy(() => import('../pages/auth/Signup'))
 const Verify = React.lazy(() => import('../pages/auth/Verify'))
 const AccountConnect = React.lazy(() => import('../pages/auth/AccountConnect'))
@@ -16,6 +17,7 @@ const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
 // dashboard
 const Dashboard = React.lazy(() => import('../pages/dashboard'))
 const Transactions = React.lazy(() => import('../pages/transactions'))
+const Account = React.lazy(() => import('../pages/account'))
 
 // handle auth and authorization
 const PrivateRoute = ({component: Component, roles, ...rest}) => (
@@ -91,7 +93,7 @@ const transactionRoutes = {
 
 // accounts
 const accountRoutes = {
-  path: '#',
+  path: '/my-account',
   // path: '/account',
   name: 'My Account',
   icon: FeatherIcon.User,
@@ -100,7 +102,7 @@ const accountRoutes = {
   //   variant: 'success',
   //   text: '1',
   // },
-  component: Dashboard,
+  component: Account,
   // roles: ['Admin'],
   route: PrivateRoute,
 }
@@ -165,10 +167,10 @@ const authRoutes = {
       route: Route,
     },
     {
-        path: '/account/logout',
-        name: 'Logout',
-        component: Logout,
-        route: Route,
+      path: '/account/logout',
+      name: 'Logout',
+      component: Logout,
+      route: Route,
     },
     {
       path: '/account/signup',
@@ -223,7 +225,13 @@ const flattenRoutes = routes => {
 
 // All routes
 const allRoutes = [authRoutes, dashboardRoutes, ...appRoutes]
-const authProtectedRoutes = [dashboardRoutes, transactionRoutes, accountRoutes, faqRoutes, supportRoutes]
+const authProtectedRoutes = [
+  dashboardRoutes,
+  transactionRoutes,
+  accountRoutes,
+  faqRoutes,
+  supportRoutes,
+]
 // const authProtectedRoutes = [dashboardRoutes, transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
 const allFlattenRoutes = flattenRoutes(allRoutes)
 

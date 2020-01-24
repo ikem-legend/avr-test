@@ -9,7 +9,7 @@ import {
   SHOW_RIGHT_SIDEBAR,
   HIDE_RIGHT_SIDEBAR,
   SHOW_FEEDBACK,
-  HIDE_FEEDBACK
+  HIDE_FEEDBACK,
 } from './constants'
 
 const INIT_STATE = {
@@ -18,7 +18,7 @@ const INIT_STATE = {
   leftSideBarTheme: layoutConstants.LEFT_SIDEBAR_THEME_DEFAULT,
   leftSideBarType: layoutConstants.LEFT_SIDEBAR_TYPE_FIXED,
   showRightSidebar: false,
-  feedbacks: []
+  feedbacks: [],
 }
 
 const Layout = (state = INIT_STATE, action) => {
@@ -59,17 +59,17 @@ const Layout = (state = INIT_STATE, action) => {
         showRightSidebar: false,
       }
     case SHOW_FEEDBACK:
-      console.log(action.payload)
+      console.log(action)
       const {message, id, color} = action.payload
       return {
         ...state,
-        feedbacks: [].concat({ message, id, color }),
-      };
+        feedbacks: [].concat({message, id, color}),
+      }
     case HIDE_FEEDBACK:
       return {
         ...state,
         feedbacks: state.feedbacks.filter(error => error.id !== action.id),
-      };
+      }
     default:
       return state
   }

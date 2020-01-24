@@ -11,7 +11,6 @@ import {
   Button,
   Progress,
 } from 'reactstrap'
-import {Cookies} from 'react-cookie'
 import classnames from 'classnames'
 
 import Loader from '../../components/Loader'
@@ -22,39 +21,39 @@ class RoundUps extends Component {
   constructor() {
     super()
     this.state = {
-      multiplier: '2x'
+      multiplier: '2x',
     }
   }
 
   switchRoundup = e => {
     const {value} = e.target
     console.log(value)
-    showFeedback('Roundup successfully saved', 'success')
+    this.props.showFeedback('Roundup successfully saved', 'success')
   }
 
   selectMultiplier = e => {
     // const {showFeedback} = this.props
     const {value} = e.target
     console.log(value)
-    showFeedback('Multiplier successfully saved', 'success')
+    // this.props.showFeedback('Multiplier successfully saved', 'success')
     this.setState({
-      multiplier: value
-    });
+      multiplier: value,
+    })
   }
 
   saveMultiplier = () => {
     const {multiplier} = this.state
-    const cookies = new Cookies()
-    const appUser =  cookies.get('avenirUser')
-
-    // console.log(appUser)
+    const {user} = this.props
+    // console.log(user)
     const intMultiplier = String(parseInt(multiplier, 10))
     console.log(intMultiplier)
-    console.log(typeof(intMultiplier))
+    // console.log(typeof(intMultiplier))
     // Only allow for 1x, 2x, 5x, 10x
-    callApi('/user/multiplier', multiplier, 'POST', appUser.token)
+    const multiplierObj = {multiplier_id: intMultiplier}
+    callApi('/user/multiplier', multiplierObj, 'POST', user.token)
       .then(result => {
         console.log(result)
+        this.props.showFeedback('Multiplier successfully saved', 'success')
       })
       .catch(err => {
         console.log(err)
@@ -63,6 +62,7 @@ class RoundUps extends Component {
 
   render() {
     const {multiplier} = this.state
+    // console.log(showFeedback)
     return (
       <Fragment>
         {/* preloader */}
@@ -79,7 +79,8 @@ class RoundUps extends Component {
                 <div className="roundup-milestone">
                   <Form>
                     <FormGroup row>
-                      <span>PAUSE </span><span> </span>
+                      <span>PAUSE </span>
+                      <span> </span>
                       <CustomInput
                         type="switch"
                         id="roundupsSwitch"
@@ -113,34 +114,79 @@ class RoundUps extends Component {
                     <Col md={2}>
                       <FormGroup>
                         <div className="">
-                          <Button color="none" value="1x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '1x', 'btn-light-blue': multiplier !== '1x'})}>1x</Button>
+                          <Button
+                            color="none"
+                            value="1x"
+                            onClick={this.selectMultiplier}
+                            className={classnames({
+                              'btn-deep-blue': multiplier === '1x',
+                              'btn-light-blue': multiplier !== '1x',
+                            })}
+                          >
+                            1x
+                          </Button>
                         </div>
                       </FormGroup>
                     </Col>
                     <Col md={2}>
                       <FormGroup>
                         <div className="">
-                          <Button color="none" value="2x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '2x', 'btn-light-blue': multiplier !== '2x'})}>2x</Button>
+                          <Button
+                            color="none"
+                            value="2x"
+                            onClick={this.selectMultiplier}
+                            className={classnames({
+                              'btn-deep-blue': multiplier === '2x',
+                              'btn-light-blue': multiplier !== '2x',
+                            })}
+                          >
+                            2x
+                          </Button>
                         </div>
                       </FormGroup>
                     </Col>
                     <Col md={2}>
                       <FormGroup>
                         <div className="">
-                          <Button color="none" value="5x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '5x', 'btn-light-blue': multiplier !== '5x'})}>5x</Button>
+                          <Button
+                            color="none"
+                            value="5x"
+                            onClick={this.selectMultiplier}
+                            className={classnames({
+                              'btn-deep-blue': multiplier === '5x',
+                              'btn-light-blue': multiplier !== '5x',
+                            })}
+                          >
+                            5x
+                          </Button>
                         </div>
                       </FormGroup>
                     </Col>
                     <Col md={2}>
                       <FormGroup>
                         <div className="">
-                          <Button color="none" value="10x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '10x', 'btn-light-blue': multiplier !== '10x'})}>10x</Button>
+                          <Button
+                            color="none"
+                            value="10x"
+                            onClick={this.selectMultiplier}
+                            className={classnames({
+                              'btn-deep-blue': multiplier === '10x',
+                              'btn-light-blue': multiplier !== '10x',
+                            })}
+                          >
+                            10x
+                          </Button>
                         </div>
                       </FormGroup>
                     </Col>
                     <Col md={4}>
                       <FormGroup>
-                        <Button color="deep-ash block" onClick={this.saveMultiplier}>SAVE</Button>
+                        <Button
+                          color="deep-ash block"
+                          onClick={this.saveMultiplier}
+                        >
+                          SAVE
+                        </Button>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -154,8 +200,8 @@ class RoundUps extends Component {
   }
 }
 
-// const mapDispatchToProps = state => ({
-//   showFeedback
-// })
+const mapStateToProps = state => ({
+  user: state.Auth.user,
+})
 
-export default connect(null, {showFeedback})(RoundUps)
+export default connect(mapStateToProps, {showFeedback})(RoundUps)

@@ -11,12 +11,12 @@ import {
   SHOW_RIGHT_SIDEBAR,
   HIDE_RIGHT_SIDEBAR,
   SHOW_FEEDBACK,
-  HIDE_FEEDBACK
+  HIDE_FEEDBACK,
 } from './constants'
 import {
   changeSidebarTheme as changeLeftSidebarThemeAction,
   changeSidebarType as changeSidebarTypeAction,
-  showFeedback as showNotification
+  showFeedback as showNotification,
 } from './actions'
 
 /**
@@ -167,20 +167,21 @@ function* hideRightSidebar() {
 /**
  * Shows the toastr
  */
-function* showFeedback({payload: {id, message, color}}) {
+function* showFeedback({payload}) {
+  console.log(payload)
   try {
-    yield put(showNotification, id, message, color)
+    // yield put(showNotification(message, type))
   } catch (error) {}
 }
 
 /**
  * Hides the toastr
  */
-function* hideFeedback() {
-  try {
-    yield call(showFeedback, 'right-bar-enabled', 'remove')
-  } catch (error) {}
-}
+// function* hideFeedback() {
+//   try {
+//     yield call(showFeedback, 'right-bar-enabled', 'remove')
+//   } catch (error) {}
+// }
 
 /**
  * Watchers
@@ -226,7 +227,7 @@ function* LayoutSaga() {
     fork(watchToggleRightSidebar),
     fork(watchShowRightSidebar),
     fork(watchHideRightSidebar),
-    fork(showFeedback),
+    fork(watchShowFeedback),
     // fork(hideFeedback)
   ])
 }
