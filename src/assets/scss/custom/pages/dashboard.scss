@@ -183,4 +183,34 @@
 			background-color: $avenir-deep-blue;
 		}
 	}
+	.reg-status {
+		span.complete {
+			color: $avenir-deep-blue;
+		}
+		span.incomplete {
+			color: $avenir-red;
+		}
+	}
+}
+
+.account-settings {
+	background-color: $white;
+	padding: 15px;
+	.nav-container {
+		background-color: $avenir-light-gray;
+		padding: 1em 0.5em;
+		.nav.nav-tabs {
+			border-bottom: 0;
+		}
+		.nav-tabs {
+			.nav-link.active {
+				background-color: $avenir-deep-blue;
+			}
+		}
+	}
+	.tab-container {
+		.btn-red {
+			background-color: $avenir-red;
+		}
+	}
 }

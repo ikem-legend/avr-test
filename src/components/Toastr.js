@@ -13,9 +13,7 @@ const options = {
 class Toastr extends Component {
   render() {
     // <ToastContainer autoClose={8000} draggable={false} />
-    console.log(this.props.feedbacks)
-    // const toastrType = toast[feedback.type]
-    // console.log(toastrType)
+    // console.log(this.props.feedbacks)
     return (
       <div>
         <ToastContainer>
