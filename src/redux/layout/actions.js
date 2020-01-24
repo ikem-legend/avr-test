@@ -52,7 +52,7 @@ export const hideFeedback = (id) => ({
 })
 
 export const showFeedback = (feedback, type) => {
-  console.log(feedback, type)
+  // console.log(feedback, type)
   const id = Date.now();
   setTimeout(() => {
     hideFeedback(id)

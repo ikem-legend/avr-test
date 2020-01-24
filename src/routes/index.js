@@ -74,20 +74,20 @@ const transactionRoutes = {
 }
 
 // referrals
-const referralRoutes = {
-  path: '#',
-  // path: '/referral',
-  name: 'Referral',
-  icon: FeatherIcon.Share2,
-  // header: 'Navigation',
-  // badge: {
-  //   variant: 'success',
-  //   text: '1',
-  // },
-  component: Dashboard,
-  // roles: ['Admin'],
-  route: PrivateRoute,
-}
+// const referralRoutes = {
+//   path: '#',
+//   // path: '/referral',
+//   name: 'Referral',
+//   icon: FeatherIcon.Share2,
+//   // header: 'Navigation',
+//   // badge: {
+//   //   variant: 'success',
+//   //   text: '1',
+//   // },
+//   component: Dashboard,
+//   // roles: ['Admin'],
+//   route: PrivateRoute,
+// }
 
 // accounts
 const accountRoutes = {
@@ -106,11 +106,27 @@ const accountRoutes = {
 }
 
 // learn
-const learnRoutes = {
+// const learnRoutes = {
+//   path: '#',
+//   // path: '/learn',
+//   name: 'Learn',
+//   icon: FeatherIcon.MessageCircle,
+//   // header: 'Navigation',
+//   // badge: {
+//   //   variant: 'success',
+//   //   text: '1',
+//   // },
+//   component: Dashboard,
+//   // roles: ['Admin'],
+//   route: PrivateRoute,
+// }
+
+// faq
+const faqRoutes = {
   path: '#',
-  // path: '/learn',
-  name: 'Learn',
-  icon: FeatherIcon.MessageCircle,
+  // path: '/faq',
+  name: 'FAQs',
+  icon: FeatherIcon.MessageSquare,
   // header: 'Navigation',
   // badge: {
   //   variant: 'success',
@@ -121,11 +137,11 @@ const learnRoutes = {
   route: PrivateRoute,
 }
 
-// faq
-const faqRoutes = {
+// support
+const supportRoutes = {
   path: '#',
   // path: '/faq',
-  name: 'FAQ and Support',
+  name: 'Support',
   icon: FeatherIcon.MessageSquare,
   // header: 'Navigation',
   // badge: {
@@ -187,7 +203,8 @@ const authRoutes = {
   ],
 }
 
-const appRoutes = [transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
+const appRoutes = [transactionRoutes, accountRoutes, faqRoutes, supportRoutes]
+// const appRoutes = [transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
 
 // flatten the list of all nested routes
 const flattenRoutes = routes => {
@@ -206,7 +223,8 @@ const flattenRoutes = routes => {
 
 // All routes
 const allRoutes = [authRoutes, dashboardRoutes, ...appRoutes]
-const authProtectedRoutes = [dashboardRoutes, transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
+const authProtectedRoutes = [dashboardRoutes, transactionRoutes, accountRoutes, faqRoutes, supportRoutes]
+// const authProtectedRoutes = [dashboardRoutes, transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
 const allFlattenRoutes = flattenRoutes(allRoutes)
 
 export {allFlattenRoutes, authProtectedRoutes}

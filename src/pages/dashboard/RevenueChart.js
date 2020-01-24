@@ -47,7 +47,7 @@ const RevenueChart = () => {
         legend: {
             show: false,
         },
-        colors: ['#43d39e'],
+        colors: ['#00a4ad'],
         xaxis: {
             type: 'string',
             categories: labels,
@@ -99,7 +99,7 @@ const RevenueChart = () => {
                         <NavLink className="text-muted" href="#">7d</NavLink>
                     </NavItem>
                     <NavItem>
-                        <NavLink className="" active href="#">15d</NavLink>
+                        <NavLink className="active-filter" active href="#">15d</NavLink>
                     </NavItem>
                     <NavItem>
                         <NavLink className="text-muted" href="#">1m</NavLink>

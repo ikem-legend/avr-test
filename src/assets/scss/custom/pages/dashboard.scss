@@ -7,7 +7,33 @@
 	color: $white;
 	background-color: $avenir-deep-blue-hover;
 }
-
+.active-filter {
+	color: $avenir-deep-blue;
+}
+.trading-rates {
+	border-right: 2px solid #939395
+}
+.btc, .eth {
+	border-right: 1px solid #939395;
+	.curr-price {
+		color: $avenir-deep-blue;
+		margin-left: 0.5em;
+	  margin-right: 0.5em;
+	  font-weight: bold;
+	}
+	.price-change {
+		background-color: $avenir-bright-green;
+		color: $white;
+	  display: inline-block;
+	  padding: 3px 15px 3px 10px;
+	}
+}
+.eth {
+	border-right: 0 !important;
+	.price-change {
+		background-color: $avenir-red;
+	}
+}
 
 // Roundup settings
 .custom-control-input:checked ~ .custom-control-label::before {
@@ -21,12 +47,19 @@
 	}
 }
 
+.btn-deep-ash {
+	background-color: #4B4A5A;
+}
+
 
 // Transactions
 .top-up {
 	background-color: $white;
 	border-radius: 5px;
 	padding: 10px;
+	img {
+		height: 120px;
+	}
 }
 
 .top-heading {
@@ -56,8 +89,9 @@
 }
 
 .roundup-bar {
-	height: 1.25rem;
-  border-radius: .5rem;
+	height: 1.7rem;
+  border-radius: 0.9rem;
+  background-color: $white;
 }
 
 .tab-content {

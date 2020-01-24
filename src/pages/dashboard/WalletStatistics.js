@@ -12,6 +12,7 @@ const Statistics = () => {
                     <StatisticsChartWidget
                         description="Total Wallet Balance"
                         title="$10,273"
+                        colors={['#43d39e']}
                         data={[25, 66, 41, 85, 63, 25, 44, 12, 36, 9, 54]}
                         trend={{
                             textClass: 'text-success',

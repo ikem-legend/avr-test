@@ -84,14 +84,14 @@ class Transactions extends Component {
             <Col sm={8}>
               <div className="mb-1 mt-1 top-up">
                 <Row>
-                  <Col md={6}>
+                  <Col md={4}>
                     <img src={TopUp} alt="Top-up" />
                   </Col>
-                  <Col md={3}>
+                  <Col md={4}>
                     <h6 className="top-heading">Top Up</h6>
                     <p>Top-Ups are an easy way to make one-time investments</p>
                   </Col>
-                  <Col md={3}>
+                  <Col md={4}>
                     <Form>
                       <FormGroup>
                         <Input

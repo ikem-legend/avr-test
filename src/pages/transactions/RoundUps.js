@@ -35,7 +35,7 @@ class RoundUps extends Component {
   selectMultiplier = e => {
     // const {showFeedback} = this.props
     const {value} = e.target
-    // console.log(value)
+    console.log(value)
     showFeedback('Multiplier successfully saved', 'success')
     this.setState({
       multiplier: value
@@ -70,24 +70,26 @@ class RoundUps extends Component {
 
         <Row>
           {/* milestone */}
-          <Col md={6}>
+          <Col md={7}>
             <Row>
               <Col md={8}>
-                <h4>Round-Up Milestone</h4>
+                <h1 className="mb-1">Round-Up Milestone</h1>
               </Col>
-              <Col md={4} className="roundup-milestone">
-                <Form>
-                  <FormGroup row>
-                    <span>PAUSE </span><span> </span>
-                    <CustomInput
-                      type="switch"
-                      id="roundupsSwitch"
-                      name="roundupsSwitch"
-                      label="RESUME"
-                      onClick={this.switchRoundup}
-                    />
-                  </FormGroup>
-                </Form>
+              <Col md={4}>
+                <div className="roundup-milestone">
+                  <Form>
+                    <FormGroup row>
+                      <span>PAUSE </span><span> </span>
+                      <CustomInput
+                        type="switch"
+                        id="roundupsSwitch"
+                        name="roundupsSwitch"
+                        label="RESUME"
+                        onClick={this.switchRoundup}
+                      />
+                    </FormGroup>
+                  </Form>
+                </div>
               </Col>
             </Row>
             <Row>
@@ -99,7 +101,7 @@ class RoundUps extends Component {
             </Row>
           </Col>
           {/* multipliers */}
-          <Col md={6}>
+          <Col md={5}>
             <p>
               Multiply your roundup amount to accelerate your investments. Eg:
               $0.10 in round-ups will be $0.20 in 2x
@@ -107,31 +109,41 @@ class RoundUps extends Component {
             <Row>
               <Col md={12}>
                 <Form>
-                  <FormGroup check inline>
+                  <Row>
                     <Col md={2}>
-                      <div className="">
-                        <Button color="none" value="1x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '1x', 'btn-light-blue': multiplier !== '1x'})}>1x</Button>
-                      </div>
+                      <FormGroup>
+                        <div className="">
+                          <Button color="none" value="1x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '1x', 'btn-light-blue': multiplier !== '1x'})}>1x</Button>
+                        </div>
+                      </FormGroup>
                     </Col>
                     <Col md={2}>
-                      <div className="">
-                        <Button color="none" value="2x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '2x', 'btn-light-blue': multiplier !== '2x'})}>2x</Button>
-                      </div>
+                      <FormGroup>
+                        <div className="">
+                          <Button color="none" value="2x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '2x', 'btn-light-blue': multiplier !== '2x'})}>2x</Button>
+                        </div>
+                      </FormGroup>
                     </Col>
                     <Col md={2}>
-                      <div className="">
-                        <Button color="none" value="5x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '5x', 'btn-light-blue': multiplier !== '5x'})}>5x</Button>
-                      </div>
+                      <FormGroup>
+                        <div className="">
+                          <Button color="none" value="5x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '5x', 'btn-light-blue': multiplier !== '5x'})}>5x</Button>
+                        </div>
+                      </FormGroup>
                     </Col>
                     <Col md={2}>
-                      <div className="">
-                        <Button color="none" value="10x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '10x', 'btn-light-blue': multiplier !== '10x'})}>10x</Button>
-                      </div>
+                      <FormGroup>
+                        <div className="">
+                          <Button color="none" value="10x" onClick={this.selectMultiplier} className={classnames({'btn-deep-blue': multiplier === '10x', 'btn-light-blue': multiplier !== '10x'})}>10x</Button>
+                        </div>
+                      </FormGroup>
                     </Col>
                     <Col md={4}>
-                      <Button color="deep-blue block" onClick={this.saveMultiplier}>SAVE MULTIPLIER</Button>
+                      <FormGroup>
+                        <Button color="deep-ash block" onClick={this.saveMultiplier}>SAVE</Button>
+                      </FormGroup>
                     </Col>
-                  </FormGroup>
+                  </Row>
                 </Form>
               </Col>
             </Row>
