@@ -314,9 +314,13 @@ class AccountConnect extends Component {
                       <Modal isOpen={accountModal} toggle={this.toggle}>
                         <ModalHeader>Select accounts to be linked</ModalHeader>
                         <ModalBody>
-                          <h4>Your account is now linked to Avenir. You can unlink an account by clicking on it.</h4>
-                          {loadingAccts ? <Loader /> : null}
-                          {accountList && accountList.length ? accountList : 'Oops, no accounts found for selected bank'}
+                          {loadingAccts ? <Loader /> : null}                          
+                          {accountList && accountList.length ? (
+                            <div>
+                              <h4 className="text-center">Your account is now linked to Avenir. You can unlink an account by clicking on it.</h4>
+                              {accountList}
+                            </div>
+                            ) : 'Oops, no accounts found for selected bank'}
                           <Button color="success" block onClick={this.connectSelectedAccts} disabled={disableConnectBtn}>Continue</Button>
                         </ModalBody>
                       </Modal>
