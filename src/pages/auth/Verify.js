@@ -50,7 +50,7 @@ class Verify extends Component {
     setTimeout(() => {
       // Take user details from local storage and set session then possibly clear local storage
       const userInStorage = JSON.parse(localStorage.getItem('avenir'))
-      console.log(this.props.history)
+      // console.log(this.props.history)
       this.props.loginUser(userInStorage, this.props.history)
     }, 12000)
   }

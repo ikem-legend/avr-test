@@ -90,6 +90,7 @@ const callSecuredApi = (url, data, method, token, callback) => {
           if (callback) {
             callback();
           }
+          console.log(response)
           resolve(response.data);
         })
         .catch(err => {
@@ -111,6 +112,7 @@ const callSecuredApi = (url, data, method, token, callback) => {
           resolve(response.data);
         })
         .catch(err => {
+          console.log(err)
           if (err.response && err.response.status === 403) {
             reject('You are not authorized to perform this action');
           }

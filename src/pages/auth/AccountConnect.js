@@ -22,7 +22,8 @@ class AccountConnect extends Component {
       accountModal: false,
       accounts: [],
       accountsLinkedList: [],
-      disableConnectBtn: true
+      disableConnectBtn: true,
+      loadingAccts: true
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
@@ -35,33 +36,6 @@ class AccountConnect extends Component {
     if (firstname && lastname) {
       document.querySelectorAll('.float-container').classList.add('active')
     }
-    
-    const {accountsLinkedList} = this.state
-    const noLinkedAccts = accountsLinkedList.filter(acct => (
-      acct.value === false
-    ))
-    // console.log(noLinkedAccts)
-    this.setState({
-      disableConnectBtn: noLinkedAccts.length ? true : false
-    });
-    // await callApi('/data/countries', null, 'GET')
-    //   .then(response => {
-    //     // console.log(response)
-    //     const countryList = response.data.map(coun => ({
-    //       value: coun.id,
-    //       label: coun.name,
-    //     }))
-    //     const cityArray = response.data.map(coun =>
-    //       coun.cities.map(city => ({value: city.id, label: city.name})),
-    //     )
-    //     const cityList = [].concat(...cityArray)
-    //     // console.log(cityList)
-    //     this.setState({
-    //       cities: cityList,
-    //       countries: countryList,
-    //     })
-    //   })
-    //   .catch(err => console.log(err))
 
     // Commented temporarily
     // const user = JSON.parse(localStorage.getItem('avenir'))
@@ -165,8 +139,10 @@ class AccountConnect extends Component {
   handleOnSuccess = (token, metadata) => {
     const {user} = this.props
     // send token to client server
-    // console.log(token)
-    // console.log(metadata)
+    // console.log(token, metadata)
+    this.setState({
+      accountModal: true
+    })
     const institution_name = metadata.institution.name
     const {institution_id} = metadata.institution
     const {public_token} = metadata
@@ -175,23 +151,23 @@ class AccountConnect extends Component {
     callApi('/user/plaid/bank', linkObj, 'POST', user.token)
       .then(res => {
         console.log(res)
+        // Deep copy is the best option
+        const accountList = JSON.parse(JSON.stringify(res.data.accounts))
+        const accountsLinkedList = accountList.map(acc => {
+          Object.keys(acc).forEach(key => 
+            (key !== 'id') && delete acc[key]
+          )
+          acc.link = false
+          return acc
+        })
+        // console.log(accountsLinkedList)
+        this.setState({
+          accounts: res.data.accounts,
+          accountsLinkedList,
+          loadingAccts: false
+        });
       })
       .catch(err => console.log(err))
-    // Deep copy is the best option
-    const accountList = JSON.parse(JSON.stringify(metadata))
-    const accountsLinkedList = accountList.accounts.map(acc => {
-      Object.keys(acc).forEach(key => 
-        (key !== 'id') && delete acc[key]
-      )
-      acc.value = false
-      return acc
-    })
-    // console.log(accountsLinkedList)
-    this.setState({
-      accountModal: true,
-      accounts: metadata.accounts,
-      accountsLinkedList
-    });
   }
   
   handleOnExit = () => {
@@ -202,17 +178,20 @@ class AccountConnect extends Component {
   accountsLinked = (id, val) => {
     // console.log(id, val)
     const {accountsLinkedList} = this.state
-    // console.log(user)
-    // const tempList = {...accountsLinkedList}
     const tempList = accountsLinkedList.map(acc => {
       if (acc.id === id) {
-        return {...acc, value: val}
+        return {...acc, link: val}
       }
       return acc
     })
-    console.log(tempList)
+    // console.log(tempList)
+    const noLinkedAccts = tempList.filter(acct => (
+      acct.link === true
+    ))
+    console.log(noLinkedAccts.length)
     this.setState({
-      accountsLinkedList: tempList
+      accountsLinkedList: tempList,
+      disableConnectBtn: !Boolean(noLinkedAccts.length)
     });
   }
 
@@ -245,7 +224,7 @@ class AccountConnect extends Component {
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
-    const {name, accounts, accountModal, disableConnectBtn} = this.state
+    const {name, accounts, accountModal, disableConnectBtn, loadingAccts} = this.state
 
     const accountList = accounts.map(acc => (
       <AccountList details={acc} key={acc.id} accountsLinked={this.accountsLinked} />
@@ -336,7 +315,8 @@ class AccountConnect extends Component {
                         <ModalHeader>Select accounts to be linked</ModalHeader>
                         <ModalBody>
                           <h4>Your account is now linked to Avenir. You can unlink an account by clicking on it.</h4>
-                          {accountList}
+                          {loadingAccts ? <Loader /> : null}
+                          {accountList && accountList.length ? accountList : 'Oops, no accounts found for selected bank'}
                           <Button color="success" block onClick={this.connectSelectedAccts} disabled={disableConnectBtn}>Continue</Button>
                         </ModalBody>
                       </Modal>

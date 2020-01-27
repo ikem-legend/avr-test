@@ -32,7 +32,7 @@ class AccountList extends Component {
         <CardBody className="account-list">
           <Row>
             <Col md={9} className="account-details">
-              <h5>{details.name} - {details.mask}</h5>
+              <h5>{details.accountName} - {details.accountMask}</h5>
             </Col>
             <Col md={3} className="text-center">
               <Button block color="transparent" className={classnames({ linked, 'unlinked': !linked})} onClick={this.modify}>{linkText}</Button>

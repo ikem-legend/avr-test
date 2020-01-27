@@ -73,3 +73,12 @@
 .dashboard {
     background-color: $avenir-light-gray;
 }
+
+// Toastr
+.Toastify__toast.Toastify__toast--default.success {
+    // background-color: $avenir-light-blue;
+}
+.Toastify__toast.Toastify__toast--default.danger {
+    background-color: $avenir-red;
+    color: $white;
+}
