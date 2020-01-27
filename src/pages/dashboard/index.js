@@ -55,14 +55,14 @@ class Dashboard extends Component {
 						<Col xl={7}>
 							<Row>
 								<Col className="text-center">
-									<Link to="/transactions" block className="mr-1 mb-4 btn btn-inv-blue">View Rounds-Ups</Link>
+									<Link to="/transactions" className="mr-1 mb-4 btn btn-inv-blue btn-block">View Rounds-Ups</Link>
 								</Col>
 								<Col className="text-center">
 									{/* Possibly set table value in state and load on mount of transactions page so it loads selected table instead of default*/}
-									<Link to="/transactions" block className="mr-1 mb-4 btn btn-inv-blue">Quick Wallet Top-Up</Link>
+									<Link to="/transactions" className="mr-1 mb-4 btn btn-inv-blue btn-block">Quick Wallet Top-Up</Link>
 								</Col>
 								<Col className="text-center">
-									<Link to="/transactions" block className="mr-1 mb-4 btn btn-inv-blue">Withdraw Investment</Link>
+									<Link to="/transactions" className="mr-1 mb-4 btn btn-inv-blue btn-block">Withdraw Investment</Link>
 								</Col>                                    
 							</Row>
 							<RevenueChart />

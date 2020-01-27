@@ -6,7 +6,7 @@ import PlaidLink from 'react-plaid-link'
 import {Container, Row, Col, Button, Modal, ModalHeader, ModalBody, Alert} from 'reactstrap'
 
 import AccountList from '../../components/AccountList'
-// import {callApi} from '../../helpers/api'
+import {callApi} from '../../helpers/api'
 import {registerUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -21,8 +21,8 @@ class AccountConnect extends Component {
       name: '',
       accountModal: false,
       accounts: [],
-      accountsLinkedList: []
-      // connectError: ''
+      accountsLinkedList: [],
+      disableConnectBtn: true
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
@@ -35,6 +35,15 @@ class AccountConnect extends Component {
     if (firstname && lastname) {
       document.querySelectorAll('.float-container').classList.add('active')
     }
+    
+    const {accountsLinkedList} = this.state
+    const noLinkedAccts = accountsLinkedList.filter(acct => (
+      acct.value === false
+    ))
+    // console.log(noLinkedAccts)
+    this.setState({
+      disableConnectBtn: noLinkedAccts.length ? true : false
+    });
     // await callApi('/data/countries', null, 'GET')
     //   .then(response => {
     //     // console.log(response)
@@ -154,9 +163,20 @@ class AccountConnect extends Component {
   }
 
   handleOnSuccess = (token, metadata) => {
+    const {user} = this.props
     // send token to client server
     // console.log(token)
     // console.log(metadata)
+    const institution_name = metadata.institution.name
+    const {institution_id} = metadata.institution
+    const {public_token} = metadata
+    const linkObj = {institution_name, institution_id, public_token}
+    console.log(linkObj)
+    callApi('/user/plaid/bank', linkObj, 'POST', user.token)
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => console.log(err))
     // Deep copy is the best option
     const accountList = JSON.parse(JSON.stringify(metadata))
     const accountsLinkedList = accountList.accounts.map(acc => {
@@ -180,8 +200,9 @@ class AccountConnect extends Component {
   }
 
   accountsLinked = (id, val) => {
-    console.log(id, val)
+    // console.log(id, val)
     const {accountsLinkedList} = this.state
+    // console.log(user)
     // const tempList = {...accountsLinkedList}
     const tempList = accountsLinkedList.map(acc => {
       if (acc.id === id) {
@@ -189,9 +210,21 @@ class AccountConnect extends Component {
       }
       return acc
     })
+    console.log(tempList)
     this.setState({
       accountsLinkedList: tempList
     });
+  }
+
+  connectSelectedAccts = () => {
+    const {accountsLinkedList} = this.state
+    const {user} = this.props
+    const accountsObj = {accounts_link: accountsLinkedList}
+    callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+      .then(response => {
+        console.log(response)
+      })
+      .catch(err => console.log(err))
   }
 
   /**
@@ -212,7 +245,7 @@ class AccountConnect extends Component {
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
-    const {name, accounts, accountModal} = this.state
+    const {name, accounts, accountModal, disableConnectBtn} = this.state
 
     const accountList = accounts.map(acc => (
       <AccountList details={acc} key={acc.id} accountsLinked={this.accountsLinked} />
@@ -304,7 +337,7 @@ class AccountConnect extends Component {
                         <ModalBody>
                           <h4>Your account is now linked to Avenir. You can unlink an account by clicking on it.</h4>
                           {accountList}
-                          <Button color="success" block>Continue</Button>
+                          <Button color="success" block onClick={this.connectSelectedAccts} disabled={disableConnectBtn}>Continue</Button>
                         </ModalBody>
                       </Modal>
 
