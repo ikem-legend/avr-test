@@ -20,7 +20,7 @@ import Loader from '../../components/Loader'
 import profilePic from '../../assets/images/users/user-profile@2x.png'
 
 import EditProfile from './EditProfile'
-// import RoundUpsTable from './RoundUpsTable'
+import AccountSettings from './AccountSettings'
 // import TopUpsTable from './TopUpsTable'
 // import WithdrawalTable from './WithdrawalTable'
 // import InvestmentChart from './InvestmentChart'
@@ -205,6 +205,11 @@ class Account extends Component {
                         <TabPane tabId="1">
                           <div className="p-4">
                             <EditProfile />
+                          </div>
+                        </TabPane>
+                        <TabPane tabId="2">
+                          <div className="p-4">
+                            <AccountSettings />
                           </div>
                         </TabPane>
                       </TabContent>
