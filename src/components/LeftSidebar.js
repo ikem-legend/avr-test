@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
+import {Progress} from 'reactstrap'
 
 import {isMobileOnly} from 'react-device-detect'
 import PerfectScrollbar from 'react-perfect-scrollbar'
@@ -13,7 +14,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 // } from 'reactstrap'
 import {getLoggedInUser} from '../helpers/authUtils'
 
-import profilePic from '../assets/images/users/avatar-7.jpg'
+import profilePic from '../assets/images/users/user-profile@2x.png'
 import AppMenu from './AppMenu'
 
 /**
@@ -24,10 +25,10 @@ const UserProfile = () => {
   // console.log(user)
   return (
     <Fragment>
-      <div className="media user-profile mt-2 mb-2">
+      <div className="media user-profile user-avatar mt-2">
         <img
           src={profilePic}
-          className="avatar-sm rounded-circle mr-2"
+          className="avatar-lg rounded-circle mr-2"
           alt="Avenir"
         />
         <img
@@ -35,11 +36,14 @@ const UserProfile = () => {
           className="avatar-xs rounded-circle mr-2"
           alt="Avenir"
         />
-
-        <div className="media-body">
-          <h6 className="pro-user-name mt-2 mb-0">{user.myFirstName} {user.myLastName}</h6>
-        </div>
       </div>
+
+        <div className="media-body user-profile details mb-2">
+          <h4 className="pro-user-name mt-2 mb-0">Hi {user.myFirstName},</h4>
+          <div className="mt-2 mb-4">{user.myEmailAddress}</div>
+          <div>Account Setup - <span className="setup">75%</span></div>
+          <Progress value="75" className="setup-level"></Progress>
+        </div>
     </Fragment>
   )
 }

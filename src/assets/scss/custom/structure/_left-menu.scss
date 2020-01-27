@@ -57,6 +57,25 @@
         height: 100%;
         padding-bottom: 30px;
     }
+
+    .user-avatar {
+        padding-bottom: 5px;
+    }
+
+    .details {
+        padding-top: 0;
+    }
+
+    .setup {
+        color: $avenir-red;
+    }
+
+    .setup-level {
+        background-color: $avenir-light-gray;
+        div {
+            background-color: $avenir-deep-blue !important;
+        }
+    }
 }
 
 
@@ -67,19 +86,23 @@
         >li {
             &.mm-active{
                 >a{
-                    border-left: 3px solid $menu-item-active;
-                    color: $menu-item-active;
+                    border-left: 3px solid $avenir-deep-blue;
+                    // border-left: 3px solid $menu-item-active;
+                    color: $avenir-deep-blue;
+                    // color: $menu-item-active;
                     background-color: $menu-item-bg-hover;
                     svg {
-                        color: $menu-item-active;
-                        fill: rgba($menu-item-active, 0.10);
+                        color: $avenir-deep-blue;
+                        fill: rgba($avenir-deep-blue, 0.10);
+                        // fill: rgba($menu-item-active, 0.10);
                     }
                 }
             }
             >a {
                 color: $menu-item;
                 display: block;
-                padding: 12px 30px;
+                padding: 15px 30px;
+                // padding: 12px 30px;
                 font-size: 15px;
                 font-weight: 400;
                 position: relative;
@@ -98,13 +121,13 @@
                 &:hover,
                 &:focus,
                 &:active {
-                    color: $menu-item-hover;
+                    color: $avenir-deep-blue;
                     text-decoration: none;
                     background-color: $menu-item-bg-hover;
                     
                     svg {
-                        color: $menu-item-active;
-                        fill: rgba($menu-item-active, 0.10);
+                        color: $avenir-deep-blue;
+                        fill: rgba($avenir-deep-blue, 0.10);
                     }
                 }
                 >span {
