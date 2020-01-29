@@ -63,7 +63,7 @@ function* login({payload: {user, history}}) {
       // console.log(userObj)
       setSession(userObj)
       yield put(loginUserSuccess(userObj))
-      yield call(() => history.push('/dashboard'))
+      yield call(() => history.push('/my-account'))
     }
   } catch (error) {
     let message

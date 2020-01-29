@@ -33,7 +33,7 @@ class EditProfile  extends Component {
     this.setState({
       name: `${user.myFirstName} ${user.myLastName}`,
       email: user.myEmailAddress,
-      phone: user.myPhoneNumber,
+      phone: user.myPhoneNumber ? user.myPhoneNumber : '',
       dob: '',
       address: 'Sample address',
       referralUrl: ''

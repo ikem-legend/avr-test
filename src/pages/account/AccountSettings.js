@@ -11,7 +11,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Button,
+  Button
 } from 'reactstrap'
 import classnames from 'classnames'
 import {callApi} from '../../helpers/api'
@@ -213,28 +213,31 @@ class AccountSettings extends Component {
             <p className="font-weight-bold">Your Bitcoin to Ethereum % ratio is <span className="inv-ratio">50% : 50%</span></p>
           </Col>
         </Row>
-        <Row>
+        <Row form>
           <Col md={12}>
             <span className="edit-ratio">Edit crypto investment ratio below</span>
             <Row>
-              <Form inline>
-                <Col md={6}>
-                  <InputGroup>
-                    <InputGroupAddon addonType="prepend" className="font-weight-bold text-center"> 
-                      <InputGroupText><img src={btcImg} alt="Bitcoin" className="invCoin mr-1" /> Bitcoin</InputGroupText>
-                    </InputGroupAddon>
-                    <Input type="number" name="btc" value={btc} onChange={this.updateRatio} min="0" max="100" />
-                  </InputGroup>
-                </Col>
-                <Col md={6}>
-                  <InputGroup>
-                    <InputGroupAddon addonType="prepend" className="font-weight-bold text-center"> 
-                      <InputGroupText><img src={ethImg} alt="Ethereum" className="invCoin mr-1" /> Ethereum</InputGroupText>
-                    </InputGroupAddon>
-                    <Input type="number" name="eth" value={eth} onChange={this.updateRatio} min="0" max="100" />
-                  </InputGroup>
-                </Col>
-              </Form>
+              <Col md={6}>
+                <InputGroup>
+                  <InputGroupAddon addonType="prepend" className="font-weight-bold text-center"> 
+                    <InputGroupText><img src={btcImg} alt="Bitcoin" className="invCoin mr-1" /> Bitcoin</InputGroupText>
+                  </InputGroupAddon>
+                  <Input type="number" name="btc" value={btc} onChange={this.updateRatio} min="0" max="100" />
+                </InputGroup>
+              </Col>
+              <Col md={6}>
+                <InputGroup>
+                  <InputGroupAddon addonType="prepend" className="font-weight-bold text-center"> 
+                    <InputGroupText><img src={ethImg} alt="Ethereum" className="invCoin mr-1" /> Ethereum</InputGroupText>
+                  </InputGroupAddon>
+                  <Input type="number" name="eth" value={eth} onChange={this.updateRatio} min="0" max="100" />
+                </InputGroup>
+              </Col>
+            </Row>
+            <Row className="mt-2">
+              <Col md={{size:2, offset: 10}}>
+                <Button color="red" className="" block>Save</Button>
+              </Col>
             </Row>
           </Col>
         </Row>
