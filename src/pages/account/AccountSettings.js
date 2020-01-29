@@ -16,14 +16,16 @@ import {
 import classnames from 'classnames'
 import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
+import btcImg from '../../assets/images/layouts/btc.svg'
+import ethImg from '../../assets/images/layouts/eth.svg'
 
 class AccountSettings extends Component {
 	constructor() {
 		super()
 		this.state = {
 			multiplier: '2x',
-			// email: '',
-			// phone: '',
+			btc: 50,
+			eth: 50,
 			// dob: '',
 			// address: '',
 			// referralUrl: ''
@@ -33,7 +35,7 @@ class AccountSettings extends Component {
   switchRoundup = e => {
     const {value} = e.target
     console.log(value)
-    // this.props.showFeedback('Roundup successfully saved', 'success')
+    // this.props.showFeedback('Roundup successfully saved', 'success' 
   }
 
   selectMultiplier = e => {
@@ -65,8 +67,23 @@ class AccountSettings extends Component {
       })
   }
 
+  updateRatio = e => {
+    const {name, value} = e.target
+    if (name === 'btc') {
+      this.setState({
+        btc: parseInt(value, 10),
+        eth: parseInt(100 - value, 10)
+      });
+    } else {
+      this.setState({
+        btc: parseInt(100 - value, 10),
+        eth: parseInt(value, 10)
+      });
+    }
+  }
+
 	render() {
-    const {multiplier} = this.state
+    const {multiplier, btc, eth} = this.state
 		return (
       <Fragment>
   			<Row>
@@ -75,27 +92,36 @@ class AccountSettings extends Component {
             <div className="roundup-milestone">
               <Form>
                 <FormGroup row className="mt-4">
-                    <span>PAUSE </span>
+                  <Col>
+                    <span>PAUSE</span>
                     <CustomInput 
                       type="switch"
                       id="roundupsSwitch"
                       name="roundupsSwitch"
+                      className="roundup-switch"
                       label="RESUME"
                       onClick={this.switchRoundup}
                     />
+                  </Col>
                 </FormGroup>
               </Form>
               <div>
-                <p>You can pause your round-up investing at any time. This will disable all Avenir round-up investments</p>
+                <p className="mb-1">You can pause your round-up investing at any time.</p>
+                <p>This will disable all Avenir round-up investments</p>
               </div>
             </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={12} className="mb-2">
+            <h5 className="font-weight-bold">Your round-up multiplier is currently set to <span className="multiplier">2x</span></h5>
           </Col>
         </Row>
         <Row>
           <Col md={12}>
             <Form>
               <Row>
-                <Col md={2}>
+                <Col md={1}>
                   <FormGroup>
                     <div className="">
                       <Button
@@ -112,7 +138,7 @@ class AccountSettings extends Component {
                     </div>
                   </FormGroup>
                 </Col>
-                <Col md={2}>
+                <Col md={1}>
                   <FormGroup>
                     <div className="">
                       <Button
@@ -129,7 +155,7 @@ class AccountSettings extends Component {
                     </div>
                   </FormGroup>
                 </Col>
-                <Col md={2}>
+                <Col md={1}>
                   <FormGroup>
                     <div className="">
                       <Button
@@ -146,7 +172,7 @@ class AccountSettings extends Component {
                     </div>
                   </FormGroup>
                 </Col>
-                <Col md={2}>
+                <Col md={1}>
                   <FormGroup>
                     <div className="">
                       <Button
@@ -175,6 +201,41 @@ class AccountSettings extends Component {
                 </Col>
               </Row>
             </Form>
+            <p className="mb-1">Multiply your round-up amount to acceleratre your</p>
+            <p className="mb-2">investments. Eg: $0.10 in round-ups will be $0.20 with 2x</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={12}>
+            <h6 className="font-weight-bold">Investment Distribution Settings</h6>
+            <p className="mb-1">Manage your investment across various cryptocurrencies.</p>
+            <p className="mb-1">Easily adjust your ratio to suit your preference.</p>
+            <p className="font-weight-bold">Your Bitcoin to Ethereum % ratio is <span className="inv-ratio">50% : 50%</span></p>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={12}>
+            <span className="edit-ratio">Edit crypto investment ratio below</span>
+            <Row>
+              <Form inline>
+                <Col md={6}>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend" className="font-weight-bold text-center"> 
+                      <InputGroupText><img src={btcImg} alt="Bitcoin" className="invCoin mr-1" /> Bitcoin</InputGroupText>
+                    </InputGroupAddon>
+                    <Input type="number" name="btc" value={btc} onChange={this.updateRatio} min="0" max="100" />
+                  </InputGroup>
+                </Col>
+                <Col md={6}>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend" className="font-weight-bold text-center"> 
+                      <InputGroupText><img src={ethImg} alt="Ethereum" className="invCoin mr-1" /> Ethereum</InputGroupText>
+                    </InputGroupAddon>
+                    <Input type="number" name="eth" value={eth} onChange={this.updateRatio} min="0" max="100" />
+                  </InputGroup>
+                </Col>
+              </Form>
+            </Row>
           </Col>
         </Row>
       </Fragment>

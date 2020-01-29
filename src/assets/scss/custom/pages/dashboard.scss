@@ -213,4 +213,19 @@
 			background-color: $avenir-red;
 		}
 	}
+	.invCoin {
+		height: 20px;
+	}
+}
+
+.roundup-switch {
+	display: inline-block;
+}
+
+span.multiplier, span.inv-ratio {
+	color: $avenir-deep-blue;
+}
+
+span.edit-ratio {
+	color: $avenir-red;
 }
