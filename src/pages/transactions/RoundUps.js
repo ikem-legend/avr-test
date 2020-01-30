@@ -76,10 +76,10 @@ class RoundUps extends Component {
                 <h1 className="mb-1">Round-Up Milestone</h1>
               </Col>
               <Col md={4}>
-                <div className="roundup-milestone">
+                <div className="roundup-milestone mt-4">
                   <Form>
                     <FormGroup row>
-                      <span>PAUSE </span>
+                      <span className="font-weight-bold">PAUSE </span>
                       <span> </span>
                       <CustomInput
                         type="switch"

@@ -152,7 +152,7 @@ class Account extends Component {
                   <Row>
                     <Col md={12}>
                       <Nav tabs>
-                        <Col md={3}>
+                        <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
                               className={classnames({ active: activeTab === '1' }, 'text-center')}
@@ -162,7 +162,7 @@ class Account extends Component {
                             </NavLink>
                           </NavItem>
                         </Col>
-                        <Col md={3}>
+                        <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
                               className={classnames({ active: activeTab === '2' }, 'text-center')}
@@ -172,7 +172,7 @@ class Account extends Component {
                             </NavLink>
                           </NavItem>
                         </Col>
-                        <Col md={3}>
+                        <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
                               className={classnames({ active: activeTab === '3' }, 'text-center')}
@@ -182,7 +182,7 @@ class Account extends Component {
                             </NavLink>
                           </NavItem>
                         </Col>
-                        <Col md={3}>
+                        <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
                               className={classnames({ active: activeTab === '4' }, 'text-center')}

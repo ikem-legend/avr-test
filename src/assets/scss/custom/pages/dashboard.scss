@@ -44,6 +44,10 @@
 .roundup-milestone {
 	span {
 		margin-right: 5px;
+		color: $gray-700;
+	}
+	label {
+		color: $gray-700;
 	}
 }
 
@@ -71,7 +75,7 @@
 	font-weight: bold;
 }
 .btn-red:hover {
-	background-color: $white;
+	background-color: $white !important;
 	color: $avenir-red;
 	border: 1px solid $avenir-red;
 }
@@ -228,4 +232,9 @@ span.multiplier, span.inv-ratio {
 
 span.edit-ratio {
 	color: $avenir-red;
+}
+
+.user-input {
+	border-radius: 0.1rem;
+  border: 1px solid #eaeaea;
 }
