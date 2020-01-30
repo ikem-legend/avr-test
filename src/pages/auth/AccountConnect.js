@@ -1,13 +1,14 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
-import {Redirect, Link} from 'react-router-dom'
+import {Redirect, Link, withRouter} from 'react-router-dom'
 import PlaidLink from 'react-plaid-link'
 
 import {Container, Row, Col, Button, Modal, ModalHeader, ModalBody, Alert} from 'reactstrap'
 
 import AccountList from '../../components/AccountList'
+import CardList from '../../components/CardList'
 import {callApi} from '../../helpers/api'
-import {registerUser} from '../../redux/actions'
+import {registerUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 // import logo from '../../assets/images/logo.png';
@@ -20,10 +21,15 @@ class AccountConnect extends Component {
     this.state = {
       name: '',
       accountModal: false,
+      cardModal: false,
       accounts: [],
       accountsLinkedList: [],
+      cards: [],
+      cardsLinkedList: [],
       disableConnectBtn: true,
-      loadingAccts: true
+      disableConnectCardBtn: true,
+      loadingAccts: true,
+      loadingCards: true
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
@@ -188,10 +194,30 @@ class AccountConnect extends Component {
     const noLinkedAccts = tempList.filter(acct => (
       acct.link === true
     ))
-    console.log(noLinkedAccts.length)
+    // console.log(noLinkedAccts.length)
     this.setState({
       accountsLinkedList: tempList,
       disableConnectBtn: !Boolean(noLinkedAccts.length)
+    });
+  }
+
+  cardsLinked = (id, val) => {
+    // console.log(id, val)
+    const {cardsLinkedList} = this.state
+    const tempList = cardsLinkedList.map(card => {
+      if (card.id === id) {
+        return {...card, link: val}
+      }
+      return card
+    })
+    // console.log(tempList)
+    const noLinkedCards = tempList.filter(card => (
+      card.link === true
+    ))
+    console.log(noLinkedCards.length)
+    this.setState({
+      cardsLinkedList: tempList,
+      disableConnectCardBtn: !Boolean(noLinkedCards.length)
     });
   }
 
@@ -202,8 +228,57 @@ class AccountConnect extends Component {
     callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
       .then(response => {
         console.log(response)
+        this.props.showFeedback('Account successfully linked', 'success')
+        this.displayCards()
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log(err)
+        this.props.showFeedback('Error linking account', 'error')
+      })
+  }
+
+  displayCards = () => {
+    const {user} = this.props
+    this.setState({
+      accountModal: false,
+      cardModal: true
+    });
+    callApi('/user/plaid/bank/get/cards', null, 'GET', user.token)
+      .then(res => {
+        console.log(res)
+        const cardList = JSON.parse(JSON.stringify(res.data))
+        const cardsLinkedList = cardList.map(card => {
+          Object.keys(card).forEach(key => 
+            (key !== 'id') && delete card[key]
+          )
+          card.link = false
+          return card
+        })
+        this.setState({
+          cards: res.data,
+          cardsLinkedList,
+          loadingCards: false
+        });
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  connectSelectedCards = () => {
+    const {cardsLinkedList} = this.state
+    const {user} = this.props
+    const cardsObj = {accounts_link: cardsLinkedList}
+    callApi('/user/plaid/bank/account/link', cardsObj, 'POST', user.token)
+      .then(response => {
+        console.log(response)
+        this.props.showFeedback('Card successfully linked', 'success')
+        this.props.history.push('/dashboard')
+      })
+      .catch(err => {
+        console.log(err)
+        this.props.showFeedback('Error linking card', 'error')
+      })
   }
 
   /**
@@ -224,11 +299,16 @@ class AccountConnect extends Component {
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
-    const {name, accounts, accountModal, disableConnectBtn, loadingAccts} = this.state
+    const {name, accounts, cards, accountModal, cardModal, disableConnectBtn, disableConnectCardBtn, loadingAccts, loadingCards} = this.state
 
     const accountList = accounts.map(acc => (
       <AccountList details={acc} key={acc.id} accountsLinked={this.accountsLinked} />
     ))
+
+    const cardList = cards.map(cardDetail => (
+      <CardList details={cardDetail} key={cardDetail.id} cardsLinked={this.cardsLinked} />
+    ))
+
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
@@ -325,6 +405,20 @@ class AccountConnect extends Component {
                         </ModalBody>
                       </Modal>
 
+                      <Modal isOpen={cardModal} toggle={this.toggle}>
+                        <ModalHeader>Select cards to be linked</ModalHeader>
+                        <ModalBody>
+                          {loadingCards ? <Loader /> : null}                          
+                          {cardList && cardList.length ? (
+                            <div>
+                              <h4 className="text-center">Your card is now linked to Avenir. You can unlink an card by clicking on it.</h4>
+                              {cardList}
+                            </div>
+                            ) : 'Oops, no cards found for selected bank'}
+                          <Button color="success" block onClick={this.connectSelectedCards} disabled={disableConnectCardBtn}>Continue</Button>
+                        </ModalBody>
+                      </Modal>
+
                       {this.props.error && (
                         <Alert
                           color="danger"
@@ -355,4 +449,4 @@ const mapStateToProps = state => {
 }
 
 // export default connect(null, {registerUser})(AccountConnect)
-export default connect(mapStateToProps, {registerUser})(AccountConnect)
+export default connect(mapStateToProps, {registerUser, showFeedback})(withRouter(AccountConnect))
