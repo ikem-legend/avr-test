@@ -5,7 +5,7 @@ import classnames from 'classnames'
 /**
  * Renders the AccountList
  */
-class AccountList extends Component {
+class CardList extends Component {
   constructor() {
     super()
     this.state = {
@@ -16,8 +16,8 @@ class AccountList extends Component {
 
   modify = () => {
     const {linked, linkText} = this.state
-    const {details, accountsLinked} = this.props
-    accountsLinked(details.id, !linked)
+    const {details, cardsLinked} = this.props
+    cardsLinked(details.id, !linked)
     this.setState({
       linked: !linked,
       linkText: linkText === 'Unlinked' ? 'Linked' : 'Unlinked'
@@ -44,4 +44,4 @@ class AccountList extends Component {
   }
 }
 
-export default AccountList
+export default CardList

@@ -71,15 +71,15 @@ const callSecuredApi = (url, data, method, token, callback) => {
   const axiosOptions = {};
   if (token) {
     axiosOptions.headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      "Accept": "application/json"
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     };
     axiosOptions.timeout = 15000;
   }
   return new Promise((resolve, reject) => {
-    if (method === "PUT") {
-      axiosOptions.method = "PUT";
+    if (method === 'PUT') {
+      axiosOptions.method = 'PUT';
       axiosOptions.body = data;
       axios
         .put(`${config.fetchUrl}${url}`, data, {
@@ -90,18 +90,19 @@ const callSecuredApi = (url, data, method, token, callback) => {
           if (callback) {
             callback();
           }
+          console.log(response)
           resolve(response.data);
         })
         .catch(err => {
           if (err.response && err.response.status === 403) {
-            reject("You are not authorized to perform this action");
+            reject('You are not authorized to perform this action');
           }
           if (err.response && err.response.status === 401) {
             reject("You've been logged out, log in to continue.");
           }
           reject(err);
         });
-    } else if (method === "POST") {
+    } else if (method === 'POST') {
       axios
         .post(`${config.fetchUrl}${url}`, data, {
           headers: axiosOptions.headers,
@@ -111,8 +112,9 @@ const callSecuredApi = (url, data, method, token, callback) => {
           resolve(response.data);
         })
         .catch(err => {
+          console.log(err)
           if (err.response && err.response.status === 403) {
-            reject("You are not authorized to perform this action");
+            reject('You are not authorized to perform this action');
           }
           if (err.response && err.response.status === 401) {
             reject("You've been logged out, log in to continue.");
@@ -120,9 +122,11 @@ const callSecuredApi = (url, data, method, token, callback) => {
           if (err.response && err.response.data) {
             reject(err.response.data);
           }
-          reject(err.response.status);
+          if (err.response.status) {
+            reject(err.response.status);
+          }
         });
-    } else if (method === "PATCH") {
+    } else if (method === 'PATCH') {
       axios
         .patch(`${config.fetchUrl}${url}`, data, {
           headers: axiosOptions.headers,
@@ -133,17 +137,17 @@ const callSecuredApi = (url, data, method, token, callback) => {
         })
         .catch(err => {
           if (err.response && err.response.status === 403) {
-            reject("You are not authorized to perform this action");
+            reject('You are not authorized to perform this action');
           }
           if (err.response && err.response.status === 401) {
-            reject("You've been logged out, log in to continue.");
+            reject('You\'ve been logged out, log in to continue.');
           }
           if (err.response.data) {
             reject(err.response.data);
           }
           reject(err.response.status);
         });
-    } else if (method === "DELETE") {
+    } else if (method === 'DELETE') {
       axios
         .delete(`${config.fetchUrl}${url}`, {
           headers: axiosOptions.headers,
@@ -154,10 +158,10 @@ const callSecuredApi = (url, data, method, token, callback) => {
         })
         .catch(err => {
           if (err.response && err.response.status === 403) {
-            reject("You are not authorized to perform this action");
+            reject('You are not authorized to perform this action');
           }
           if (err.response && err.response.status === 401) {
-            reject("You've been logged out, log in to continue.");
+            reject('You\'ve been logged out, log in to continue.');
           }
           if (err.response.data) {
             reject(err.response.data);
@@ -175,7 +179,7 @@ const callSecuredApi = (url, data, method, token, callback) => {
         })
         .catch(err => {
           if (err.response && err.response.status === 403) {
-            reject("You are not authorized to perform this action");
+            reject('You are not authorized to perform this action');
           }
           if (err.response && err.response.status === 401) {
             reject("You've been logged out, log in to continue.");

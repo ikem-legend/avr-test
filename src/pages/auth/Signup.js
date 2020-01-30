@@ -25,7 +25,7 @@ import MaskedInput from 'react-text-mask'
 // import { Mail, Lock, User } from 'react-feather';
 
 import {callApi} from '../../helpers/api'
-import {registerUser} from '../../redux/actions'
+import {registerUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 // import logo from '../../assets/images/logo.png';
@@ -128,7 +128,7 @@ class Signup extends Component {
       // console.log(data)
       this.props.registerUser(data, history)
     } else {
-      alert('Please agree to the terms and conditions')
+      this.props.showFeedback('Please agree to the terms and conditions', 'error')
     }
   }
 
@@ -647,4 +647,4 @@ const mapStateToProps = (state) => {
 };
 
 // export default connect(null, {registerUser})(Signup)
-export default connect(mapStateToProps, { registerUser })(Signup);
+export default connect(mapStateToProps, {registerUser, showFeedback})(Signup);
