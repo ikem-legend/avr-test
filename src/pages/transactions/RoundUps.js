@@ -21,8 +21,29 @@ class RoundUps extends Component {
   constructor() {
     super()
     this.state = {
-      multiplier: '2x',
+      multiplier: '2',
+      invPause: false
     }
+  }
+
+  componentDidMount() {
+    this.loadUserData()
+  }
+
+  loadUserData = () = {
+    const {user} = this.props
+      callApi('/auth/me', null, 'GET', user.token)
+        .then(res => {
+          // console.log(res)
+          const {myMultiplierSetting, MyInvestmentPause} = res.data
+          this.setState({
+            multiplier: myMultiplierSetting,
+            invPause: MyInvestmentPause
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
   }
 
   switchRoundup = e => {
@@ -32,12 +53,10 @@ class RoundUps extends Component {
   }
 
   selectMultiplier = e => {
-    // const {showFeedback} = this.props
     const {value} = e.target
     console.log(value)
-    // this.props.showFeedback('Multiplier successfully saved', 'success')
     this.setState({
-      multiplier: value,
+      multiplier: parseInt(value, 10),
     })
   }
 
@@ -45,7 +64,8 @@ class RoundUps extends Component {
     const {multiplier} = this.state
     const {user} = this.props
     // console.log(user)
-    const intMultiplier = String(parseInt(multiplier, 10))
+    const multiplierIdArray = [1, 2, 5, 10]
+    const intMultiplier = (multiplierIdArray.indexOf(multiplier)) + 1
     console.log(intMultiplier)
     // console.log(typeof(intMultiplier))
     // Only allow for 1x, 2x, 5x, 10x
@@ -53,15 +73,17 @@ class RoundUps extends Component {
     callApi('/user/multiplier', multiplierObj, 'POST', user.token)
       .then(result => {
         console.log(result)
+        this.loadUserData()
         this.props.showFeedback('Multiplier successfully saved', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.showFeedback('Error saving multiplier, please try again', 'error')
       })
   }
 
   render() {
-    const {multiplier} = this.state
+    const {multiplier, invPause} = this.state
     // console.log(showFeedback)
     return (
       <Fragment>
@@ -119,8 +141,8 @@ class RoundUps extends Component {
                             value="1x"
                             onClick={this.selectMultiplier}
                             className={classnames({
-                              'btn-deep-blue': multiplier === '1x',
-                              'btn-light-blue': multiplier !== '1x',
+                              'btn-deep-blue': multiplier === 1,
+                              'btn-light-blue': multiplier !== 1
                             })}
                           >
                             1x
@@ -136,8 +158,8 @@ class RoundUps extends Component {
                             value="2x"
                             onClick={this.selectMultiplier}
                             className={classnames({
-                              'btn-deep-blue': multiplier === '2x',
-                              'btn-light-blue': multiplier !== '2x',
+                              'btn-deep-blue': multiplier === 2,
+                              'btn-light-blue': multiplier !== 2
                             })}
                           >
                             2x
@@ -153,8 +175,8 @@ class RoundUps extends Component {
                             value="5x"
                             onClick={this.selectMultiplier}
                             className={classnames({
-                              'btn-deep-blue': multiplier === '5x',
-                              'btn-light-blue': multiplier !== '5x',
+                              'btn-deep-blue': multiplier === 5,
+                              'btn-light-blue': multiplier !== 5,
                             })}
                           >
                             5x
@@ -170,8 +192,8 @@ class RoundUps extends Component {
                             value="10x"
                             onClick={this.selectMultiplier}
                             className={classnames({
-                              'btn-deep-blue': multiplier === '10x',
-                              'btn-light-blue': multiplier !== '10x',
+                              'btn-deep-blue': multiplier === 10,
+                              'btn-light-blue': multiplier !== 10
                             })}
                           >
                             10x

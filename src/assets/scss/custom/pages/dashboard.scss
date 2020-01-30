@@ -55,6 +55,10 @@
 	background-color: #4B4A5A;
 }
 
+.btn-deep-ash:hover {
+	color: $white;
+}
+
 
 // Transactions
 .top-up {
@@ -88,8 +92,20 @@
 	background-color: #7dc5d5;
 }
 
+.btn-light-blue:hover {
+	color: #7dc5d5;
+	background-color: $white;
+	border: 1px solid #7dc5d5;
+}
+
 .btn-deep-blue {
 	background-color: $avenir-deep-blue;
+}
+
+.btn-deep-blue:hover {
+	color: $avenir-deep-blue;
+	background-color: $white;
+	border: 1px solid $avenir-deep-blue;
 }
 
 .roundup-bar {
