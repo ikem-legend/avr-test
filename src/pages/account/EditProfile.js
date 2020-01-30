@@ -13,6 +13,8 @@ import {
   Button,
 } from 'reactstrap'
 import Flatpickr from 'react-flatpickr'
+import {callApi} from '../../helpers/api'
+import {showFeedback} from '../../redux/actions'
 
 class EditProfile  extends Component {
 	constructor() {
@@ -28,25 +30,54 @@ class EditProfile  extends Component {
 	}
 
   componentDidMount() {
+    this.loadUserData()
+  }
+
+  loadUserData = () => {
     const {user} = this.props
-    console.log(user)
-    this.setState({
-      name: `${user.myFirstName} ${user.myLastName}`,
-      email: user.myEmailAddress,
-      phone: user.myPhoneNumber,
-      dob: '',
-      address: 'Sample address',
-      referralUrl: ''
-    });
+    callApi('/auth/me', null, 'GET', user.token)
+      .then(res => {
+        // console.log(res)
+        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myIdentifier} = res.data
+        this.setState({
+          name: `${myFirstName} ${myLastName}`,
+          email: myEmailAddress,
+          phone: myPhoneNumber ? myPhoneNumber : '',
+          dob: myBirthDay,
+          address: myContactAddress ? myContactAddress : '',
+          referralUrl: myIdentifier ? myIdentifier : ''
+        });
+      })
+      .catch(err => {
+        console.log(err)
+        this.props.showFeedback('Error retrieving user details. Please try again', 'error')
+      })
   }
 
 	updateFields = e => {
 		const {name, value} = e.target
 		this.setState((prevState) => ({
 			...prevState,
-			[name]: [value]
+			[name]: value
 		}));
 	}
+
+  updateProfile = () => {
+    const {name, dob, phone, email, address, referralUrl} = this.state
+    const [first_name, last_name] = String(name).split(' ')
+    const userData = {first_name, last_name, email, phone, dob, address, identifier: referralUrl}
+    // console.log(userData)
+    callApi('/user/profile/update', userData, 'POST', this.props.user.token)
+      .then(() => {
+        // console.log(res)
+        this.props.showFeedback('Profile updated successfully', 'success')
+        this.loadUserData()
+      })
+      .catch(err => {
+        console.log(err)
+        this.props.showFeedback('Error updating profile, please try again', 'error')
+      })
+  }
 
 	render() {
 		const {name, email, phone, dob, address, referralUrl} = this.state
@@ -56,15 +87,15 @@ class EditProfile  extends Component {
 					<Form>
 						<FormGroup>
 							<label htmlFor="name">Full Name</label>
-							<Input type="text" value={name} onChange={this.updateFields} />
+							<Input type="text" name="name" value={name} onChange={this.updateFields} />
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="email">Email address</label>
-							<Input type="text" value={email} onChange={this.updateFields} />
+							<Input type="text" name="email" value={email} onChange={this.updateFields} />
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="phone">Phone Number</label>
-							<Input type="text" value={phone} onChange={this.updateFields} />
+							<Input type="text" name="phone" value={phone} onChange={this.updateFields} />
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="date of birth">Date of Birth</label>
@@ -74,7 +105,7 @@ class EditProfile  extends Component {
                 onChange={date =>
                   this.setState(prevState => ({
                     ...prevState,
-                      dob: date
+                    dob: date
                   }))
                 }
                 className="form-control"
@@ -87,7 +118,7 @@ class EditProfile  extends Component {
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="home address">Home Address</label>
-							 <Input type="text" value={address} onChange={this.updateFields} />
+							 <Input type="text" name="address" value={address} onChange={this.updateFields} />
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="referral link">Referral Custom URL <span className="text-muted font-size-12">(This can only be changed once)</span></label> 
@@ -95,12 +126,12 @@ class EditProfile  extends Component {
                 <InputGroupAddon addonType="prepend">
                   <InputGroupText>https://avenir-app.com</InputGroupText>
                 </InputGroupAddon>
-                <Input type="text" value={referralUrl} onChange={this.updateFields} />
+                <Input type="text" name="referralUrl" value={referralUrl} onChange={this.updateFields} disabled={Boolean(referralUrl)} />
               </InputGroup>
 						</FormGroup>
             <Row>
               <Col md={{size:2, offset: 10}}>
-                <Button color="red" className="" block>Save</Button>
+                <Button color="red" block onClick={this.updateProfile}>Save</Button>
               </Col>
             </Row>
 					</Form>
@@ -114,4 +145,4 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps)(EditProfile)
+export default connect(mapStateToProps, {showFeedback})(EditProfile)

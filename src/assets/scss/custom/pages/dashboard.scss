@@ -44,11 +44,19 @@
 .roundup-milestone {
 	span {
 		margin-right: 5px;
+		color: $gray-700;
+	}
+	label {
+		color: $gray-700;
 	}
 }
 
 .btn-deep-ash {
 	background-color: #4B4A5A;
+}
+
+.btn-deep-ash:hover {
+	color: $white;
 }
 
 
@@ -71,7 +79,7 @@
 	font-weight: bold;
 }
 .btn-red:hover {
-	background-color: $white;
+	background-color: $white !important;
 	color: $avenir-red;
 	border: 1px solid $avenir-red;
 }
@@ -84,8 +92,20 @@
 	background-color: #7dc5d5;
 }
 
+.btn-light-blue:hover {
+	color: #7dc5d5;
+	background-color: $white;
+	border: 1px solid #7dc5d5;
+}
+
 .btn-deep-blue {
 	background-color: $avenir-deep-blue;
+}
+
+.btn-deep-blue:hover {
+	color: $avenir-deep-blue;
+	background-color: $white;
+	border: 1px solid $avenir-deep-blue;
 }
 
 .roundup-bar {
@@ -228,4 +248,9 @@ span.multiplier, span.inv-ratio {
 
 span.edit-ratio {
 	color: $avenir-red;
+}
+
+.user-input {
+	border-radius: 0.1rem;
+  border: 1px solid #eaeaea;
 }

@@ -21,7 +21,7 @@ import profilePic from '../../assets/images/users/user-profile@2x.png'
 
 import EditProfile from './EditProfile'
 import AccountSettings from './AccountSettings'
-// import TopUpsTable from './TopUpsTable'
+import Security from './Security'
 // import WithdrawalTable from './WithdrawalTable'
 // import InvestmentChart from './InvestmentChart'
 
@@ -46,8 +46,6 @@ class Account extends Component {
   }
 
   toggle = tab => {
-    console.log(tab)
-    console.log(typeof tab)
     if (tab !== this.state.activeTab) {
       this.setState({
         activeTab: tab,
@@ -154,7 +152,7 @@ class Account extends Component {
                   <Row>
                     <Col md={12}>
                       <Nav tabs>
-                        <Col md={3}>
+                        <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
                               className={classnames({ active: activeTab === '1' }, 'text-center')}
@@ -164,7 +162,7 @@ class Account extends Component {
                             </NavLink>
                           </NavItem>
                         </Col>
-                        <Col md={3}>
+                        <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
                               className={classnames({ active: activeTab === '2' }, 'text-center')}
@@ -174,7 +172,7 @@ class Account extends Component {
                             </NavLink>
                           </NavItem>
                         </Col>
-                        <Col md={3}>
+                        <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
                               className={classnames({ active: activeTab === '3' }, 'text-center')}
@@ -184,7 +182,7 @@ class Account extends Component {
                             </NavLink>
                           </NavItem>
                         </Col>
-                        <Col md={3}>
+                        <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
                               className={classnames({ active: activeTab === '4' }, 'text-center')}
@@ -210,6 +208,11 @@ class Account extends Component {
                         <TabPane tabId="2">
                           <div className="p-4">
                             <AccountSettings />
+                          </div>
+                        </TabPane>
+                        <TabPane tabId="4">
+                          <div className="p-4">
+                            <Security />
                           </div>
                         </TabPane>
                       </TabContent>
