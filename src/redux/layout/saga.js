@@ -168,7 +168,7 @@ function* hideRightSidebar() {
  * Shows the toastr
  */
 function* showFeedback({payload}) {
-  console.log(payload)
+  // console.log(payload)
   try {
     // yield put(showNotification(message, type))
   } catch (error) {}

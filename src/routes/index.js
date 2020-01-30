@@ -2,6 +2,7 @@ import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
 import * as FeatherIcon from 'react-feather'
 // import * as Unicons from '@iconscout/react-unicons'
+// import UilReact from '@iconscout/react-unicons/icons/uil-react'
 
 import {isUserAuthenticated} from '../helpers/authUtils'
 // import { isUserAuthenticated, getLoggedInUser } from '../helpers/authUtils';
@@ -66,11 +67,7 @@ const transactionRoutes = {
   path: '/transactions',
   name: 'Transactions',
   icon: FeatherIcon.CreditCard,
-  // header: 'Navigation',
-  // badge: {
-  //   variant: 'success',
-  //   text: '1',
-  // },
+  // icon: Unicons.UilUsersAlt,
   component: Transactions,
   route: PrivateRoute,
 }
@@ -97,31 +94,11 @@ const accountRoutes = {
   // path: '/account',
   name: 'My Account',
   icon: FeatherIcon.User,
-  // header: 'Navigation',
-  // badge: {
-  //   variant: 'success',
-  //   text: '1',
-  // },
+  // icon: Unicons.UilUsersAlt,
   component: Account,
   // roles: ['Admin'],
   route: PrivateRoute,
 }
-
-// learn
-// const learnRoutes = {
-//   path: '#',
-//   // path: '/learn',
-//   name: 'Learn',
-//   icon: FeatherIcon.MessageCircle,
-//   // header: 'Navigation',
-//   // badge: {
-//   //   variant: 'success',
-//   //   text: '1',
-//   // },
-//   component: Dashboard,
-//   // roles: ['Admin'],
-//   route: PrivateRoute,
-// }
 
 // faq
 const faqRoutes = {
@@ -129,13 +106,8 @@ const faqRoutes = {
   // path: '/faq',
   name: 'FAQs',
   icon: FeatherIcon.MessageSquare,
-  // header: 'Navigation',
-  // badge: {
-  //   variant: 'success',
-  //   text: '1',
-  // },
+  // icon: Unicons.UilCommentAltLines,
   component: Dashboard,
-  // roles: ['Admin'],
   route: PrivateRoute,
 }
 
@@ -145,13 +117,8 @@ const supportRoutes = {
   // path: '/faq',
   name: 'Support',
   icon: FeatherIcon.MessageSquare,
-  // header: 'Navigation',
-  // badge: {
-  //   variant: 'success',
-  //   text: '1',
-  // },
+  // icon: Unicons.UilCommentAltNotes,
   component: Dashboard,
-  // roles: ['Admin'],
   route: PrivateRoute,
 }
 

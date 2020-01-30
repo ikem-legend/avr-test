@@ -84,25 +84,26 @@ class Transactions extends Component {
             <Col sm={8}>
               <div className="mb-1 mt-1 top-up">
                 <Row>
-                  <Col md={4}>
+                  <Col md={5}>
                     <img src={TopUp} alt="Top-up" />
                   </Col>
-                  <Col md={4}>
+                  <Col md={3}>
                     <h6 className="top-heading">Top Up</h6>
                     <p>Top-Ups are an easy way to make one-time investments</p>
                   </Col>
                   <Col md={4}>
                     <Form>
-                      <FormGroup>
+                      <FormGroup className="mt-4 mb-1">
                         <Input
                           type="text"
                           name="roundup"
+                          className="user-input"
                           placeholder="Enter Amount"
                           value={roundup}
                           onChange={this.updateValue}
                         />
                       </FormGroup>
-                      <Button color="red" className="mt-1" size="sm">
+                      <Button color="red" size="sm">
                         Invest Now
                       </Button>
                     </Form>
