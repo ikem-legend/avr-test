@@ -30,7 +30,7 @@ class RoundUps extends Component {
     this.loadUserData()
   }
 
-  loadUserData = () = {
+  loadUserData = () => {
     const {user} = this.props
       callApi('/auth/me', null, 'GET', user.token)
         .then(res => {
@@ -54,7 +54,6 @@ class RoundUps extends Component {
 
   selectMultiplier = e => {
     const {value} = e.target
-    console.log(value)
     this.setState({
       multiplier: parseInt(value, 10),
     })
