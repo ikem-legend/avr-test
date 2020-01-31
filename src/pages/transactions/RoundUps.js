@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router-dom'
 import {
   Row,
   Col,
@@ -22,7 +23,7 @@ class RoundUps extends Component {
     super()
     this.state = {
       multiplier: '2',
-      invPause: false
+      invPause: false,
     }
   }
 
@@ -32,18 +33,20 @@ class RoundUps extends Component {
 
   loadUserData = () => {
     const {user} = this.props
-      callApi('/auth/me', null, 'GET', user.token)
-        .then(res => {
-          // console.log(res)
-          const {myMultiplierSetting, MyInvestmentPause} = res.data
-          this.setState({
-            multiplier: myMultiplierSetting,
-            invPause: MyInvestmentPause
-          })
+    callApi('/auth/me', null, 'GET', user.token)
+      .then(res => {
+        // console.log(res)
+        const {myMultiplierSetting, MyInvestmentPause} = res.data
+        this.setState({
+          multiplier: myMultiplierSetting,
+          invPause: MyInvestmentPause,
         })
-        .catch(err => {
-          console.log(err)
-        })
+      })
+      .catch(err => {
+        console.log(err)
+        // this.props.showFeedback(err)
+        // this.props.history.push('/account/login')
+      })
   }
 
   switchRoundup = e => {
@@ -64,7 +67,7 @@ class RoundUps extends Component {
     const {user} = this.props
     // console.log(user)
     const multiplierIdArray = [1, 2, 5, 10]
-    const intMultiplier = (multiplierIdArray.indexOf(multiplier)) + 1
+    const intMultiplier = multiplierIdArray.indexOf(multiplier) + 1
     console.log(intMultiplier)
     // console.log(typeof(intMultiplier))
     // Only allow for 1x, 2x, 5x, 10x
@@ -77,7 +80,10 @@ class RoundUps extends Component {
       })
       .catch(err => {
         console.log(err)
-        this.props.showFeedback('Error saving multiplier, please try again', 'error')
+        this.props.showFeedback(
+          'Error saving multiplier, please try again',
+          'error',
+        )
       })
   }
 
@@ -141,7 +147,7 @@ class RoundUps extends Component {
                             onClick={this.selectMultiplier}
                             className={classnames({
                               'btn-deep-blue': multiplier === 1,
-                              'btn-light-blue': multiplier !== 1
+                              'btn-light-blue': multiplier !== 1,
                             })}
                           >
                             1x
@@ -158,7 +164,7 @@ class RoundUps extends Component {
                             onClick={this.selectMultiplier}
                             className={classnames({
                               'btn-deep-blue': multiplier === 2,
-                              'btn-light-blue': multiplier !== 2
+                              'btn-light-blue': multiplier !== 2,
                             })}
                           >
                             2x
@@ -192,7 +198,7 @@ class RoundUps extends Component {
                             onClick={this.selectMultiplier}
                             className={classnames({
                               'btn-deep-blue': multiplier === 10,
-                              'btn-light-blue': multiplier !== 10
+                              'btn-light-blue': multiplier !== 10,
                             })}
                           >
                             10x
@@ -225,4 +231,4 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps, {showFeedback})(RoundUps)
+export default connect(mapStateToProps, {showFeedback})(withRouter(RoundUps))
