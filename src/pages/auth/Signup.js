@@ -123,7 +123,7 @@ class Signup extends Component {
             key === 'zipcode' ||
             key === 'city' ||
             key === 'country') &&
-          delete data[key],
+          delete data[key]
       )
       // console.log(data)
       this.props.registerUser(data, history)
