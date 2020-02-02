@@ -52,12 +52,11 @@ class AccountConnect extends Component {
       document.querySelectorAll('.float-container').classList.add('active')
     }
 
-    // Commented temporarily
-    // const user = JSON.parse(localStorage.getItem('avenir'))
-    // // console.log(user.myFirstName)
-    // this.setState({
-    //   name: user.myFirstName,
-    // })
+    const user = JSON.parse(localStorage.getItem('avenir'))
+    // console.log(user.myFirstName)
+    this.setState({
+      name: user.myFirstName,
+    })
   }
 
   componentWillUnmount() {
@@ -156,21 +155,19 @@ class AccountConnect extends Component {
     // send token to client server
     // console.log(token, metadata)
     this.setState({
-      accountModal: true,
+      accountModal: true
     })
     const institution_name = metadata.institution.name
     const {institution_id} = metadata.institution
     const {public_token} = metadata
     const linkObj = {institution_name, institution_id, public_token}
-    console.log(linkObj)
     callApi('/user/plaid/bank', linkObj, 'POST', user.token)
       .then(res => {
-        console.log(res)
         // Deep copy is the best option
         const accountList = JSON.parse(JSON.stringify(res.data.accounts))
         const accountsLinkedList = accountList.map(acc => {
           Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
-          acc.link = false
+          acc.link = true
           return acc
         })
         // console.log(accountsLinkedList)
@@ -217,7 +214,6 @@ class AccountConnect extends Component {
     })
     // console.log(tempList)
     const noLinkedCards = tempList.filter(card => card.link === true)
-    console.log(noLinkedCards.length)
     this.setState({
       cardsLinkedList: tempList,
       disableConnectCardBtn: !Boolean(noLinkedCards.length),
@@ -229,14 +225,13 @@ class AccountConnect extends Component {
     const {user} = this.props
     const accountsObj = {accounts_link: accountsLinkedList}
     callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
-      .then(response => {
-        console.log(response)
-        this.props.showFeedback('Account successfully linked', 'success')
+      .then(() => {
+        this.props.showFeedback('Account(s) successfully linked', 'success')
         this.displayCards()
       })
       .catch(err => {
         console.log(err)
-        this.props.showFeedback('Error linking account', 'error')
+        this.props.showFeedback('Error linking account(s)', 'error')
       })
   }
 
@@ -248,17 +243,16 @@ class AccountConnect extends Component {
     })
     callApi('/user/plaid/bank/get/cards', null, 'GET', user.token)
       .then(res => {
-        console.log(res)
         const cardList = JSON.parse(JSON.stringify(res.data))
         const cardsLinkedList = cardList.map(card => {
           Object.keys(card).forEach(key => key !== 'id' && delete card[key])
-          card.link = false
+          card.link = true
           return card
         })
         this.setState({
           cards: res.data,
           cardsLinkedList,
-          loadingCards: false,
+          loadingCards: false
         })
       })
       .catch(err => {
@@ -271,14 +265,13 @@ class AccountConnect extends Component {
     const {user} = this.props
     const cardsObj = {accounts_link: cardsLinkedList}
     callApi('/user/plaid/bank/account/link', cardsObj, 'POST', user.token)
-      .then(response => {
-        console.log(response)
-        this.props.showFeedback('Card successfully linked', 'success')
+      .then(() => {
+        this.props.showFeedback('Card(s) successfully linked', 'success')
         this.props.history.push('/my-account')
       })
       .catch(err => {
         console.log(err)
-        this.props.showFeedback('Error linking card', 'error')
+        this.props.showFeedback('Error linking card(s)', 'error')
       })
   }
 
@@ -286,16 +279,15 @@ class AccountConnect extends Component {
    * Redirect to root
    * @returns {object} Redirect component
    */
-  // Commented temporarily
   renderRedirectToRoot = () => {
-    // const isAuthTokenValid = isUserAuthenticated()
-    // const userInStorage = localStorage.getItem('avenir')
-    // if (!isAuthTokenValid && userInStorage) {
-    //   return false
-    // }
-    // if (!isAuthTokenValid) {
-    //   return <Redirect to="/account/login" />
-    // }
+    const isAuthTokenValid = isUserAuthenticated()
+    const userInStorage = localStorage.getItem('avenir')
+    if (!isAuthTokenValid && userInStorage) {
+      return false
+    }
+    if (!isAuthTokenValid) {
+      return <Redirect to="/account/login" />
+    }
   }
 
   render() {
@@ -402,13 +394,6 @@ class AccountConnect extends Component {
                         >
                           Connect my Funding Account
                         </PlaidLink>
-                      </div>
-                      <div className="mt-3">
-                        <Link to="/dashboard">
-                          <Button color="transp" className="float-right">
-                            Skip Round-Up Settings for now
-                          </Button>
-                        </Link>
                       </div>
                       <Modal isOpen={accountModal} toggle={this.toggle}>
                         <ModalHeader>Select accounts to be linked</ModalHeader>

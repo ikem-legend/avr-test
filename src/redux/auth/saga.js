@@ -129,7 +129,7 @@ function* register({payload: {user, history}}) {
     localStorage.setItem('avenir', JSON.stringify(userObj))
     // console.log(localStorage.getItem('avenir'))
     // setSession(userObj);
-    yield call(() => history.push('/account/verify'))
+    yield call(() => history.push('/account/account-connect'))
   } catch (error) {
     let message
     switch (error.status) {
