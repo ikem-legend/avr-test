@@ -9,9 +9,9 @@ import {
   Button,
   TabPane,
   TabContent,
-  Nav, 
-  NavItem, 
-  NavLink
+  Nav,
+  NavItem,
+  NavLink,
 } from 'reactstrap'
 import classnames from 'classnames'
 
@@ -32,7 +32,7 @@ class Transactions extends Component {
 
     this.state = {
       roundup: '',
-      activeTab: '1'
+      activeTab: '1',
       // user: getLoggedInUser(),
     }
   }
@@ -45,11 +45,11 @@ class Transactions extends Component {
 
   toggle = tab => {
     console.log(tab)
-    console.log(typeof(tab))
+    console.log(typeof tab)
     if (tab !== this.state.activeTab) {
       this.setState({
-        activeTab: tab
-      });
+        activeTab: tab,
+      })
     }
   }
 
@@ -85,7 +85,7 @@ class Transactions extends Component {
               <div className="mb-1 mt-1 top-up">
                 <Row>
                   <Col md={5}>
-                    <img src={TopUp} alt="Top-up" />
+                    <img src={TopUp} alt="Top-up" className="img-fluid" />
                   </Col>
                   <Col md={3}>
                     <h6 className="top-heading">Top Up</h6>
@@ -121,24 +121,30 @@ class Transactions extends Component {
               <Nav tabs>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '1' })}
-                    onClick={() => { this.toggle('1'); }}
+                    className={classnames({active: activeTab === '1'})}
+                    onClick={() => {
+                      this.toggle('1')
+                    }}
                   >
                     ROUND-UPS
                   </NavLink>
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '2' })}
-                    onClick={() => { this.toggle('2'); }}
+                    className={classnames({active: activeTab === '2'})}
+                    onClick={() => {
+                      this.toggle('2')
+                    }}
                   >
                     TOP-UPS
                   </NavLink>
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '3' })}
-                    onClick={() => { this.toggle('3'); }}
+                    className={classnames({active: activeTab === '3'})}
+                    onClick={() => {
+                      this.toggle('3')
+                    }}
                   >
                     WITHDRAWALS
                   </NavLink>
