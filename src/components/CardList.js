@@ -9,8 +9,8 @@ class CardList extends Component {
   constructor() {
     super()
     this.state = {
-      linked: false,
-      linkText: 'Unlinked'
+      linked: true,
+      linkText: 'Linked'
     }
   }
 
