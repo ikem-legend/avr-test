@@ -52,11 +52,19 @@ class AccountSettings extends Component {
     const {multiplier} = this.state
     const {user} = this.props
     // console.log(user)
-    const intMultiplier = String(parseInt(multiplier, 10))
-    console.log(intMultiplier)
-    // console.log(typeof(intMultiplier))
+    const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
+// Object.keys(obj).find(key => obj[key] === value)
+    const selectedMultiplierId = Object.keys(multiplierList).find(key => 
+      multiplierList[key] === String(parseInt(multiplier, 10))
+    )
+    // const selectedMultiplierId = Object.values(multiplierList).filter((id, indx) => {
+    //   return indx ? id === String(parseInt(multiplier, 10)) : null      
+    // })
+    console.log(selectedMultiplierId)
+    // console.log(intMultiplier)
     // Only allow for 1x, 2x, 5x, 10x
-    const multiplierObj = {multiplier_id: intMultiplier}
+    const multiplierObj = {'multiplier_id': selectedMultiplierId}
+    console.log(multiplierObj)
     callApi('/user/multiplier', multiplierObj, 'POST', user.token)
       .then(result => {
         console.log(result)
@@ -189,16 +197,6 @@ class AccountSettings extends Component {
                     </div>
                   </FormGroup>
                 </Col>
-                <Col md={4}>
-                  <FormGroup>
-                    <Button
-                      color="deep-ash block"
-                      onClick={this.saveMultiplier}
-                    >
-                      SAVE
-                    </Button>
-                  </FormGroup>
-                </Col>
               </Row>
             </Form>
             <p className="mb-1">Multiply your round-up amount to acceleratre your</p>
@@ -236,7 +234,7 @@ class AccountSettings extends Component {
             </Row>
             <Row className="mt-2">
               <Col md={{size:2, offset: 10}}>
-                <Button color="red" className="" block>Save</Button>
+                <Button color="red" block onClick={this.saveMultiplier}>Save</Button>
               </Col>
             </Row>
           </Col>
