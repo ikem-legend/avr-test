@@ -71,7 +71,7 @@ class RoundUps extends Component {
     console.log(intMultiplier)
     // console.log(typeof(intMultiplier))
     // Only allow for 1x, 2x, 5x, 10x
-    const multiplierObj = {multiplier_id: intMultiplier}
+    const multiplierObj = {multiplier: intMultiplier}
     callApi('/user/multiplier', multiplierObj, 'POST', user.token)
       .then(result => {
         console.log(result)
