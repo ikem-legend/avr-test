@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
-import {Redirect, Link, withRouter} from 'react-router-dom'
+import {Redirect, withRouter} from 'react-router-dom'
 import PlaidLink from 'react-plaid-link'
 
 import {
@@ -17,7 +17,7 @@ import {
 import AccountList from '../../components/AccountList'
 import CardList from '../../components/CardList'
 import {callApi} from '../../helpers/api'
-import {registerUser, showFeedback} from '../../redux/actions'
+import {loginUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 // import logo from '../../assets/images/logo.png';
@@ -35,8 +35,8 @@ class AccountConnect extends Component {
       accountsLinkedList: [],
       cards: [],
       cardsLinkedList: [],
-      disableConnectBtn: true,
-      disableConnectCardBtn: true,
+      // disableConnectBtn: true,
+      // disableConnectCardBtn: true,
       loadingAccts: true,
       loadingCards: true,
     }
@@ -64,82 +64,6 @@ class AccountConnect extends Component {
     document.body.classList.remove('authentication-bg')
     // Ensure that you can navigate to other auth parts by removing localStorage user details
     localStorage.removeItem('avenir')
-  }
-
-  /**
-   * Handles the submit
-   * @param {object} event The event object
-   * @param {object} values Values to be submitted
-   */
-  handleValidSubmit = () => {
-    // console.log(event, values)
-    // console.log(this.state.inputs)
-    const data = {...this.state.inputs}
-    const {history} = this.props
-    data.ssn = data.ssn.replace(/-/g, '')
-    data.dob = String(data.dob)
-    data.first_name = String(data.firstname)
-    data.last_name = String(data.lastname)
-    data.zip_code = String(data.zipcode)
-    data.city_id = String(data.city.value)
-    data.country_id = String(data.country.value)
-    Object.keys(data).forEach(
-      key =>
-        (key === 'firstname' ||
-          key === 'lastname' ||
-          key === 'zipcode' ||
-          key === 'city' ||
-          key === 'country') &&
-        delete data[key],
-    )
-    // console.log(data)
-    this.props.registerUser(data, history)
-  }
-
-  activateField = e => {
-    // console.log(e.target.name)
-    document
-      .querySelector(`.float-container #${e.target.name}`)
-      .parentElement.classList.add('active')
-    document.querySelector(
-      `.float-container #${e.target.name}`,
-    ).parentElement.style.borderLeft = '2px solid #1ca4a9'
-  }
-
-  deactivateField = e => {
-    // console.log(e.target.name)
-    document.querySelector(
-      `.float-container #${e.target.name}`,
-    ).parentElement.style.borderLeft = '1px solid #ccc'
-    if (e.target.value === '') {
-      // console.log(e.target.name)
-      document
-        .querySelector(`.float-container #${e.target.name}`)
-        .parentElement.classList.remove('active')
-    }
-  }
-
-  updateInputValue = e => {
-    // console.log(e.target)
-    e.preventDefault()
-    const {name, value} = e.target
-    // console.log(name, value)
-    this.setState(prevState => ({
-      ...prevState,
-      inputs: {
-        ...prevState.inputs,
-        [name]: value,
-      },
-    }))
-    // this.activateField(e);
-  }
-
-  updateTerms = e => {
-    const {checked} = e.target
-    // console.log(checked)
-    this.setState({
-      terms: checked,
-    })
   }
 
   toggle = () => {
@@ -182,7 +106,7 @@ class AccountConnect extends Component {
 
   handleOnExit = () => {
     // handle the case when your user exits Link
-    console.log('Exited')
+    this.props.showFeedback('Exited Plaid account linking', 'error')
   }
 
   accountsLinked = (id, val) => {
@@ -195,11 +119,11 @@ class AccountConnect extends Component {
       return acc
     })
     // console.log(tempList)
-    const noLinkedAccts = tempList.filter(acct => acct.link === true)
+    // const noLinkedAccts = tempList.filter(acct => acct.link === true)
     // console.log(noLinkedAccts.length)
     this.setState({
       accountsLinkedList: tempList,
-      disableConnectBtn: !Boolean(noLinkedAccts.length),
+      // disableConnectBtn: !Boolean(noLinkedAccts.length),
     })
   }
 
@@ -213,10 +137,10 @@ class AccountConnect extends Component {
       return card
     })
     // console.log(tempList)
-    const noLinkedCards = tempList.filter(card => card.link === true)
+    // const noLinkedCards = tempList.filter(card => card.link === true)
     this.setState({
       cardsLinkedList: tempList,
-      disableConnectCardBtn: !Boolean(noLinkedCards.length),
+      // disableConnectCardBtn: !Boolean(noLinkedCards.length),
     })
   }
 
@@ -267,6 +191,7 @@ class AccountConnect extends Component {
     callApi('/user/plaid/bank/account/link', cardsObj, 'POST', user.token)
       .then(() => {
         this.props.showFeedback('Card(s) successfully linked', 'success')
+        // this.props.loginUser()
         this.props.history.push('/my-account')
       })
       .catch(err => {
@@ -298,8 +223,8 @@ class AccountConnect extends Component {
       cards,
       accountModal,
       cardModal,
-      disableConnectBtn,
-      disableConnectCardBtn,
+      // disableConnectBtn,
+      // disableConnectCardBtn,
       loadingAccts,
       loadingCards,
     } = this.state
@@ -414,7 +339,7 @@ class AccountConnect extends Component {
                             color="success"
                             block
                             onClick={this.connectSelectedAccts}
-                            disabled={disableConnectBtn}
+                            // disabled={disableConnectBtn}
                           >
                             Continue
                           </Button>
@@ -440,7 +365,7 @@ class AccountConnect extends Component {
                             color="success"
                             block
                             onClick={this.connectSelectedCards}
-                            disabled={disableConnectCardBtn}
+                            // disabled={disableConnectCardBtn}
                           >
                             Continue
                           </Button>
@@ -472,11 +397,10 @@ class AccountConnect extends Component {
 }
 
 const mapStateToProps = state => {
-  const {user, loading, error} = state.Auth
-  return {user, loading, error}
+  const {user, error} = state.Auth
+  return {user, error}
 }
 
-// export default connect(null, {registerUser})(AccountConnect)
-export default connect(mapStateToProps, {registerUser, showFeedback})(
+export default connect(mapStateToProps, {loginUser, showFeedback})(
   withRouter(AccountConnect),
 )
