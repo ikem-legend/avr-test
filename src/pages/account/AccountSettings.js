@@ -14,6 +14,7 @@ import {
   Button
 } from 'reactstrap'
 import classnames from 'classnames'
+import Loader from '../../components/Loader'
 import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
 import btcImg from '../../assets/images/layouts/btc.svg'
@@ -23,56 +24,86 @@ class AccountSettings extends Component {
 	constructor() {
 		super()
 		this.state = {
-			multiplier: '2x',
+			multiplier: '2',
 			btc: 50,
 			eth: 50,
-			// dob: '',
-			// address: '',
-			// referralUrl: ''
+			invPause: false,
+			loading: '',
+			currDist: {}
 		}
 	}
 
-  switchRoundup = e => {
-    const {value} = e.target
-    console.log(value)
-    // this.props.showFeedback('Roundup successfully saved', 'success' 
+  componentDidMount() {
+    this.loadUserData()
   }
 
-  selectMultiplier = e => {
-    // const {showFeedback} = this.props
-    const {value} = e.target
-    console.log(value)
-    // this.props.showFeedback('Multiplier successfully saved', 'success')
-    this.setState({
-      multiplier: value,
-    })
-  }
-
-  saveMultiplier = () => {
-    const {multiplier} = this.state
+  
+  loadUserData = () => {
     const {user} = this.props
-    // console.log(user)
-    const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
-// Object.keys(obj).find(key => obj[key] === value)
-    const selectedMultiplierId = Object.keys(multiplierList).find(key => 
-      multiplierList[key] === String(parseInt(multiplier, 10))
-    )
-    // const selectedMultiplierId = Object.values(multiplierList).filter((id, indx) => {
-    //   return indx ? id === String(parseInt(multiplier, 10)) : null      
-    // })
-    console.log(selectedMultiplierId)
-    // console.log(intMultiplier)
-    // Only allow for 1x, 2x, 5x, 10x
-    const multiplierObj = {'multiplier_id': selectedMultiplierId}
-    console.log(multiplierObj)
-    callApi('/user/multiplier', multiplierObj, 'POST', user.token)
-      .then(result => {
-        console.log(result)
-        this.props.showFeedback('Multiplier successfully saved', 'success')
+    callApi('/auth/me', null, 'GET', user.token)
+      .then(res => {
+        // console.log(res)
+        const {MyInvestmentPause, myMultiplierSetting, myCurrencyDistributions} = res.data
+        const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
+        const btcVal = myCurrencyDistributions[0].percentage
+        const ethVal = myCurrencyDistributions[1].percentage
+        this.setState({
+          multiplier: multiplierList[myMultiplierSetting],
+          invPause: MyInvestmentPause,
+          btc: btcVal,
+          eth: ethVal,
+          currDist: {btc: btcVal, eth: ethVal}
+        });
       })
       .catch(err => {
         console.log(err)
+        this.props.showFeedback('Error retrieving user details. Please try again', 'error')
       })
+  }
+
+  switchRoundup = e => {
+    const {checked} = e.target
+    const {user} = this.props
+    this.setState({
+      invPause: !checked,
+      loading: true
+    });
+    if (checked) {
+      callApi('/user/investment/continue', null, 'GET', user.token)
+        .then(() => {
+          this.setState({
+            loading: false
+          });
+          this.props.showFeedback('Round-up successfully updated', 'success')
+        })
+        .catch(() => {
+          this.setState({
+            loading: false
+          });
+          this.props.showFeedback('Error updating round-up', 'error')
+        })
+    } else {
+      callApi('/user/investment/pause', null, 'GET', user.token)
+        .then(() => {
+          this.setState({
+            loading: false
+          });
+          this.props.showFeedback('Round-up successfully updated', 'success')
+        })
+        .catch(() => {
+          this.setState({
+            loading: false
+          });
+          this.props.showFeedback('Error updating round-up', 'error')
+        })
+    }
+  }
+
+  selectMultiplier = e => {
+    const {value} = e.target
+    this.setState({
+      multiplier: value
+    })
   }
 
   updateRatio = e => {
@@ -90,29 +121,82 @@ class AccountSettings extends Component {
     }
   }
 
+  saveMultiplier = () => {
+    const {multiplier} = this.state
+    const {user} = this.props
+    // console.log(user)
+    const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
+    const selectedMultiplierId = Object.keys(multiplierList).find(key => 
+      multiplierList[key] === String(parseInt(multiplier, 10))
+    )
+    this.setState({
+      loading: true
+    });
+    const multiplierObj = {'multiplier': selectedMultiplierId}
+    // console.log(multiplierObj)
+    callApi('/user/multipliers', multiplierObj, 'POST', user.token)
+      .then(() => {
+        this.props.showFeedback('Multiplier successfully updated', 'success')
+        this.saveRatio()
+      })
+      .catch(err => {
+        console.log(err)
+        this.setState({
+          loading: false
+        });
+        this.props.showFeedback('Error updating currency ratio, please try again')
+      })
+  }
+
+  saveRatio = () => {
+    const {btc, eth} = this.state
+    const {user} = this.props
+    // Created temporarily
+    const currArray = [{id: 2, percentage: btc}, {id: 3, percentage: eth}]
+    const currObj = {currencies: currArray}
+    callApi('/user/distributions', currObj, 'POST', user.token)
+      .then(() => {
+        this.props.showFeedback('Currency ratio successfully updated', 'success')
+        this.setState({
+          loading: false,
+          currDist: {btc, eth}
+        });
+      })
+      .catch(() => {
+        this.props.showFeedback('Error updating currency ratio, please try again')
+        this.setState({
+          loading: false
+        });
+      })
+  }
+
 	render() {
-    const {multiplier, btc, eth} = this.state
+    const {multiplier, btc, eth, currDist, invPause, loading} = this.state
 		return (
       <Fragment>
   			<Row>
   				<Col md={12}>
   					<h6 className="font-weight-bold">Round-Up Investment</h6>
             <div className="roundup-milestone">
-              <Form>
-                <FormGroup row className="mt-4">
-                  <Col>
-                    <span>PAUSE</span>
-                    <CustomInput 
-                      type="switch"
-                      id="roundupsSwitch"
-                      name="roundupsSwitch"
-                      className="roundup-switch"
-                      label="RESUME"
-                      onClick={this.switchRoundup}
-                    />
-                  </Col>
-                </FormGroup>
-              </Form>
+              { loading ? 
+                <Loader /> : 
+                <Form>
+                  <FormGroup row className="mt-4">
+                    <Col>
+                      <span>PAUSE</span>
+                      <CustomInput 
+                        type="switch"
+                        id="roundupsSwitch"
+                        name="roundupsSwitch"
+                        className="roundup-switch"
+                        label="RESUME"
+                        checked={!invPause}
+                        onChange={this.switchRoundup}
+                      />
+                    </Col>
+                  </FormGroup>
+                </Form>
+              }
               <div>
                 <p className="mb-1">You can pause your round-up investing at any time.</p>
                 <p>This will disable all Avenir round-up investments</p>
@@ -122,7 +206,7 @@ class AccountSettings extends Component {
         </Row>
         <Row>
           <Col md={12} className="mb-2">
-            <h5 className="font-weight-bold">Your round-up multiplier is currently set to <span className="multiplier">2x</span></h5>
+            <h5 className="font-weight-bold">Your round-up multiplier is currently set to <span className="multiplier">{multiplier}x</span></h5>
           </Col>
         </Row>
         <Row>
@@ -134,11 +218,11 @@ class AccountSettings extends Component {
                     <div className="">
                       <Button
                         color="none"
-                        value="1x"
+                        value="1"
                         onClick={this.selectMultiplier}
                         className={classnames({
-                          'btn-deep-blue': multiplier === '1x',
-                          'btn-light-blue': multiplier !== '1x',
+                          'btn-deep-blue': multiplier === '1',
+                          'btn-light-blue': multiplier !== '1',
                         })}
                       >
                         1x
@@ -151,11 +235,11 @@ class AccountSettings extends Component {
                     <div className="">
                       <Button
                         color="none"
-                        value="2x"
+                        value="2"
                         onClick={this.selectMultiplier}
                         className={classnames({
-                          'btn-deep-blue': multiplier === '2x',
-                          'btn-light-blue': multiplier !== '2x',
+                          'btn-deep-blue': multiplier === '2',
+                          'btn-light-blue': multiplier !== '2',
                         })}
                       >
                         2x
@@ -168,11 +252,11 @@ class AccountSettings extends Component {
                     <div className="">
                       <Button
                         color="none"
-                        value="5x"
+                        value="5"
                         onClick={this.selectMultiplier}
                         className={classnames({
-                          'btn-deep-blue': multiplier === '5x',
-                          'btn-light-blue': multiplier !== '5x',
+                          'btn-deep-blue': multiplier === '5',
+                          'btn-light-blue': multiplier !== '5',
                         })}
                       >
                         5x
@@ -185,11 +269,11 @@ class AccountSettings extends Component {
                     <div className="">
                       <Button
                         color="none"
-                        value="10x"
+                        value="10"
                         onClick={this.selectMultiplier}
                         className={classnames({
-                          'btn-deep-blue': multiplier === '10x',
-                          'btn-light-blue': multiplier !== '10x',
+                          'btn-deep-blue': multiplier === '10',
+                          'btn-light-blue': multiplier !== '10',
                         })}
                       >
                         10x
@@ -208,7 +292,7 @@ class AccountSettings extends Component {
             <h6 className="font-weight-bold">Investment Distribution Settings</h6>
             <p className="mb-1">Manage your investment across various cryptocurrencies.</p>
             <p className="mb-1">Easily adjust your ratio to suit your preference.</p>
-            <p className="font-weight-bold">Your Bitcoin to Ethereum % ratio is <span className="inv-ratio">50% : 50%</span></p>
+            <p className="font-weight-bold">Your Bitcoin to Ethereum % ratio is <span className="inv-ratio">{currDist.btc}% : {currDist.eth}%</span></p>
           </Col>
         </Row>
         <Row form>
