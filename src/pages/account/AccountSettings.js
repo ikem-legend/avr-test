@@ -56,8 +56,8 @@ class AccountSettings extends Component {
         });
       })
       .catch(err => {
-        console.log(err)
-        this.props.showFeedback('Error retrieving user details. Please try again', 'error')
+        this.props.showFeedback(err, 'error')
+        // this.props.showFeedback('Error retrieving user details. Please try again', 'error')
       })
   }
 

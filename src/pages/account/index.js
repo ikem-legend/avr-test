@@ -22,8 +22,7 @@ import profilePic from '../../assets/images/users/user-profile@2x.png'
 import EditProfile from './EditProfile'
 import AccountSettings from './AccountSettings'
 import Security from './Security'
-// import WithdrawalTable from './WithdrawalTable'
-// import InvestmentChart from './InvestmentChart'
+import BanksCards from './BanksCards'
 
 class Account extends Component {
   constructor(props) {
@@ -34,6 +33,7 @@ class Account extends Component {
       stage2: true,
       stage3: true,
       stage4: false,
+      stage5: false,
       activeTab: '1'
     }
   }
@@ -65,7 +65,7 @@ class Account extends Component {
   }
 
   render() {
-    const {stage1, stage2, stage3, stage4, activeTab} = this.state
+    const {stage1, stage2, stage3, stage4, stage5, activeTab} = this.state
     const {user} = this.props
 
     return (
@@ -138,8 +138,18 @@ class Account extends Component {
                   <CustomInput
                     type="checkbox"
                     id="reg-stage-4"
-                    label="Make your first top-up"
+                    label="Upload User ID"
                     checked={stage4}
+                    readOnly
+                  />
+                  <span className="ml-4 font-weight-bold incomplete">Incomplete</span>
+                </div>
+                <div className="reg-status">
+                  <CustomInput
+                    type="checkbox"
+                    id="reg-stage-5"
+                    label="Make your first top-up"
+                    checked={stage5}
                     readOnly
                   />
                   <span className="ml-4 font-weight-bold incomplete">Incomplete</span>
@@ -208,6 +218,11 @@ class Account extends Component {
                         <TabPane tabId="2">
                           <div className="p-4">
                             <AccountSettings />
+                          </div>
+                        </TabPane>
+                        <TabPane tabId="3">
+                          <div className="p-4">
+                            <BanksCards />
                           </div>
                         </TabPane>
                         <TabPane tabId="4">
