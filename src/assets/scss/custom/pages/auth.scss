@@ -49,6 +49,9 @@
 	}
 	.btn-blue {
 		background-color: $avenir-blue;
+		&:hover {
+			color: $white !important;
+		}
 	}
 	.btn-blue-inverted {
 		color: $avenir-blue;
@@ -109,6 +112,9 @@
 	}
 	.btn-blue {
 		background-color: $avenir-blue !important;
+		&:hover {
+			color: $white !important;
+		}
 	}
 }
 

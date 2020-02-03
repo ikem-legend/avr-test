@@ -76,7 +76,8 @@
 
 // Toastr
 .Toastify__toast.Toastify__toast--default.success {
-    // background-color: $avenir-light-blue;
+    background-color: $avenir-deep-blue;
+    color: $white;
 }
 .Toastify__toast.Toastify__toast--default.danger {
     background-color: $avenir-red;
