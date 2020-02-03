@@ -40,7 +40,6 @@ class AccountConnect extends Component {
       loadingAccts: true,
       loadingCards: true,
     }
-    this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
 
   componentDidMount() {
