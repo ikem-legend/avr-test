@@ -20,9 +20,8 @@ import {
   AvInput,
   AvFeedback,
 } from 'availity-reactstrap-validation'
-// import {Mail, Lock} from 'react-feather'
 
-import {loginUser} from '../../redux/actions'
+import {loginUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 
@@ -59,12 +58,18 @@ class Login extends Component {
 
   /**
    * Handles the submit
+   * @param {object} event The event object
+   * @param {object} values Values to be submitted 
    */
-  handleValidSubmit = (event, values) => {
+  handleValidSubmit = async (event, values) => {
     const {history} = this.props
     // console.log(values)
     // console.log(history)
-    this.props.loginUser(values, history)
+    await this.props.loginUser(values, history)
+    if (this.props.error && this.props.error.message) {
+      console.log(this.props.error)
+      this.props.showFeedback('Error logging in, ...', 'error')
+    }
   }
 
   activateField = e => {
@@ -272,5 +277,4 @@ const mapStateToProps = state => {
 	return { user, loading, error };
 }
 
-export default connect(mapStateToProps, {loginUser})(withRouter(Login))
-// export default connect(null, {loginUser})(withRouter(Login))
+export default connect(mapStateToProps, {loginUser, showFeedback})(withRouter(Login))
