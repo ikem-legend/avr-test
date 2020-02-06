@@ -1,7 +1,9 @@
 // Dashboard
 .btn-inv-blue {
 	background-color: $avenir-deep-blue;
-	border-radius: 0 !important;
+	&.br-0 {
+		border-radius: 0 !important;
+	}
 }
 .btn-inv-blue:hover {
 	color: $white;
@@ -34,6 +36,27 @@
 		background-color: $avenir-red;
 	}
 }
+.modal-content {
+	width: 90% !important;
+}
+.wallet-topup {
+	color: $avenir-deep-blue;
+}
+.btn-inv-gray {
+	background-color: $gray-700;
+}
+.img-box {
+	background-color: $avenir-light-gray;
+	padding: 20px;
+	border-radius: 10px;
+	img {
+		height: 50px;
+	}
+}
+.active-coin {
+	border: 2px dashed $gray-700;
+}
+
 
 // Roundup settings
 .custom-control-input:checked ~ .custom-control-label::before {
@@ -53,10 +76,9 @@
 
 .btn-deep-ash {
 	background-color: #4B4A5A;
-}
-
-.btn-deep-ash:hover {
-	color: $white;
+	&:hover {
+		color: $white;
+	}
 }
 
 
