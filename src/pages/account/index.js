@@ -58,6 +58,7 @@ class Account extends Component {
    * @returns {object} Redirect component
    */
   renderRedirectToRoot = () => {
+    console.log("look here")
     const isAuthTokenValid = isUserAuthenticated()
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
