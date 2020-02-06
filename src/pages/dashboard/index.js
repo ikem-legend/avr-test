@@ -156,13 +156,21 @@ class Dashboard extends Component {
 								<p className="mt-0 mb-4">Choose Cryptocurrency</p>
 								<Row>
 									<Col md={{offset: 2, size: 4}}>
-										<div className={classnames({'active-coin': activeCoin === 'btc'}, 'img-box', 'text-center')} onClick={() => this.selectCoin('btc')}>
+										<div 
+											className={classnames({'active-coin': activeCoin === 'btc'}, 'img-box', 'text-center')} 
+											onClick={() => this.selectCoin('btc')}
+											onKeyPress={() => this.selectCoin('btc')}
+										>
 											<img src={btc} alt="Bitcoin" className="img-fluid" />
 											<span>Bitcoin</span>
 										</div>
 									</Col>
 									<Col md={4}>
-										<div className={classnames({'active-coin': activeCoin === 'eth'}, 'img-box', 'text-center')} onClick={() => this.selectCoin('eth')}>
+										<div 
+											className={classnames({'active-coin': activeCoin === 'eth'}, 'img-box', 'text-center')} 
+											onClick={() => this.selectCoin('eth')}
+											onKeyPress={() => this.selectCoin('eth')}
+										>
 											<img src={eth} alt="Ethereum" className="img-fluid" />
 											<span>Ethereum</span>
 										</div>
