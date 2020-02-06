@@ -24,6 +24,7 @@ class RoundUps extends Component {
     this.state = {
       multiplier: '2',
       invPause: false,
+      loading: false
     }
   }
 
@@ -35,30 +36,62 @@ class RoundUps extends Component {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        // console.log(res)
         const {myMultiplierSetting, MyInvestmentPause} = res.data
+        const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
         this.setState({
-          multiplier: myMultiplierSetting,
+          multiplier: multiplierList[myMultiplierSetting],
           invPause: MyInvestmentPause,
         })
       })
       .catch(err => {
         console.log(err)
-        // this.props.showFeedback(err)
+        this.props.showFeedback(err, 'error')
         // this.props.history.push('/account/login')
       })
   }
 
   switchRoundup = e => {
-    const {value} = e.target
-    console.log(value)
-    this.props.showFeedback('Roundup successfully saved', 'success')
+    const {checked} = e.target
+    const {user} = this.props
+    this.setState({
+      invPause: !checked,
+      loading: true
+    });
+    if (checked) {
+      callApi('/user/investment/continue', null, 'GET', user.token)
+        .then(() => {
+          this.setState({
+            loading: false
+          });
+          this.props.showFeedback('Round-up successfully updated', 'success')
+        })
+        .catch(() => {
+          this.setState({
+            loading: false
+          });
+          this.props.showFeedback('Error updating round-up', 'error')
+        })
+    } else {
+      callApi('/user/investment/pause', null, 'GET', user.token)
+        .then(() => {
+          this.setState({
+            loading: false
+          });
+          this.props.showFeedback('Round-up successfully updated', 'success')
+        })
+        .catch(() => {
+          this.setState({
+            loading: false
+          });
+          this.props.showFeedback('Error updating round-up', 'error')
+        })
+    }
   }
 
   selectMultiplier = e => {
     const {value} = e.target
     this.setState({
-      multiplier: parseInt(value, 10),
+      multiplier: value
     })
   }
 
@@ -66,20 +99,31 @@ class RoundUps extends Component {
     const {multiplier} = this.state
     const {user} = this.props
     // console.log(user)
-    const multiplierIdArray = [1, 2, 5, 10]
-    const intMultiplier = multiplierIdArray.indexOf(multiplier) + 1
-    console.log(intMultiplier)
-    // console.log(typeof(intMultiplier))
-    // Only allow for 1x, 2x, 5x, 10x
-    const multiplierObj = {multiplier: intMultiplier}
-    callApi('/user/multiplier', multiplierObj, 'POST', user.token)
+    const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
+    const selectedMultiplierId = Object.keys(multiplierList).find(key => 
+      multiplierList[key] === String(parseInt(multiplier, 10))
+    )
+    this.setState({
+      loading: true
+    });
+    const multiplierObj = {multiplier: selectedMultiplierId}
+    callApi('/user/multipliers', multiplierObj, 'POST', user.token)
       .then(result => {
         console.log(result)
         this.loadUserData()
-        this.props.showFeedback('Multiplier successfully saved', 'success')
+        this.setState({
+          loading: false
+        });
+        this.props.showFeedback(
+          'Multiplier successfully updated', 
+          'success'
+        )
       })
       .catch(err => {
         console.log(err)
+        this.setState({
+          loading: false
+        });
         this.props.showFeedback(
           'Error saving multiplier, please try again',
           'error',
@@ -88,8 +132,7 @@ class RoundUps extends Component {
   }
 
   render() {
-    const {multiplier, invPause} = this.state
-    // console.log(showFeedback)
+    const {multiplier, invPause, loading} = this.state
     return (
       <Fragment>
         {/* preloader */}
@@ -104,19 +147,23 @@ class RoundUps extends Component {
               </Col>
               <Col md={4}>
                 <div className="roundup-milestone mt-4">
-                  <Form>
-                    <FormGroup row>
-                      <span className="font-weight-bold">PAUSE </span>
-                      <span> </span>
-                      <CustomInput
-                        type="switch"
-                        id="roundupsSwitch"
-                        name="roundupsSwitch"
-                        label="RESUME"
-                        onClick={this.switchRoundup}
-                      />
-                    </FormGroup>
-                  </Form>
+                  { loading ? 
+                    <Loader /> : 
+                    <Form>
+                      <FormGroup row>
+                        <span className="font-weight-bold">PAUSE </span>
+                        <span> </span>
+                        <CustomInput
+                          type="switch"
+                          id="roundupsSwitch"
+                          name="roundupsSwitch"
+                          label="RESUME"
+                          checked={!invPause}
+                          onChange={this.switchRoundup}
+                        />
+                      </FormGroup>
+                    </Form>
+                  }
                 </div>
               </Col>
             </Row>
@@ -140,14 +187,14 @@ class RoundUps extends Component {
                   <Row>
                     <Col md={2}>
                       <FormGroup>
-                        <div className="">
+                        <div>
                           <Button
                             color="none"
-                            value="1x"
+                            value="1"
                             onClick={this.selectMultiplier}
                             className={classnames({
-                              'btn-deep-blue': multiplier === 1,
-                              'btn-light-blue': multiplier !== 1,
+                              'btn-deep-blue': multiplier === '1',
+                              'btn-light-blue': multiplier !== '1',
                             })}
                           >
                             1x
@@ -157,14 +204,14 @@ class RoundUps extends Component {
                     </Col>
                     <Col md={2}>
                       <FormGroup>
-                        <div className="">
+                        <div>
                           <Button
                             color="none"
-                            value="2x"
+                            value="2"
                             onClick={this.selectMultiplier}
                             className={classnames({
-                              'btn-deep-blue': multiplier === 2,
-                              'btn-light-blue': multiplier !== 2,
+                              'btn-deep-blue': multiplier === '2',
+                              'btn-light-blue': multiplier !== '2',
                             })}
                           >
                             2x
@@ -174,14 +221,14 @@ class RoundUps extends Component {
                     </Col>
                     <Col md={2}>
                       <FormGroup>
-                        <div className="">
+                        <div>
                           <Button
                             color="none"
-                            value="5x"
+                            value="5"
                             onClick={this.selectMultiplier}
                             className={classnames({
-                              'btn-deep-blue': multiplier === 5,
-                              'btn-light-blue': multiplier !== 5,
+                              'btn-deep-blue': multiplier === '5',
+                              'btn-light-blue': multiplier !== '5',
                             })}
                           >
                             5x
@@ -191,14 +238,14 @@ class RoundUps extends Component {
                     </Col>
                     <Col md={2}>
                       <FormGroup>
-                        <div className="">
+                        <div>
                           <Button
                             color="none"
-                            value="10x"
+                            value="10"
                             onClick={this.selectMultiplier}
                             className={classnames({
-                              'btn-deep-blue': multiplier === 10,
-                              'btn-light-blue': multiplier !== 10,
+                              'btn-deep-blue': multiplier === '10',
+                              'btn-light-blue': multiplier !== '10',
                             })}
                           >
                             10x
@@ -207,14 +254,17 @@ class RoundUps extends Component {
                       </FormGroup>
                     </Col>
                     <Col md={4}>
-                      <FormGroup>
-                        <Button
-                          color="deep-ash block"
-                          onClick={this.saveMultiplier}
-                        >
-                          SAVE
-                        </Button>
-                      </FormGroup>
+                      { loading ? 
+                        <Loader /> :
+                        <FormGroup>
+                          <Button
+                            color="deep-ash block"
+                            onClick={this.saveMultiplier}
+                          >
+                            SAVE
+                          </Button>
+                        </FormGroup>
+                      }
                     </Col>
                   </Row>
                 </Form>
