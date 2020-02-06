@@ -104,7 +104,7 @@ class Account extends Component {
                 </div>
                 <Progress value="75" className="setup-level" />
                 <hr />
-                <div className="reg-status mb-2">
+                <div className="reg-status mb-3">
                   <CustomInput
                     type="checkbox"
                     id="reg-stage-1"
@@ -114,7 +114,7 @@ class Account extends Component {
                   />
                   <span className="ml-4 font-weight-bold complete">Complete</span>
                 </div>
-                <div className="reg-status mb-2">
+                <div className="reg-status mb-3">
                   <CustomInput
                     type="checkbox"
                     id="reg-stage-2"
@@ -124,7 +124,7 @@ class Account extends Component {
                   />
                   <span className="ml-4 font-weight-bold complete">Complete</span>
                 </div>
-                <div className="reg-status mb-2">
+                <div className="reg-status mb-3">
                   <CustomInput
                     type="checkbox"
                     id="reg-stage-3"
@@ -134,7 +134,7 @@ class Account extends Component {
                   />
                   <span className="ml-4 font-weight-bold complete">Complete</span>
                 </div>
-                <div className="reg-status">
+                <div className="reg-status mb-3">
                   <CustomInput
                     type="checkbox"
                     id="reg-stage-4"

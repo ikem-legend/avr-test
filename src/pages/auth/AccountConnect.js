@@ -178,8 +178,11 @@ class AccountConnect extends Component {
           loadingCards: false
         })
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
+        this.props.showFeedback('Error displaying card(s), contact your banking for details', 'error')
+        this.setState({
+          loadingCards: false
+        });
       })
   }
 
