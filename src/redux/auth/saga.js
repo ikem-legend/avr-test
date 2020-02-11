@@ -50,7 +50,6 @@ function* login({payload: {user, history}}) {
         'GET',
         result.token,
       )
-      console.log(response)
       const {
         data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
       } = response

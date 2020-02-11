@@ -29,7 +29,6 @@ class Dashboard extends Component {
 			btcVal: '250.50',
 			ethVal: '178.62'
 		};
-		console.log("seeeeeeeeee")
 	}
 
 	toggleTopup = () => {
