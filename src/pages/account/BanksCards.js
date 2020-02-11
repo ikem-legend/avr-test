@@ -4,21 +4,21 @@ import {connect} from 'react-redux'
 import {
   Row,
   Col,
-  CustomInput,
-  Form,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Button
+  // CustomInput,
+  // Form,
+  // FormGroup,
+  // Input,
+  // InputGroup,
+  // InputGroupAddon,
+  // InputGroupText,
+  // Button
 } from 'reactstrap'
-import classnames from 'classnames'
-import Loader from '../../components/Loader'
+// import classnames from 'classnames'
+// import Loader from '../../components/Loader'
 import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
-import btcImg from '../../assets/images/layouts/btc.svg'
-import ethImg from '../../assets/images/layouts/eth.svg'
+// import btcImg from '../../assets/images/layouts/btc.svg'
+// import ethImg from '../../assets/images/layouts/eth.svg'
 
 class BanksCards extends Component {
 	constructor() {

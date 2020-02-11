@@ -50,7 +50,7 @@ function* login({payload: {user, history}}) {
         'GET',
         result.token,
       )
-      // console.log(response)
+      console.log(response)
       const {
         data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
       } = response
@@ -60,7 +60,7 @@ function* login({payload: {user, history}}) {
         {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
         {token: result.token},
       )
-      // console.log(userObj)
+      console.log(userObj)
       setSession(userObj)
       yield put(loginUserSuccess(userObj))
       yield call(() => history.push('/dashboard'))
