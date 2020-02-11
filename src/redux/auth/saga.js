@@ -50,7 +50,6 @@ function* login({payload: {user, history}}) {
         'GET',
         result.token,
       )
-      console.log(response)
       const {
         data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
       } = response
@@ -64,7 +63,6 @@ function* login({payload: {user, history}}) {
       setSession(userObj)
       yield put(loginUserSuccess(userObj))
       yield call(() => history.push('/dashboard'))
-      console.log("hia")
     }
   } catch (error) {
     let message
