@@ -1,4 +1,5 @@
 import React, {Component, Fragment} from 'react'
+import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
 import {
   Row,
@@ -20,11 +21,12 @@ import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 import TopUp from '../../assets/images/topups.svg'
 
+import {callApi} from '../../helpers/api'
+import {showFeedback} from '../../redux/actions'
 import RoundUps from './RoundUps'
 import RoundUpsTable from './RoundUpsTable'
 import TopUpsTable from './TopUpsTable'
 import WithdrawalTable from './WithdrawalTable'
-// import InvestmentChart from './InvestmentChart'
 
 class Transactions extends Component {
   constructor(props) {
@@ -34,7 +36,38 @@ class Transactions extends Component {
       roundup: '',
       activeTab: '1',
       // user: getLoggedInUser(),
+      multiplier: 1, // id value of multiplier
+      invPause: false,
+      currDstrbn: [],
     }
+  }
+
+  componentDidMount() {
+    this.loadUserData()
+  }
+
+  loadUserData = () => {
+    const {user} = this.props
+    callApi('/auth/me', null, 'GET', user.token)
+      .then(res => {
+        const {
+          myMultiplierSetting,
+          MyInvestmentPause,
+          myCurrencyDistributions,
+        } = res.data
+        const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
+        this.setState({
+          multiplier: multiplierList[myMultiplierSetting],
+          invPause: MyInvestmentPause,
+          user,
+          currDstrbn: myCurrencyDistributions,
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        this.props.showFeedback(err, 'error')
+        // this.props.history.push('/account/login')
+      })
   }
 
   updateValue = e => {
@@ -44,13 +77,17 @@ class Transactions extends Component {
   }
 
   toggle = tab => {
-    console.log(tab)
-    console.log(typeof tab)
     if (tab !== this.state.activeTab) {
       this.setState({
         activeTab: tab,
       })
     }
+  }
+
+  setTopup = amount => {
+    const {currDstrbn} = this.state
+    let newCurrDstrbn = currDstrbn.reduce(curr => curr.percentage * amount, {})
+    console.log(newCurrDstrbn)
   }
 
   /**
@@ -65,7 +102,7 @@ class Transactions extends Component {
   }
 
   render() {
-    const {roundup, activeTab} = this.state
+    const {user, roundup, activeTab, multiplier, invPause} = this.state
 
     return (
       <Fragment>
@@ -103,7 +140,7 @@ class Transactions extends Component {
                           onChange={this.updateValue}
                         />
                       </FormGroup>
-                      <Button color="red" size="sm">
+                      <Button color="red" size="sm" onClick={this.setTopup}>
                         Invest Now
                       </Button>
                     </Form>
@@ -113,7 +150,12 @@ class Transactions extends Component {
             </Col>
           </Row>
 
-          <RoundUps />
+          <RoundUps
+            user={user}
+            multiplier={multiplier}
+            invPause={invPause}
+            showFeedback={this.props.showFeedback}
+          />
 
           {/* table */}
           <Row className="mt-4 mb-4">
@@ -175,4 +217,8 @@ class Transactions extends Component {
   }
 }
 
-export default Transactions
+const mapStateToProps = state => ({
+  user: state.Auth.user,
+})
+
+export default connect(mapStateToProps, {showFeedback})(Transactions)
