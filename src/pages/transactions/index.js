@@ -18,7 +18,7 @@ import classnames from 'classnames'
 
 import {isUserAuthenticated} from '../../helpers/authUtils'
 // import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
-import Loader from '../../components/Loader'
+import Loader from '../../assets/images/spin-loader.gif'
 import TopUp from '../../assets/images/topups.svg'
 
 import {callApi} from '../../helpers/api'
@@ -39,6 +39,7 @@ class Transactions extends Component {
       multiplier: 1, // id value of multiplier
       invPause: false,
       currDstrbn: [],
+      loadingTopup: false
     }
   }
 
@@ -84,10 +85,25 @@ class Transactions extends Component {
     }
   }
 
-  setTopup = amount => {
-    const {currDstrbn} = this.state
-    let newCurrDstrbn = currDstrbn.reduce(curr => curr.percentage * amount, {})
-    console.log(newCurrDstrbn)
+  setTopup = () => {
+    this.setState({loadingTopup: true});
+    const {currDstrbn, roundup} = this.state
+    const {user} = this.props
+    // item + 2 to reflect coin IDs
+    const newCurrDstrbn = currDstrbn.map((curr, item) => ({currency_id: item + 2, amount: parseInt(curr.percentage, 10) / 100 * parseInt(roundup, 10)}))
+    const fundObj = {total: parseInt(roundup, 10), amount_split: newCurrDstrbn}
+    callApi('/user/wallet/fund', fundObj, 'POST', user.token)
+      .then(() => {
+        this.setState({
+          loadingTopup: false,
+          roundup: 0
+        });
+        this.props.showFeedback('Top-up made successfully', 'success')
+      })
+      .catch(() => {
+        this.setState({loadingTopup: false});
+        this.props.showFeedback('Error making top-up, please check the amount and try again', 'error')
+      })
   }
 
   /**
@@ -102,15 +118,12 @@ class Transactions extends Component {
   }
 
   render() {
-    const {user, roundup, activeTab, multiplier, invPause} = this.state
+    const {user, roundup, activeTab, multiplier, invPause, loadingTopup} = this.state
 
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
         <div className="">
-          {/* preloader */}
-          {this.props.loading && <Loader />}
-
           <Row className="page-title align-items-center">
             <Col sm={4}>
               <p className="mb-1 mt-1 text-muted">
@@ -140,9 +153,13 @@ class Transactions extends Component {
                           onChange={this.updateValue}
                         />
                       </FormGroup>
-                      <Button color="red" size="sm" onClick={this.setTopup}>
+                      {loadingTopup ? (
+                        <img src={Loader} alt="loader" style={{height: '40px'}} />
+                      ) : (
+                        <Button color="red" size="sm" onClick={this.setTopup}>
                         Invest Now
-                      </Button>
+                        </Button>
+                      )}
                     </Form>
                   </Col>
                 </Row>
