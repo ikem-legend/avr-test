@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
+import subYears from 'date-fns/subYears'
 
 import {
   Container,
@@ -12,7 +13,7 @@ import {
   Alert,
   CustomInput,
 } from 'reactstrap'
-// import { Container, Row, Col, Card, CardBody, Label, FormGroup, Button, Alert, InputGroup, InputGroupAddon, CustomInput } from 'reactstrap';
+
 import {
   AvForm,
   AvGroup,
@@ -22,13 +23,11 @@ import {
 import Select from 'react-select'
 import Flatpickr from 'react-flatpickr'
 import MaskedInput from 'react-text-mask'
-// import { Mail, Lock, User } from 'react-feather';
 
 import {callApi} from '../../helpers/api'
 import {registerUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-// import logo from '../../assets/images/logo.png';
 
 class Signup extends Component {
   _isMounted = false
@@ -40,7 +39,7 @@ class Signup extends Component {
         firstname: '',
         lastname: '',
         phone: '',
-        dob: new Date('2004-01-01').getTime(),
+        dob: subYears(new Date(), 16).getTime(),
         email: '',
         password: '',
         ssn: '',
@@ -49,18 +48,8 @@ class Signup extends Component {
         city: '',
         country: '',
       },
-      cities: [
-        // {value: 'new york', label: 'New York'},
-        // {value: 'la', label: 'Los Angeles'},
-        // {value: 'atl', label: 'Atlanta'},
-      ],
-      countries: [
-        // {value: 'usa', label: 'USA'},
-        // {value: 'uk', label: 'UK'},
-        // {value: 'singapore', label: 'Singapore'},
-      ],
       terms: false,
-      signupError: ''
+      signupError: '',
     }
     this.handleValidSubmit = this.handleValidSubmit.bind(this)
   }
@@ -84,7 +73,6 @@ class Signup extends Component {
           coun.cities.map(city => ({value: city.id, label: city.name})),
         )
         const cityList = [].concat(...cityArray)
-        // console.log(cityList)
         this.setState({
           cities: cityList,
           countries: countryList,
@@ -104,8 +92,6 @@ class Signup extends Component {
    * @param {object} values Values to be submitted
    */
   handleValidSubmit = () => {
-    // console.log(event, values)
-    // console.log(this.state.inputs)
     if (this.state.terms) {
       const data = {...this.state.inputs}
       const {history} = this.props
@@ -123,17 +109,18 @@ class Signup extends Component {
             key === 'zipcode' ||
             key === 'city' ||
             key === 'country') &&
-          delete data[key]
+          delete data[key],
       )
-      // console.log(data)
       this.props.registerUser(data, history)
     } else {
-      this.props.showFeedback('Please agree to the terms and conditions', 'error')
+      this.props.showFeedback(
+        'Please agree to the terms and conditions',
+        'error',
+      )
     }
   }
 
   activateField = e => {
-    // console.log(e.target.name)
     document
       .querySelector(`.float-container #${e.target.name}`)
       .parentElement.classList.add('active')
@@ -143,7 +130,6 @@ class Signup extends Component {
   }
 
   deactivateField = e => {
-    // console.log(e.target.name)
     document.querySelector(
       `.float-container #${e.target.name}`,
     ).parentElement.style.borderLeft = '1px solid #ccc'
@@ -156,7 +142,6 @@ class Signup extends Component {
   }
 
   updateInputValue = e => {
-    // console.log(e.target)
     e.preventDefault()
     const {name, value} = e.target
     // console.log(name, value)
@@ -167,14 +152,12 @@ class Signup extends Component {
         [name]: value,
       },
     }))
-    // this.activateField(e);
   }
 
   updateTerms = e => {
     const {checked} = e.target
-    // console.log(checked)
     this.setState({
-      terms: checked
+      terms: checked,
     })
   }
 
@@ -203,7 +186,7 @@ class Signup extends Component {
       address,
       zipcode,
       city,
-      country
+      country,
     } = this.state.inputs
     return (
       <Fragment>
@@ -248,9 +231,14 @@ class Signup extends Component {
                       <h6 className="h5 mb-0 mt-4"></h6>
 
                       {this.props.error && (
-                        <Alert color="danger" isOpen={typeof(this.props.error) === 'object'}>
+                        <Alert
+                          color="danger"
+                          isOpen={typeof this.props.error === 'object'}
+                        >
                           <div>
-                          	{this.props.error.message === 'Network Error' ? 'Network Error. Please check your internet connection' : this.props.error.message}
+                            {this.props.error.message === 'Network Error'
+                              ? 'Network Error. Please check your internet connection'
+                              : this.props.error.message}
                           </div>
                         </Alert>
                       )}
@@ -292,7 +280,9 @@ class Signup extends Component {
                                 required
                               />
 
-                              <AvFeedback>First Name is invalid</AvFeedback>
+                              <AvFeedback data-testid="fname-error">
+                                First Name is invalid
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={6}>
@@ -327,7 +317,9 @@ class Signup extends Component {
                                 required
                               />
 
-                              <AvFeedback>Last Name is invalid</AvFeedback>
+                              <AvFeedback data-testid="lname-error">
+                                Last Name is invalid
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={6}>
@@ -361,7 +353,9 @@ class Signup extends Component {
                                 required
                               />
 
-                              <AvFeedback>Phone number is invalid</AvFeedback>
+                              <AvFeedback data-testid="phone-error">
+                                Phone number is invalid
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={6}>
@@ -369,6 +363,7 @@ class Signup extends Component {
                               <Label for="dob">Date of Birth</Label>
                               <div className="form-group mb-sm-0 mr-2">
                                 <Flatpickr
+                                  id="dob"
                                   name="dob"
                                   value={dob}
                                   onChange={date =>
@@ -382,7 +377,7 @@ class Signup extends Component {
                                   }
                                   className="form-control"
                                   options={{
-                                    maxDate: new Date('2004-01-01'),
+                                    maxDate: subYears(new Date(), 16),
                                     defaultDate: dob,
                                     dateFormat: 'd-M-Y',
                                   }}
@@ -423,7 +418,9 @@ class Signup extends Component {
                                 required
                               />
 
-                              <AvFeedback>Email is invalid</AvFeedback>
+                              <AvFeedback data-testid="email-error">
+                                Email is invalid
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={6}>
@@ -458,7 +455,7 @@ class Signup extends Component {
                                 }}
                                 required
                               />
-                              <AvFeedback>
+                              <AvFeedback data-testid="password-error">
                                 Password must contain at least 1 lowercase, 1
                                 uppercase, 1 number and 8 characters
                               </AvFeedback>
@@ -497,6 +494,7 @@ class Signup extends Component {
                                       /\d/,
                                       /[1-9]/,
                                     ]}
+                                    id="ssn"
                                     name="ssn"
                                     className="form-control text-center"
                                     placeholder="999-99-9999"
@@ -505,7 +503,7 @@ class Signup extends Component {
                                     onChange={this.updateInputValue}
                                     required
                                   />
-                                  <AvFeedback>
+                                  <AvFeedback data-testid="ssn-error">
                                     Social Security Number is invalid
                                   </AvFeedback>
                                 </Col>
@@ -526,7 +524,9 @@ class Signup extends Component {
                                 onChange={this.updateInputValue}
                                 required
                               />
-                              <AvFeedback>Address is invalid</AvFeedback>
+                              <AvFeedback data-testid="address-error">
+                                Address is invalid
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={4}>
@@ -551,13 +551,16 @@ class Signup extends Component {
                                 required
                               />
 
-                              <AvFeedback>Zipcode is invalid</AvFeedback>
+                              <AvFeedback data-testid="zip-error">
+                                Zipcode is invalid
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={6}>
                             <AvGroup className="float-container">
                               <Label for="city">Choose your city</Label>
                               <Select
+                                id="city"
                                 options={this.state.cities}
                                 value={city}
                                 onChange={val =>
@@ -571,13 +574,16 @@ class Signup extends Component {
                                 }
                                 required
                               />
-                              <AvFeedback>Please select a city</AvFeedback>
+                              <AvFeedback data-testid="city-error">
+                                Please select a city
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={6}>
                             <AvGroup className="float-container">
                               <Label for="country">Select your country</Label>
                               <Select
+                                id="country"
                                 options={this.state.countries}
                                 value={country}
                                 onChange={val =>
@@ -591,7 +597,9 @@ class Signup extends Component {
                                 }
                                 required
                               />
-                              <AvFeedback>This field is invalid</AvFeedback>
+                              <AvFeedback data-testid="country-error">
+                                This field is invalid
+                              </AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={12} className="mb-4">
@@ -641,10 +649,10 @@ class Signup extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-	const { user, loading, error } = state.Auth;
-	return { user, loading, error };
-};
+const mapStateToProps = state => {
+  const {user, loading, error} = state.Auth
+  return {user, loading, error}
+}
 
 // export default connect(null, {registerUser})(Signup)
-export default connect(mapStateToProps, {registerUser, showFeedback})(Signup);
+export default connect(mapStateToProps, {registerUser, showFeedback})(Signup)

@@ -21,7 +21,6 @@ import {
   AvFeedback,
 } from 'availity-reactstrap-validation'
 
-// import {loginUser} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 

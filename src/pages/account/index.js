@@ -5,17 +5,16 @@ import {
   Row,
   Col,
   Progress,
-  CustomInput,  
+  CustomInput,
   TabPane,
   TabContent,
-  Nav, 
-  NavItem, 
-  NavLink
+  Nav,
+  NavItem,
+  NavLink,
 } from 'reactstrap'
 import classnames from 'classnames'
 
 import {isUserAuthenticated} from '../../helpers/authUtils'
-// import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 import profilePic from '../../assets/images/users/user-profile@2x.png'
 
@@ -34,12 +33,11 @@ class Account extends Component {
       stage3: true,
       stage4: false,
       stage5: false,
-      activeTab: '1'
+      activeTab: '1',
     }
   }
 
   updateValue = e => {
-    console.log(e.target.checked)
     this.setState({
       roundup: e.target.value,
     })
@@ -58,7 +56,7 @@ class Account extends Component {
    * @returns {object} Redirect component
    */
   renderRedirectToRoot = () => {
-    console.log("look here")
+    console.log('look here')
     const isAuthTokenValid = isUserAuthenticated()
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
@@ -92,12 +90,12 @@ class Account extends Component {
                     alt="Avenir"
                   />
                 </div>
-                <h4 className="mb-4">
+                <h4 data-testid="username-display" className="mb-4">
                   {user.myFirstName} {user.myLastName}
                 </h4>
                 <hr />
-                <span>{user.myEmailAddress}</span>
-                <p className="mt-1 mb-3">
+                <span data-testid="email-display">{user.myEmailAddress}</span>
+                <p data-testid="phone-display" className="mt-1 mb-3">
                   <span>{user.myPhoneNumber}</span>
                 </p>
                 <div className="mt-3">
@@ -113,7 +111,9 @@ class Account extends Component {
                     checked={stage1}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold complete">Complete</span>
+                  <span className="ml-4 font-weight-bold complete">
+                    Complete
+                  </span>
                 </div>
                 <div className="reg-status mb-3">
                   <CustomInput
@@ -123,7 +123,9 @@ class Account extends Component {
                     checked={stage2}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold complete">Complete</span>
+                  <span className="ml-4 font-weight-bold complete">
+                    Complete
+                  </span>
                 </div>
                 <div className="reg-status mb-3">
                   <CustomInput
@@ -133,7 +135,9 @@ class Account extends Component {
                     checked={stage3}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold complete">Complete</span>
+                  <span className="ml-4 font-weight-bold complete">
+                    Complete
+                  </span>
                 </div>
                 <div className="reg-status mb-3">
                   <CustomInput
@@ -143,7 +147,9 @@ class Account extends Component {
                     checked={stage4}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold incomplete">Incomplete</span>
+                  <span className="ml-4 font-weight-bold incomplete">
+                    Incomplete
+                  </span>
                 </div>
                 <div className="reg-status">
                   <CustomInput
@@ -153,7 +159,9 @@ class Account extends Component {
                     checked={stage5}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold incomplete">Incomplete</span>
+                  <span className="ml-4 font-weight-bold incomplete">
+                    Incomplete
+                  </span>
                 </div>
               </div>
             </Col>
@@ -166,8 +174,13 @@ class Account extends Component {
                         <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
-                              className={classnames({ active: activeTab === '1' }, 'text-center')}
-                              onClick={() => { this.toggle('1'); }}
+                              className={classnames(
+                                {active: activeTab === '1'},
+                                'text-center',
+                              )}
+                              onClick={() => {
+                                this.toggle('1')
+                              }}
                             >
                               Edit Profile
                             </NavLink>
@@ -176,8 +189,13 @@ class Account extends Component {
                         <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
-                              className={classnames({ active: activeTab === '2' }, 'text-center')}
-                              onClick={() => { this.toggle('2'); }}
+                              className={classnames(
+                                {active: activeTab === '2'},
+                                'text-center',
+                              )}
+                              onClick={() => {
+                                this.toggle('2')
+                              }}
                             >
                               Account Settings
                             </NavLink>
@@ -186,8 +204,13 @@ class Account extends Component {
                         <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
-                              className={classnames({ active: activeTab === '3' }, 'text-center')}
-                              onClick={() => { this.toggle('3'); }}
+                              className={classnames(
+                                {active: activeTab === '3'},
+                                'text-center',
+                              )}
+                              onClick={() => {
+                                this.toggle('3')
+                              }}
                             >
                               Banks & Cards
                             </NavLink>
@@ -196,16 +219,21 @@ class Account extends Component {
                         <Col md={3} className="p-0">
                           <NavItem>
                             <NavLink
-                              className={classnames({ active: activeTab === '4' }, 'text-center')}
-                              onClick={() => { this.toggle('4'); }}
+                              className={classnames(
+                                {active: activeTab === '4'},
+                                'text-center',
+                              )}
+                              onClick={() => {
+                                this.toggle('4')
+                              }}
                             >
                               Security
                             </NavLink>
                           </NavItem>
-                        </Col>              
+                        </Col>
                       </Nav>
                     </Col>
-                  </Row> 
+                  </Row>
                 </div>
                 <div className="tab-container">
                   <Row>

@@ -37,7 +37,6 @@ class EditProfile  extends Component {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        // console.log(res)
         const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myIdentifier} = res.data
         this.setState({
           name: `${myFirstName} ${myLastName}`,
@@ -50,7 +49,6 @@ class EditProfile  extends Component {
       })
       .catch(err => {
         this.props.showFeedback(err, 'error')
-        // this.props.showFeedback('Error retrieving user details. Please try again', 'error')
       })
   }
 
@@ -66,10 +64,8 @@ class EditProfile  extends Component {
     const {name, dob, phone, email, address, referralUrl} = this.state
     const [first_name, last_name] = String(name).split(' ')
     const userData = {first_name, last_name, email, phone, dob, address, identifier: referralUrl}
-    // console.log(userData)
     callApi('/user/profile/update', userData, 'POST', this.props.user.token)
       .then(() => {
-        // console.log(res)
         this.props.showFeedback('Profile updated successfully', 'success')
         this.loadUserData()
       })
