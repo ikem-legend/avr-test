@@ -17,6 +17,8 @@ import {
   changeSidebarTheme as changeLeftSidebarThemeAction,
   changeSidebarType as changeSidebarTypeAction,
   showFeedback as showNotification,
+  showFeedbackSuccess,
+  showFeedbackError
 } from './actions'
 
 /**
@@ -49,14 +51,14 @@ function manageBodyClass(cssClass, action = 'toggle') {
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------------
- * Note: Following are the functions which allows you to save the user prefrences on backend side by making an api request.
+ * Note: Following are the functions which allows you to save the user preferences on backend side by making an api request.
  * For now, we are just applying the required logic on frontend side
  * ----------------------------------------------------------------------------------------------------------------------------
  */
 
 /**
  * Changes the layout type
- * @param {*} param0
+ * @param {object} setting User's preferred setting
  */
 function* changeLayout({payload: layout}) {
   try {
@@ -87,7 +89,7 @@ function* changeLayout({payload: layout}) {
 
 /**
  * Changes the layout width
- * @param {*} param0
+ * @param {object} setting User's preferred setting
  */
 function* changeLayoutWidth({payload: width}) {
   try {
@@ -103,7 +105,7 @@ function* changeLayoutWidth({payload: width}) {
 
 /**
  * Changes the left sidebar theme
- * @param {*} param0
+ * @param {object} setting User's preferred setting
  */
 function* changeLeftSidebarTheme({payload: theme}) {
   try {
@@ -117,7 +119,7 @@ function* changeLeftSidebarTheme({payload: theme}) {
 
 /**
  * Changes the left sidebar type
- * @param {*} param0
+ * @param {object} setting User's preferred setting
  */
 function* changeLeftSidebarType({payload: type}) {
   try {
@@ -168,10 +170,12 @@ function* hideRightSidebar() {
  * Shows the toastr
  */
 function* showFeedback({payload}) {
-  // console.log(payload)
   try {
-    // yield put(showNotification(message, type))
-  } catch (error) {}
+  console.log(payload)
+    yield put(showFeedbackSuccess(payload))
+  } catch (error) {
+    yield put(showFeedbackSuccess(error))
+  }
 }
 
 /**
