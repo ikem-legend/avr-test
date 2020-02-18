@@ -9,6 +9,8 @@ import {
   SHOW_RIGHT_SIDEBAR,
   HIDE_RIGHT_SIDEBAR,
   SHOW_FEEDBACK,
+  SHOW_FEEDBACK_SUCCESS,
+  SHOW_FEEDBACK_ERROR,
   HIDE_FEEDBACK,
 } from './constants'
 
@@ -59,16 +61,25 @@ const Layout = (state = INIT_STATE, action) => {
         showRightSidebar: false,
       }
     case SHOW_FEEDBACK:
+      return {
+        ...state,
+      }
+    case SHOW_FEEDBACK_SUCCESS:
       // console.log(action)
       const {message, id, color} = action.payload
       return {
         ...state,
         feedbacks: [].concat({message, id, color}),
       }
+    case SHOW_FEEDBACK_ERROR:
+      return {
+        ...state,
+        error: action.payload
+      }
     case HIDE_FEEDBACK:
       return {
         ...state,
-        feedbacks: state.feedbacks.filter(error => error.id !== action.id),
+        feedbacks: state.feedbacks.filter(error => error.id !== action.id), // review for possible return value of number
       }
     default:
       return state
