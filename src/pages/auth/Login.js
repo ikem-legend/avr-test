@@ -184,7 +184,7 @@ class Login extends Component {
                           </AvFeedback>
                           <Link
                             to="/account/forgot-password"
-                            className="mt-3 float-right blue-text font-weight-bold text-unline-dashed ml-1"
+                            className="mt-3 float-sm-right float-left blue-text font-weight-bold text-unline-dashed ml-1"
                           >
                             Forgot password?
                           </Link>
@@ -193,12 +193,12 @@ class Login extends Component {
                         <FormGroup className="form-group mb-0 text-center">
                           <Container>
                             <Row>
-                              <Col md={{offset: 4, size: 4}}>
+                              <Col md={{offset: 4, size: 4}} xs={6}>
                                 <Button color="blue" block className="mb-1">
                                   Login
                                 </Button>
                               </Col>
-                              <Col md={4}>
+                              <Col md={4} xs={6}>
                                 <Link
                                   to="/account/signup"
                                   className="mb-1 btn btn-blue-inverted btn-block"
@@ -219,7 +219,7 @@ class Login extends Component {
                   <br />
                   <br />
                   <Row className="mt-3">
-                    <Col className="col-8 text-center">
+                    <Col className="text-center order-12 order-sm-1" xs={12} sm={8}>
                       <p className="text-muted">
                         Trouble signing in?{' '}
                         <Link
@@ -230,8 +230,8 @@ class Login extends Component {
                         </Link>
                       </p>
                     </Col>
-                    <Col className="col-4">
-                      <p className="text-muted float-right">
+                    <Col className="order-1 order-sm-12 offset-xs-3 text-center text-sm-right" xs={12} sm={4}>
+                      <p className="text-muted float-sm-right">
                         <span
                           onClick={this.togglePrivacy}
                           onKeyPress={this.togglePrivacy}
