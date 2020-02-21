@@ -102,7 +102,14 @@ function* register({payload: {user, history}}) {
   // console.log(user, history)
   // localStorage.setItem('avenir', 'abcd')
   try {
-    const result = yield call(callApi, '/auth/signup', user, 'POST')
+  	const queryString = history.location.search
+  	const urlParams = new URLSearchParams(queryString);
+  	let result
+  	if (urlParams === '') {
+    	result = yield call(callApi, '/auth/signup', user, 'POST')
+  	} else {
+  		result = yield call(callApi, `/auth/signup${urlParams}`, user, 'POST')
+  	}
     // console.log(result.data.message.token)
     const response = yield call(
       callApi,
