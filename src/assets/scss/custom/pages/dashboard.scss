@@ -275,3 +275,41 @@ span.edit-ratio {
 	border-radius: 0.1rem;
   border: 1px solid #eaeaea;
 }
+
+
+// Referral
+.referral-head {
+	color: $avenir-blue;
+}
+
+.referral-url {
+	color: $avenir-red;
+}
+
+.referral-amount {
+	font-size: 3rem;
+}
+
+.referral-block {
+	background-color: $avenir-deep-blue;
+	color: $white;
+	border-radius: 10px;
+	h4 {
+		color: $white;
+	}
+	.input-group {
+		.input-group-append span {
+			background-color: $avenir-blue;
+		}
+	}
+	.referral-code {
+		text-transform: uppercase;
+		font-size: 1.5rem;
+	}
+}
+
+.referral-perf-block {
+	border: 1px solid #939395;
+	border-radius: 10px;
+
+}
