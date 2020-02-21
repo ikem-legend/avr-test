@@ -7,22 +7,7 @@ import axios from 'axios'
  */
 
 const config = {
-  fetchUrl: 'https://avenirapp.herokuapp.com/api/v1',
-}
-const fetchJSON = (url, options = {}) => {
-  return fetch(url, options)
-    .then(response => {
-      if (!response.status === 200) {
-        throw response.json()
-      }
-      return response.json()
-    })
-    .then(json => {
-      return json
-    })
-    .catch(error => {
-      throw error
-    })
+  fetchUrl: 'https://myavenir.herokuapp.com/api/v1',
 }
 
 const callPlainApi = (url, data, method) =>
@@ -45,7 +30,6 @@ const callPlainApi = (url, data, method) =>
         })
     }
     if (method === 'POST') {
-      // console.log(data)
       axios
         .post(`${config.fetchUrl}${url}`, data, axiosOptions)
         .then(response => {
@@ -192,11 +176,9 @@ const callSecuredApi = (url, data, method, token, callback) => {
 
 const callApi = (url, data, method, token, callback) => {
   if (token) {
-    // console.log(`Calling Secured Axios API... ${url}`);
     return callSecuredApi(url, data, method, token, callback)
   }
-  // console.log(`Calling Axios API... ${url}`);
   return callPlainApi(url, data, method, callback)
 }
 
-export {config, fetchJSON, callApi}
+export {config, callApi}

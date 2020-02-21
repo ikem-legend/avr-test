@@ -94,7 +94,11 @@ class AccountConnect extends Component {
           loadingAccts: false,
         })
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log(err)
+        this.props.showFeedback('Error linking bank, please try again', 'error')
+        this.setState({loadingAccts: false});
+      })
   }
 
   handleOnExit = () => {

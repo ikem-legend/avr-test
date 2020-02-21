@@ -90,8 +90,19 @@ class Signup extends Component {
    * Handles the submit
    * @param {object} event The event object
    * @param {object} values Values to be submitted
+   * @returns {function} showFeedback Displays feedback
    */
   handleValidSubmit = () => {
+    const {inputs: {ssn, city, country}} = this.state
+    if (!ssn) {
+      return this.props.showFeedback('Please enter Social Security Number', 'error')
+    }
+    if (!city.value) {
+      return this.props.showFeedback('Please select your city', 'error')
+    }
+    if (!country.value) {
+      return this.props.showFeedback('Please select your country', 'error')
+    }
     if (this.state.terms) {
       const data = {...this.state.inputs}
       const {history} = this.props
@@ -217,6 +228,15 @@ class Signup extends Component {
 
                       <div className="auth-page-sidebar">
                         <div className="overlay"></div>
+                        <div className="auth-user-testimonial d-block d-sm-none">
+                          <p className="lead font-weight-bold">
+                            <span>Create an Account</span>
+                            <span className="float-right back">Back to <Link to="/account/login">Login</Link></span>
+                          </p>
+                          <p className="font-size-24 font-weight-bold mb-1">
+                            Confirm your Identity
+                          </p>
+                        </div>
                         <div className="auth-user-testimonial">
                           <p className="verify-info font-weight-bold text-muted mb-0">
                             U.S financial regulations require your identity to
