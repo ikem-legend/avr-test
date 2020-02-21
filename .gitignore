@@ -6,3 +6,5 @@ dist
 .opt-out
 .DS_Store
 .eslintcache
+cypress/videos
+cypress/sreenshots

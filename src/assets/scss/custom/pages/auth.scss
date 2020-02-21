@@ -81,6 +81,13 @@
 		font-size: 12px;
 		text-transform: uppercase;
 		color: $avenir-blue;
+		.back {
+			color: initial;
+			text-transform: initial;
+			a {
+				color: $avenir-blue;
+			}
+		}
 	}
 	.verify-info {
 		font-size: 12px;

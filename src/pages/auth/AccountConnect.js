@@ -20,7 +20,6 @@ import {callApi} from '../../helpers/api'
 import {loginUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-// import logo from '../../assets/images/logo.png';
 
 class AccountConnect extends Component {
   _isMounted = false
@@ -35,8 +34,6 @@ class AccountConnect extends Component {
       accountsLinkedList: [],
       cards: [],
       cardsLinkedList: [],
-      // disableConnectBtn: true,
-      // disableConnectCardBtn: true,
       loadingAccts: true,
       loadingCards: true,
     }
@@ -51,11 +48,11 @@ class AccountConnect extends Component {
       document.querySelectorAll('.float-container').classList.add('active')
     }
 
-    const user = JSON.parse(localStorage.getItem('avenir'))
-    // console.log(user.myFirstName)
-    this.setState({
-      name: user.myFirstName,
-    })
+    // const user = JSON.parse(localStorage.getItem('avenir'))
+    // // console.log(user.myFirstName)
+    // this.setState({
+    //   name: user.myFirstName,
+    // })
   }
 
   componentWillUnmount() {
@@ -67,7 +64,6 @@ class AccountConnect extends Component {
 
   toggle = () => {
     const {accountModal} = this.state
-    // console.log(accountModal)
     this.setState({
       accountModal: !accountModal,
     })
@@ -75,10 +71,8 @@ class AccountConnect extends Component {
 
   handleOnSuccess = (token, metadata) => {
     const {user} = this.props
-    // send token to client server
-    // console.log(token, metadata)
     this.setState({
-      accountModal: true
+      accountModal: true,
     })
     const institution_name = metadata.institution.name
     const {institution_id} = metadata.institution
@@ -100,7 +94,11 @@ class AccountConnect extends Component {
           loadingAccts: false,
         })
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        console.log(err)
+        this.props.showFeedback('Error linking bank, please try again', 'error')
+        this.setState({loadingAccts: false});
+      })
   }
 
   handleOnExit = () => {
@@ -175,14 +173,17 @@ class AccountConnect extends Component {
         this.setState({
           cards: res.data,
           cardsLinkedList,
-          loadingCards: false
+          loadingCards: false,
         })
       })
       .catch(() => {
-        this.props.showFeedback('Error displaying card(s), contact your banking for details', 'error')
+        this.props.showFeedback(
+          'Error displaying card(s), contact your banking for details',
+          'error',
+        )
         this.setState({
-          loadingCards: false
-        });
+          loadingCards: false,
+        })
       })
   }
 

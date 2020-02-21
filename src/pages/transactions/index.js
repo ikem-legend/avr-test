@@ -29,18 +29,13 @@ import TopUpsTable from './TopUpsTable'
 import WithdrawalTable from './WithdrawalTable'
 
 class Transactions extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      roundup: '',
-      activeTab: '1',
-      // user: getLoggedInUser(),
-      multiplier: 1, // id value of multiplier
-      invPause: false,
-      currDstrbn: [],
-      loadingTopup: false
-    }
+  state = {
+    roundup: '',
+    activeTab: '1',
+    multiplier: 1, // id value of multiplier
+    invPause: false,
+    currDstrbn: [],
+    loadingTopup: false,
   }
 
   componentDidMount() {
@@ -86,12 +81,14 @@ class Transactions extends Component {
   }
 
   setTopup = () => {
-    this.setState({loadingTopup: true});
+    this.setState({loadingTopup: true})
     const {currDstrbn, roundup} = this.state
     const {user} = this.props
     if (roundup && roundup > 0) {
       // item + 2 to reflect coin IDs
-      const newCurrDstrbn = currDstrbn.map((curr, item) => ({currency_id: item + 2, amount: parseInt(curr.percentage, 10) / 100 * parseInt(roundup, 10)}))
+      const newCurrDstrbn = currDstrbn.map((curr, item) => ({
+        currency_id: item + 2, 
+        amount: parseInt(curr.percentage, 10) / 100 * parseInt(roundup, 10)}))
       const fundObj = {total: parseInt(roundup, 10), amount_split: newCurrDstrbn}
       callApi('/user/wallet/fund', fundObj, 'POST', user.token)
         .then(() => {
@@ -123,7 +120,14 @@ class Transactions extends Component {
   }
 
   render() {
-    const {user, roundup, activeTab, multiplier, invPause, loadingTopup} = this.state
+    const {
+      user,
+      roundup,
+      activeTab,
+      multiplier,
+      invPause,
+      loadingTopup,
+    } = this.state
 
     return (
       <Fragment>
@@ -159,10 +163,14 @@ class Transactions extends Component {
                         />
                       </FormGroup>
                       {loadingTopup ? (
-                        <img src={Loader} alt="loader" style={{height: '40px'}} />
+                        <img
+                          src={Loader}
+                          alt="loader"
+                          style={{height: '40px'}}
+                        />
                       ) : (
                         <Button color="red" size="sm" onClick={this.setTopup}>
-                        Invest Now
+                          Invest Now
                         </Button>
                       )}
                     </Form>

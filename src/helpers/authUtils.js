@@ -4,6 +4,7 @@ import {Cookies} from 'react-cookie'
 
 /**
  * Returns the logged in user
+ * @returns {object} user User object
  */
 const getLoggedInUser = () => {
   const cookies = new Cookies()
@@ -14,19 +15,28 @@ const getLoggedInUser = () => {
 
 /**
  * Checks if user is authenticated
+ * @returns {bool} Auth Authentication status
  */
 const isUserAuthenticated = () => {
   // Add condtion for other pages before dashboard like account and credit card linking
   const user = getLoggedInUser()
   const userInStorage = localStorage.getItem('avenir')
-  if (!user) {
+  const url = window.location.pathname
+  if (user) {
+    // Temp fix
+    if (user && userInStorage && url === '/account/login') {
+      return true
+    }
+    if (user && userInStorage && url === 'account/account-connect') {
+      // This is done to prevent auth layout during the account and credit card connection pages
+      // However it led to some login bugs when there was both cookies and local storage data
+      // This is a temp solution but a rewrite of unauth pages should fix it
+      return false
+    }
+    return true
+  } else {
     return false
   }
-  if (user && userInStorage) {
-    // This is done to prevent auth layout during the account and credit card connection pages
-    return false
-  }
-  return true
   // const decoded = jwtDecode(user.token)
   // // console.log(decoded)
   // const currentTime = Date.now() / 1000

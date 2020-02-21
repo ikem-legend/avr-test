@@ -15,6 +15,8 @@
     "availity-reactstrap-validation": "^2.6.0",
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
+    "classnames": "^2.2.6",
+    "date-fns": "^2.9.0",
     "draft-js": "^0.10.5",
     "draftjs-to-html": "^0.8.4",
     "jwt-decode": "^2.2.0",
@@ -50,12 +52,18 @@
     "sortablejs": "^1.10.0"
   },
   "scripts": {
-    "start": "set PORT=3001 && react-scripts start",
+    "start": "set PORT=3000 && react-scripts start",
     "build": "react-scripts build",
     "test": "kcd-scripts test",
     "lint": "kcd-scripts lint",
-    "validate": "kcd-scripts validate",
-    "setup": "npm install --silent && npm run validate --silent"
+    "validate": "kcd-scripts validate && npm run test:e2e:run",
+    "setup": "npm install --silent && npm run validate --silent",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open",
+    "test:e2e": "is-ci \"test:e2e:run\" \"test:e2e:dev\"",
+    "pretest:e2e:run": "npm run build",
+    "test:e2e:run": "start-server-and-test start http://localhost:3000 cy:run",
+    "test:e2e:dev": "start-server-and-test start http://localhost:3000 cy:open"
   },
   "husky": {
     "hooks": {
@@ -101,7 +109,13 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@jackfranklin/test-data-bot": "github:jackfranklin/test-data-bot",
+    "@testing-library/cypress": "^5.3.0",
+    "cypress": "^4.0.2",
+    "eslint-plugin-cypress": "^2.10.1",
+    "is-ci-cli": "^2.0.0",
     "jest-axe": "^3.2.0",
-    "kcd-scripts": "^1.14.0"
+    "kcd-scripts": "^1.14.0",
+    "start-server-and-test": "^1.10.8"
   }
 }

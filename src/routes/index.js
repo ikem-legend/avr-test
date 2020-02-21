@@ -7,6 +7,10 @@ import * as FeatherIcon from 'react-feather'
 import {isUserAuthenticated} from '../helpers/authUtils'
 // import { isUserAuthenticated, getLoggedInUser } from '../helpers/authUtils';
 
+// home
+const Home = React.lazy(() => import('../pages/home'))
+console.log(Home)
+
 // auth
 const Login = React.lazy(() => import('../pages/auth/Login'))
 const Logout = React.lazy(() => import('../pages/auth/Logout'))
@@ -47,6 +51,16 @@ const PrivateRoute = ({component: Component, roles, ...rest}) => (
   />
 )
 
+// home
+const homeRoutes = {
+  path: '/',
+  name: 'Home',
+  icon: FeatherIcon.Home,
+  component: Home,
+  route: Route,
+  exact: true
+}
+
 // dashboards
 const dashboardRoutes = {
   path: '/dashboard',
@@ -58,7 +72,6 @@ const dashboardRoutes = {
   //   text: '1',
   // },
   component: Dashboard,
-  // roles: ['Admin'],
   route: PrivateRoute,
 }
 
@@ -91,12 +104,10 @@ const transactionRoutes = {
 // accounts
 const accountRoutes = {
   path: '/my-account',
-  // path: '/account',
   name: 'My Account',
   icon: FeatherIcon.User,
   // icon: Unicons.UilUsersAlt,
   component: Account,
-  // roles: ['Admin'],
   route: PrivateRoute,
 }
 
@@ -157,12 +168,6 @@ const authRoutes = {
       component: AccountConnect,
       route: Route,
     },
-    // {
-    //     path: '/account/confirm',
-    //     name: 'Confirm',
-    //     component: Confirm,
-    //     route: Route,
-    // },
     {
       path: '/account/forgot-password',
       name: 'Forgot Password',
@@ -191,7 +196,7 @@ const flattenRoutes = routes => {
 }
 
 // All routes
-const allRoutes = [authRoutes, dashboardRoutes, ...appRoutes]
+const allRoutes = [homeRoutes, authRoutes, dashboardRoutes, ...appRoutes]
 const authProtectedRoutes = [
   dashboardRoutes,
   transactionRoutes,
