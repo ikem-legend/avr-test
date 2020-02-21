@@ -9,7 +9,6 @@ import {isUserAuthenticated} from '../helpers/authUtils'
 
 // home
 const Home = React.lazy(() => import('../pages/home'))
-console.log(Home)
 
 // auth
 const Login = React.lazy(() => import('../pages/auth/Login'))
