@@ -22,6 +22,7 @@ const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
 const Dashboard = React.lazy(() => import('../pages/dashboard'))
 const Transactions = React.lazy(() => import('../pages/transactions'))
 const Account = React.lazy(() => import('../pages/account'))
+const Referral = React.lazy(() => import('../pages/referral'))
 
 // handle auth and authorization
 const PrivateRoute = ({component: Component, roles, ...rest}) => (
@@ -85,20 +86,13 @@ const transactionRoutes = {
 }
 
 // referrals
-// const referralRoutes = {
-//   path: '#',
-//   // path: '/referral',
-//   name: 'Referral',
-//   icon: FeatherIcon.Share2,
-//   // header: 'Navigation',
-//   // badge: {
-//   //   variant: 'success',
-//   //   text: '1',
-//   // },
-//   component: Dashboard,
-//   // roles: ['Admin'],
-//   route: PrivateRoute,
-// }
+const referralRoutes = {
+  path: '/referral',
+  name: 'Referral',
+  icon: FeatherIcon.Share2,
+  component: Referral,
+  route: PrivateRoute,
+}
 
 // accounts
 const accountRoutes = {
@@ -176,7 +170,7 @@ const authRoutes = {
   ],
 }
 
-const appRoutes = [transactionRoutes, accountRoutes, faqRoutes, supportRoutes]
+const appRoutes = [transactionRoutes, accountRoutes, referralRoutes, faqRoutes, supportRoutes]
 // const appRoutes = [transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
 
 // flatten the list of all nested routes
@@ -200,6 +194,7 @@ const authProtectedRoutes = [
   dashboardRoutes,
   transactionRoutes,
   accountRoutes,
+  referralRoutes,
   faqRoutes,
   supportRoutes,
 ]
