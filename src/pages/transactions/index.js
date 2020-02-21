@@ -84,27 +84,28 @@ class Transactions extends Component {
     this.setState({loadingTopup: true})
     const {currDstrbn, roundup} = this.state
     const {user} = this.props
-    // item + 2 to reflect coin IDs
-    const newCurrDstrbn = currDstrbn.map((curr, item) => ({
-      currency_id: item + 2,
-      amount: (parseInt(curr.percentage, 10) / 100) * parseInt(roundup, 10),
-    }))
-    const fundObj = {total: parseInt(roundup, 10), amount_split: newCurrDstrbn}
-    callApi('/user/wallet/fund', fundObj, 'POST', user.token)
-      .then(() => {
-        this.setState({
-          loadingTopup: false,
-          roundup: 0,
+    if (roundup && roundup > 0) {
+      // item + 2 to reflect coin IDs
+      const newCurrDstrbn = currDstrbn.map((curr, item) => ({
+        currency_id: item + 2, 
+        amount: parseInt(curr.percentage, 10) / 100 * parseInt(roundup, 10)}))
+      const fundObj = {total: parseInt(roundup, 10), amount_split: newCurrDstrbn}
+      callApi('/user/wallet/fund', fundObj, 'POST', user.token)
+        .then(() => {
+          this.setState({
+            loadingTopup: false,
+            roundup: 0
+          });
+          this.props.showFeedback('Top-up made successfully', 'success')
         })
-        this.props.showFeedback('Top-up made successfully', 'success')
-      })
-      .catch(() => {
-        this.setState({loadingTopup: false})
-        this.props.showFeedback(
-          'Error making top-up, please check the amount and try again',
-          'error',
-        )
-      })
+        .catch(() => {
+          this.setState({loadingTopup: false});
+          this.props.showFeedback('Error making top-up, please check the amount and try again', 'error')
+        })
+    } else {
+      this.setState({loadingTopup: false})
+      this.props.showFeedback('Please set roundup amount', 'error')
+    }
   }
 
   /**
