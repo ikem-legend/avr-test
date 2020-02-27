@@ -1,7 +1,7 @@
-import React, {Component, Fragment} from 'react'
+import React, {Component, Fragment, createRef} from 'react'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
-import {Row, Col, Button, Modal, ModalBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input} from 'reactstrap'
+import {Row, Col, Button, InputGroup, InputGroupAddon, InputGroupText, Input} from 'reactstrap'
 import classnames from 'classnames'
 import {Link} from 'react-feather'
 
@@ -20,8 +20,10 @@ class Referral extends Component {
 
 		this.state = {
 			referralCode: '',
-			referralUrl: ''
+			referralUrl: '',
+			copySuccess: ''
 		};
+		this.textInput = createRef();
 	}
 
 	componentDidMount() {
@@ -35,15 +37,46 @@ class Referral extends Component {
         const {
         	myIdentifier
         } = res.data
-        console.log(res)
+        // console.log(res)
         this.setState({
         	referralCode: myIdentifier,
-        	referralUrl: `https://my.avenir-app.com/${myIdentifier}`
+        	referralUrl: `https://my.avenir-app.com/r/${myIdentifier}`
         });
       })
       .catch(() => {
       	this.props.showFeedback('Error displaying user data', 'error')
       })
+	}
+
+	copyRefCode = (e) => {
+		// const {referralUrl} = this.state
+		// console.log('Copying...')
+		// let ax = document.querySelector('.referral-url')
+		// ax.select()
+		console.log(this.textInput)
+		console.log(this.textArea)
+		console.log(this.textInput.current)
+		console.log(this.textArea.select())
+		this.textInput.current.focus();
+    document.execCommand('copy');
+    // This is just personal preference.
+    // I prefer to not show the the whole text area selected.
+    // e.target.focus();
+    this.setState({ copySuccess: 'Copied!' });
+
+		// this.textArea.select();
+  //   document.execCommand('copy');
+		// document.execCommand('copy', null, referralUrl)
+
+		// const el = document.createElement('textarea');
+	 //  el.value = referralUrl;
+	 //  el.setAttribute('readonly', '');
+	 //  el.style.position = 'absolute';
+	 //  el.style.left = '-9999px';
+	 //  document.body.appendChild(el);
+	 //  el.select();
+	 //  document.execCommand('copy');
+	 //  document.body.removeChild(el);
 	}
 
   /**
@@ -90,9 +123,14 @@ class Referral extends Component {
 			  				<hr />
 			  				<p className="referral-code">{referralCode}</p>
 			  				<InputGroup>
-			  					<Input type="text" value={referralUrl} readOnly />
+			  					{/* <Input type="text" value={referralUrl} readOnly className="referral-url" ref={this.textInput} /> Style input field as text area -> resize: none; */}
+			  					<Input type="textarea"
+				            ref={(textarea) => this.textArea = textarea}
+				            value={referralUrl}
+				            readOnly
+				          />
 			  					<InputGroupAddon addonType="append">
-			  						<InputGroupText><Link /></InputGroupText>
+			  						<InputGroupText><Link onClick={this.copyRefCode} /></InputGroupText>
 			  					</InputGroupAddon>
 			  				</InputGroup>
 			  			</div>
