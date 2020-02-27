@@ -25,7 +25,8 @@ class EditProfile  extends Component {
 			phone: '',
 			dob: '',
 			address: '',
-			referralUrl: ''
+			referralUrl: '',
+      urlExists: false
 		}
 	}
 
@@ -44,7 +45,8 @@ class EditProfile  extends Component {
           phone: myPhoneNumber ? myPhoneNumber : '',
           dob: myBirthDay,
           address: myContactAddress ? myContactAddress : '',
-          referralUrl: myIdentifier ? myIdentifier : ''
+          referralUrl: myIdentifier ? myIdentifier : '',
+          urlExists: myIdentifier
         });
       })
       .catch(err => {
@@ -76,7 +78,7 @@ class EditProfile  extends Component {
   }
 
 	render() {
-		const {name, email, phone, dob, address, referralUrl} = this.state
+		const {name, email, phone, dob, address, referralUrl, urlExists} = this.state
 		return (
 			<Row>
 				<Col>
@@ -120,9 +122,9 @@ class EditProfile  extends Component {
 							<label htmlFor="referral link">Referral Custom URL <span className="text-muted font-size-12">(This can only be changed once)</span></label> 
               <InputGroup>
                 <InputGroupAddon addonType="prepend">
-                  <InputGroupText>https://avenir-app.com</InputGroupText>
+                  <InputGroupText>https://avenir-app.com/r/</InputGroupText>
                 </InputGroupAddon>
-                <Input type="text" name="referralUrl" value={referralUrl} onChange={this.updateFields} disabled={Boolean(referralUrl)} />
+                <Input type="text" name="referralUrl" value={referralUrl} onChange={this.updateFields} readOnly={Boolean(urlExists)} />
               </InputGroup>
 						</FormGroup>
             <Row>
