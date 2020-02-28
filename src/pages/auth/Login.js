@@ -21,6 +21,7 @@ import {
   AvFeedback,
 } from 'availity-reactstrap-validation'
 
+import Logo from '../../assets/images/default-logo.svg'
 import {loginUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -131,123 +132,123 @@ class Login extends Component {
         {(this._isMounted || !isAuthTokenValid) && (
           <div className="account-pages">
             <Container fluid={true}>
-              <Row className="justify-content-center">
-                <Col md={5} className="p-5 position-relative">
-                  <Row>
-                    <Col md={12}>
-                      {/* preloader */}
-                      {this.props.loading && <Loader />}
+              <Row className="justify-content-center position-absolute h-100 w-100">
+                <Col md={5} className="p-5">
+                  <div className="position-relative">
+                    <Row>
+                      <Col md={12}>
+                        {/* preloader */}
+                        {this.props.loading && <Loader />}
 
-                      <div className="mx-auto mb-5" />
+                        <div className="mt-5 mb-5 pl-5">
+                          <img src={Logo} alt="App logo" />
+                        </div>
 
-                      <h6 className="h5 mb-4 mt-4">Welcome back!</h6>
+                        <h6 className="h5 mb-4 mt-4 pl-5">Welcome back!</h6>
 
-                      {this.props.error && (
-                        <Alert color="danger" isOpen={this.props.error}>
-                          <div>{this.props.error.message}</div>
-                        </Alert>
-                      )}
+                        {this.props.error && (
+                          <Alert color="danger" isOpen={this.props.error}>
+                            <div>{this.props.error.message}</div>
+                          </Alert>
+                        )}
 
-                      <AvForm
-                        onValidSubmit={this.handleValidSubmit}
-                        className="authentication-form"
-                      >
-                        <AvGroup className="float-container n1 mb-0">
-                          <Label for="email">Email</Label>
-                          <AvInput
-                            type="email"
-                            name="email"
-                            id="email"
-                            value={this.state.email}
-                            onFocus={this.activateField}
-                            onBlur={this.deactivateField}
-                            required
-                          />
-                          <AvFeedback data-testid="email-error">
-                            Email is invalid
-                          </AvFeedback>
-                        </AvGroup>
+                        <AvForm
+                          onValidSubmit={this.handleValidSubmit}
+                          className="authentication-form pl-5"
+                        >
+                          <AvGroup className="float-container n1 mb-0">
+                            <Label for="email">Email</Label>
+                            <AvInput
+                              type="email"
+                              name="email"
+                              id="email"
+                              value={this.state.email}
+                              onFocus={this.activateField}
+                              onBlur={this.deactivateField}
+                              required
+                            />
+                            <AvFeedback data-testid="email-error">
+                              Email is invalid
+                            </AvFeedback>
+                          </AvGroup>
 
-                        <AvGroup className="mb-5 float-container">
-                          <Label for="password">Password</Label>
-                          <AvInput
-                            type="password"
-                            name="password"
-                            id="password"
-                            value={this.state.password}
-                            onFocus={this.activateField}
-                            onBlur={this.deactivateField}
-                            required
-                          />
-                          <AvFeedback data-testid="password-error">
-                            This field is invalid
-                          </AvFeedback>
+                          <AvGroup className="mb-5 float-container">
+                            <Label for="password">Password</Label>
+                            <AvInput
+                              type="password"
+                              name="password"
+                              id="password"
+                              value={this.state.password}
+                              onFocus={this.activateField}
+                              onBlur={this.deactivateField}
+                              required
+                            />
+                            <AvFeedback data-testid="password-error">
+                              This field is invalid
+                            </AvFeedback>
+                            <Link
+                              to="/account/forgot-password"
+                              className="mt-3 float-sm-right float-left blue-text font-weight-bold text-unline-dashed ml-1"
+                            >
+                              Forgot password?
+                            </Link>
+                          </AvGroup>
+
+                          <FormGroup className="form-group mb-0 text-center">
+                            <Container>
+                              <Row>
+                                <Col md={{offset: 4, size: 4}} xs={6}>
+                                  <Button color="blue" block className="mb-1">
+                                    Login
+                                  </Button>
+                                </Col>
+                                <Col md={4} xs={6}>
+                                  <Link
+                                    to="/account/signup"
+                                    className="mb-1 btn btn-blue-inverted btn-block"
+                                  >
+                                    Sign Up
+                                  </Link>
+                                </Col>
+                              </Row>
+                            </Container>
+                          </FormGroup>
+                        </AvForm>
+                      </Col>
+                    </Row>
+                  </div>
+                  <div className="position-absolute w-100 login-bottom">
+                    <Row className="mt-3 pl-5">
+                      <Col className="order-12 order-sm-1" xs={12} sm={6}>
+                        <p className="text-muted">
+                          Trouble signing in?{' '}
                           <Link
-                            to="/account/forgot-password"
-                            className="mt-3 float-sm-right float-left blue-text font-weight-bold text-unline-dashed ml-1"
+                            to="/account/register"
+                            className="blue-text font-weight-bold ml-1"
                           >
-                            Forgot password?
+                            Contact Support
                           </Link>
-                        </AvGroup>
-
-                        <FormGroup className="form-group mb-0 text-center">
-                          <Container>
-                            <Row>
-                              <Col md={{offset: 4, size: 4}} xs={6}>
-                                <Button color="blue" block className="mb-1">
-                                  Login
-                                </Button>
-                              </Col>
-                              <Col md={4} xs={6}>
-                                <Link
-                                  to="/account/signup"
-                                  className="mb-1 btn btn-blue-inverted btn-block"
-                                >
-                                  Sign Up
-                                </Link>
-                              </Col>
-                            </Row>
-                          </Container>
-                        </FormGroup>
-                      </AvForm>
-                    </Col>
-                  </Row>
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <Row className="mt-3">
-                    <Col className="text-center order-12 order-sm-1" xs={12} sm={8}>
-                      <p className="text-muted">
-                        Trouble signing in?{' '}
-                        <Link
-                          to="/account/register"
-                          className="blue-text font-weight-bold ml-1"
-                        >
-                          Contact Support
-                        </Link>
-                      </p>
-                    </Col>
-                    <Col className="order-1 order-sm-12 offset-xs-3 text-center text-sm-right" xs={12} sm={4}>
-                      <p className="text-muted float-sm-right">
-                        <span
-                          onClick={this.togglePrivacy}
-                          onKeyPress={this.togglePrivacy}
-                        >
-                          Privacy
-                        </span>{' '}
-                        |{' '}
-                        <span
-                          onClick={this.toggleTerms}
-                          onKeyPress={this.toggleTerms}
-                        >
-                          Terms
-                        </span>
-                      </p>
-                    </Col>
-                  </Row>
+                        </p>
+                      </Col>
+                      <Col className="order-1 order-sm-12 offset-xs-3 text-sm-right" xs={12} sm={4}>
+                        <p className="text-muted float-sm-right">
+                          <span
+                            onClick={this.togglePrivacy}
+                            onKeyPress={this.togglePrivacy}
+                          >
+                            Privacy
+                          </span>{' '}
+                          |{' '}
+                          <span
+                            onClick={this.toggleTerms}
+                            onKeyPress={this.toggleTerms}
+                          >
+                            Terms
+                          </span>
+                        </p>
+                      </Col>
+                    </Row>
+                  </div>
                 </Col>
 
                 <Col md={7} className="d-none d-md-inline-block login-bg">
