@@ -92,7 +92,7 @@ class Signup extends Component {
    * @param {object} values Values to be submitted
    * @returns {function} showFeedback Displays feedback
    */
-  handleValidSubmit = () => {
+  handleValidSubmit = async () => {
     const {inputs: {ssn, city, country}} = this.state
     if (!ssn) {
       return this.props.showFeedback('Please enter Social Security Number', 'error')
@@ -122,7 +122,7 @@ class Signup extends Component {
             key === 'country') &&
           delete data[key],
       )
-      this.props.registerUser(data, history)
+      await this.props.registerUser(data, history)
     } else {
       this.props.showFeedback(
         'Please agree to the terms and conditions',
@@ -226,7 +226,7 @@ class Signup extends Component {
                       {/* preloader */}
                       {this.props.loading && <Loader />}
 
-                      <div className="auth-page-sidebar">
+                      <div className="auth-page-sidebar mb-4">
                         <div className="overlay"></div>
                         <div className="auth-user-testimonial d-block d-sm-none">
                           <p className="lead font-weight-bold">
@@ -248,20 +248,6 @@ class Signup extends Component {
                           </p>
                         </div>
                       </div>
-                      <h6 className="h5 mb-0 mt-4"></h6>
-
-                      {this.props.error && (
-                        <Alert
-                          color="danger"
-                          isOpen={typeof this.props.error === 'object'}
-                        >
-                          <div>
-                            {this.props.error.message === 'Network Error'
-                              ? 'Network Error. Please check your internet connection'
-                              : this.props.error.message}
-                          </div>
-                        </Alert>
-                      )}
 
                       <AvForm
                         onValidSubmit={this.handleValidSubmit}

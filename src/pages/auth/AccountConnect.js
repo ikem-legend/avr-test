@@ -42,11 +42,7 @@ class AccountConnect extends Component {
   componentDidMount() {
     this._isMounted = true
     document.body.classList.add('authentication-bg')
-    const {firstname, lastname} = this.state
-    // Another possible solution is to use an array to loop through the state then update field styling
-    if (firstname && lastname) {
-      document.querySelectorAll('.float-container').classList.add('active')
-    }
+    // const {firstname, lastname} = this.state
 
     // const user = JSON.parse(localStorage.getItem('avenir'))
     // // console.log(user.myFirstName)
@@ -209,10 +205,6 @@ class AccountConnect extends Component {
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
-    const userInStorage = localStorage.getItem('avenir')
-    if (!isAuthTokenValid && userInStorage) {
-      return false
-    }
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
     }
