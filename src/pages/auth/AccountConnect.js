@@ -313,7 +313,7 @@ class AccountConnect extends Component {
                       <div className="mt-3">
                         <PlaidLink
                           clientName="Avenir app"
-                          env="development"
+                          env="sandbox"
                           product={['auth', 'transactions']}
                           publicKey="3c3d222fa56168931abed2dc785bc2"
                           onExit={this.handleOnExit}
