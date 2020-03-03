@@ -1,5 +1,6 @@
 // @flow
 import {Cookies} from 'react-cookie'
+import {toast} from 'react-toastify'
 import {all, call, fork, put, takeLatest} from 'redux-saga/effects'
 
 import {callApi} from '../../helpers/api'
@@ -51,12 +52,14 @@ function* login({payload: {user, history}}) {
         result.token,
       )
       const {
-        data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+        data,
+        // data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
       } = response
       const userObj = {}
       Object.assign(
         userObj,
-        {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+        {...data},
+        // {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
         {token: result.token},
       )
       setSession(userObj)
@@ -120,20 +123,22 @@ function* register({payload: {user, history}}) {
     )
     // console.log(response)
     const {
-      data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+      data
+      // data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
     } = response
     const userObj = {}
     Object.assign(
       userObj,
-      {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+      {...data},
+      // {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
       {token: result.data.message.token},
     )
     yield put(registerUserSuccess(userObj))
     // console.log(userObj)
     // Save user object in local storage for the meantime then if validation successful set cookie and/else delete from local storage
-    localStorage.setItem('avenir', JSON.stringify(userObj))
+    // localStorage.setItem('avenir', JSON.stringify(userObj))
     // console.log(localStorage.getItem('avenir'))
-    // setSession(userObj);
+    setSession(userObj);
     yield call(() => history.push('/account/account-connect'))
   } catch (error) {
     let message
@@ -148,6 +153,10 @@ function* register({payload: {user, history}}) {
         message = error
     }
     yield put(registerUserFailed(message))
+    toast.error(
+    	'Registration error. Please check your details and try again', 
+    	{hideProgressBar: true}
+    )
   }
 }
 

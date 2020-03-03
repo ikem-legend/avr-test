@@ -1,6 +1,6 @@
 // Login
 .login-bg {
-	background: transparent url('../../../images/login-bg-illustration.png') 0% 0% no-repeat padding-box;
+	background: transparent url('../../../images/login_static_bg.svg') 0% 0% no-repeat padding-box;
 	background-size: cover;
 }
 
@@ -89,7 +89,7 @@
 	.verify-info {
 		font-size: 12px;
 	}
-	.ssn {
+	.userId {
 		background-color: $avenir-light-blue;
 		label {
 			position: inherit;

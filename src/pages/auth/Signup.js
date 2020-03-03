@@ -10,7 +10,6 @@ import {
   Label,
   FormGroup,
   Button,
-  Alert,
   CustomInput,
 } from 'reactstrap'
 
@@ -42,7 +41,8 @@ class Signup extends Component {
         dob: subYears(new Date(), 16).getTime(),
         email: '',
         password: '',
-        ssn: '',
+        confirmPassword: '',
+        userId: '',
         address: '',
         zipcode: '',
         city: '',
@@ -92,10 +92,10 @@ class Signup extends Component {
    * @param {object} values Values to be submitted
    * @returns {function} showFeedback Displays feedback
    */
-  handleValidSubmit = () => {
-    const {inputs: {ssn, city, country}} = this.state
-    if (!ssn) {
-      return this.props.showFeedback('Please enter Social Security Number', 'error')
+  handleValidSubmit = async () => {
+    const {inputs: {userId, city, country}} = this.state
+    if (!userId) {
+      return this.props.showFeedback('Please select an image or document for upload', 'error')
     }
     if (!city.value) {
       return this.props.showFeedback('Please select your city', 'error')
@@ -106,7 +106,7 @@ class Signup extends Component {
     if (this.state.terms) {
       const data = {...this.state.inputs}
       const {history} = this.props
-      data.ssn = data.ssn.replace(/-/g, '')
+      // data.ssn = data.ssn.replace(/-/g, '')
       data.dob = String(data.dob)
       data.first_name = String(data.firstname)
       data.last_name = String(data.lastname)
@@ -122,7 +122,8 @@ class Signup extends Component {
             key === 'country') &&
           delete data[key],
       )
-      this.props.registerUser(data, history)
+      await this.props.registerUser(data, history)
+      // const formData = new FormData()
     } else {
       this.props.showFeedback(
         'Please agree to the terms and conditions',
@@ -154,15 +155,25 @@ class Signup extends Component {
 
   updateInputValue = e => {
     e.preventDefault()
-    const {name, value} = e.target
+    const {name, value, files} = e.target
     // console.log(name, value)
-    this.setState(prevState => ({
-      ...prevState,
-      inputs: {
-        ...prevState.inputs,
-        [name]: value,
-      },
-    }))
+    if (files) {
+      this.setState(prevState => ({
+        ...prevState,
+        inputs: {
+          ...prevState.inputs,
+          userId: files[0]
+        }
+      }));
+    } else {
+      this.setState(prevState => ({
+        ...prevState,
+        inputs: {
+          ...prevState.inputs,
+          [name]: value,
+        },
+      }))
+    }
   }
 
   updateTerms = e => {
@@ -193,7 +204,8 @@ class Signup extends Component {
       dob,
       email,
       password,
-      ssn,
+      confirmPassword,
+      userId,
       address,
       zipcode,
       city,
@@ -218,6 +230,16 @@ class Signup extends Component {
                           <p className="font-size-24 font-weight-bold mb-1">
                             Confirm your Identity
                           </p>
+                          <div className="auth-user-testimonial">
+                          <p className="verify-info font-weight-bold text-muted mb-0">
+                            U.S financial regulations require your identity to
+                            be verified.
+                          </p>
+                          <p className="verify-info font-weight-bold text-muted mb-0">
+                            After you link your bank account, you can start
+                            rounding up for crypto investment
+                          </p>
+                          </div>
                         </div>
                       </div>
                       <div className="overlay signup-bg"></div>
@@ -226,7 +248,7 @@ class Signup extends Component {
                       {/* preloader */}
                       {this.props.loading && <Loader />}
 
-                      <div className="auth-page-sidebar">
+                      <div className="auth-page-sidebar mb-4">
                         <div className="overlay"></div>
                         <div className="auth-user-testimonial d-block d-sm-none">
                           <p className="lead font-weight-bold">
@@ -237,31 +259,7 @@ class Signup extends Component {
                             Confirm your Identity
                           </p>
                         </div>
-                        <div className="auth-user-testimonial">
-                          <p className="verify-info font-weight-bold text-muted mb-0">
-                            U.S financial regulations require your identity to
-                            be verified.
-                          </p>
-                          <p className="verify-info font-weight-bold text-muted mb-0">
-                            After you link your bank account, you can start
-                            rounding up for crypto investment
-                          </p>
-                        </div>
                       </div>
-                      <h6 className="h5 mb-0 mt-4"></h6>
-
-                      {this.props.error && (
-                        <Alert
-                          color="danger"
-                          isOpen={typeof this.props.error === 'object'}
-                        >
-                          <div>
-                            {this.props.error.message === 'Network Error'
-                              ? 'Network Error. Please check your internet connection'
-                              : this.props.error.message}
-                          </div>
-                        </Alert>
-                      )}
 
                       <AvForm
                         onValidSubmit={this.handleValidSubmit}
@@ -344,70 +342,6 @@ class Signup extends Component {
                           </Col>
                           <Col md={6}>
                             <AvGroup className="float-container">
-                              <Label for="phone">Phone</Label>
-                              <AvInput
-                                type="phone"
-                                name="phone"
-                                id="phone"
-                                value={phone}
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                validate={{
-                                  pattern: {
-                                    value: '^[0-9]+$',
-                                    errorMessage:
-                                      'Your phone number must be composed only with numbers',
-                                  },
-                                  minLength: {
-                                    value: 10,
-                                    errorMessage:
-                                      'Your phone number must be between 10 and 15 characters',
-                                  },
-                                  maxLength: {
-                                    value: 15,
-                                    errorMessage:
-                                      'Your phone number must be between 10 and 15 characters',
-                                  },
-                                }}
-                                required
-                              />
-
-                              <AvFeedback data-testid="phone-error">
-                                Phone number is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container active">
-                              <Label for="dob">Date of Birth</Label>
-                              <div className="form-group mb-sm-0 mr-2">
-                                <Flatpickr
-                                  id="dob"
-                                  name="dob"
-                                  value={dob}
-                                  onChange={date =>
-                                    this.setState(prevState => ({
-                                      ...prevState,
-                                      inputs: {
-                                        ...prevState.inputs,
-                                        dob: date,
-                                      },
-                                    }))
-                                  }
-                                  className="form-control"
-                                  options={{
-                                    maxDate: subYears(new Date(), 16),
-                                    defaultDate: dob,
-                                    dateFormat: 'd-M-Y',
-                                  }}
-                                />
-                              </div>
-                              <AvFeedback>This field is invalid</AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
                               <Label for="email">Email</Label>
                               <AvInput
                                 type="email"
@@ -440,6 +374,42 @@ class Signup extends Component {
 
                               <AvFeedback data-testid="email-error">
                                 Email is invalid
+                              </AvFeedback>
+                            </AvGroup>
+                          </Col>
+                          <Col md={6}>
+                            <AvGroup className="float-container">
+                              <Label for="phone">Phone</Label>
+                              <AvInput
+                                type="phone"
+                                name="phone"
+                                id="phone"
+                                value={phone}
+                                onFocus={this.activateField}
+                                onBlur={this.deactivateField}
+                                onChange={this.updateInputValue}
+                                validate={{
+                                  pattern: {
+                                    value: '^[0-9]+$',
+                                    errorMessage:
+                                      'Your phone number must be composed only with numbers',
+                                  },
+                                  minLength: {
+                                    value: 10,
+                                    errorMessage:
+                                      'Your phone number must be between 10 and 15 characters',
+                                  },
+                                  maxLength: {
+                                    value: 15,
+                                    errorMessage:
+                                      'Your phone number must be between 10 and 15 characters',
+                                  },
+                                }}
+                                required
+                              />
+
+                              <AvFeedback data-testid="phone-error">
+                                Phone number is invalid
                               </AvFeedback>
                             </AvGroup>
                           </Col>
@@ -481,16 +451,53 @@ class Signup extends Component {
                               </AvFeedback>
                             </AvGroup>
                           </Col>
+                          <Col md={6}>
+                            <AvGroup className="float-container">
+                              <Label for="confirmPassword">Confirm Password</Label>
+                              <AvInput
+                                type="password"
+                                name="confirmPassword"
+                                id="confirmPassword"
+                                // placeholder="Avenir A"
+                                value={confirmPassword}
+                                onFocus={this.activateField}
+                                onBlur={this.deactivateField}
+                                onChange={this.updateInputValue}
+                                validate={{
+                                  pattern: {
+                                    value:
+                                      '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
+                                    errorMessage:
+                                      'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
+                                  },
+                                  minLength: {
+                                    value: 8,
+                                    errorMessage:
+                                      'Your name must be between 8 and 20 characters',
+                                  },
+                                  maxLength: {
+                                    value: 20,
+                                    errorMessage:
+                                      'Your name must be between 8 and 20 characters',
+                                  },
+                                }}
+                                required
+                              />
+                              <AvFeedback data-testid="password-error">
+                                Passwords do not match
+                              </AvFeedback>
+                            </AvGroup>
+                          </Col>
                           <Col md={12}>
-                            <AvGroup className="ssn">
+                            <AvGroup className="userId">
                               <Row>
                                 <Col md={6}>
-                                  <Label for="ssn">
-                                    Social Security Number
+                                  <Label for="userId">
+                                    Upload User ID
                                   </Label>
                                   <p>
-                                    We need your SSN to verify your identity
-                                    with our payment provider. This information
+                                    We need your means of identification to verify your identity
+                                    for security purposes. This information
                                     is encrypted and not stored on Avenir
                                     servers
                                   </p>
@@ -499,35 +506,49 @@ class Signup extends Component {
                                   md={6}
                                   className="d-flex align-items-center"
                                 >
-                                  <MaskedInput
-                                    // mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
-                                    mask={[
-                                      /[0-7]/,
-                                      /\d/,
-                                      /[1-9]/,
-                                      '-',
-                                      /\d/,
-                                      /[1-9]/,
-                                      '-',
-                                      /\d/,
-                                      /\d/,
-                                      /\d/,
-                                      /[1-9]/,
-                                    ]}
-                                    id="ssn"
-                                    name="ssn"
+                                  <AvInput
+                                    type="file"
+                                    accept="image/*, application/pdf, application/doc"
+                                    name="userId"
+                                    id="userId"
+                                    value={userId}
                                     className="form-control text-center"
-                                    placeholder="999-99-9999"
-                                    // placeholder="___-__-____"
-                                    value={ssn}
                                     onChange={this.updateInputValue}
                                     required
                                   />
                                   <AvFeedback data-testid="ssn-error">
-                                    Social Security Number is invalid
+                                    Please select image
                                   </AvFeedback>
                                 </Col>
                               </Row>
+                            </AvGroup>
+                          </Col>
+                          <Col md={4}>
+                            <AvGroup className="float-container active">
+                              <Label for="dob">Date of Birth</Label>
+                              <div className="form-group mb-sm-0 mr-2">
+                                <Flatpickr
+                                  id="dob"
+                                  name="dob"
+                                  value={dob}
+                                  onChange={date =>
+                                    this.setState(prevState => ({
+                                      ...prevState,
+                                      inputs: {
+                                        ...prevState.inputs,
+                                        dob: date,
+                                      },
+                                    }))
+                                  }
+                                  className="form-control"
+                                  options={{
+                                    maxDate: subYears(new Date(), 16),
+                                    defaultDate: dob,
+                                    dateFormat: 'd-M-Y',
+                                  }}
+                                />
+                              </div>
+                              <AvFeedback>This field is invalid</AvFeedback>
                             </AvGroup>
                           </Col>
                           <Col md={8}>
@@ -549,7 +570,53 @@ class Signup extends Component {
                               </AvFeedback>
                             </AvGroup>
                           </Col>
+                          <Col md={5}>
+                            <AvGroup className="float-container">
+                              <Label for="city">Choose your city</Label>
+                              <Select
+                                id="city"
+                                options={this.state.cities}
+                                value={city}
+                                onChange={val =>
+                                  this.setState(prevState => ({
+                                    ...prevState,
+                                    inputs: {
+                                      ...prevState.inputs,
+                                      city: val,
+                                    },
+                                  }))
+                                }
+                                required
+                              />
+                              <AvFeedback data-testid="city-error">
+                                Please select a city
+                              </AvFeedback>
+                            </AvGroup>
+                          </Col>
                           <Col md={4}>
+                            <AvGroup className="float-container">
+                              <Label for="country">Select your country</Label>
+                              <Select
+                                id="country"
+                                options={this.state.countries}
+                                value={country}
+                                onChange={val =>
+                                  this.setState(prevState => ({
+                                    ...prevState,
+                                    inputs: {
+                                      ...prevState.inputs,
+                                      country: val,
+                                    },
+                                  }))
+                                }
+                                required
+                              />
+                              <AvFeedback data-testid="country-error">
+                                This field is invalid
+                              </AvFeedback>
+                            </AvGroup>
+                          </Col>
+                          <Col md={3}>
                             <AvGroup className="float-container">
                               <Label for="zipcode">Zipcode</Label>
                               <AvInput
@@ -573,52 +640,6 @@ class Signup extends Component {
 
                               <AvFeedback data-testid="zip-error">
                                 Zipcode is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
-                              <Label for="city">Choose your city</Label>
-                              <Select
-                                id="city"
-                                options={this.state.cities}
-                                value={city}
-                                onChange={val =>
-                                  this.setState(prevState => ({
-                                    ...prevState,
-                                    inputs: {
-                                      ...prevState.inputs,
-                                      city: val,
-                                    },
-                                  }))
-                                }
-                                required
-                              />
-                              <AvFeedback data-testid="city-error">
-                                Please select a city
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
-                              <Label for="country">Select your country</Label>
-                              <Select
-                                id="country"
-                                options={this.state.countries}
-                                value={country}
-                                onChange={val =>
-                                  this.setState(prevState => ({
-                                    ...prevState,
-                                    inputs: {
-                                      ...prevState.inputs,
-                                      country: val,
-                                    },
-                                  }))
-                                }
-                                required
-                              />
-                              <AvFeedback data-testid="country-error">
-                                This field is invalid
                               </AvFeedback>
                             </AvGroup>
                           </Col>

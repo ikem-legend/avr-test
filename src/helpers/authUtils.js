@@ -20,17 +20,21 @@ const getLoggedInUser = () => {
 const isUserAuthenticated = () => {
   // Add condtion for other pages before dashboard like account and credit card linking
   const user = getLoggedInUser()
-  const userInStorage = localStorage.getItem('avenir')
-  const url = window.location.pathname
+  // const userInStorage = localStorage.getItem('avenir')
+  // const url = window.location.pathname
   if (user) {
     // Temp fix
-    if (user && userInStorage && url === '/account/login') {
-      return true
-    }
-    if (user && userInStorage && url === 'account/account-connect') {
-      // This is done to prevent auth layout during the account and credit card connection pages
-      // However it led to some login bugs when there was both cookies and local storage data
-      // This is a temp solution but a rewrite of unauth pages should fix it
+    // if (user && userInStorage && url === '/account/login') {
+    //   return true
+    // }
+    // if (user && userInStorage && url === 'account/account-connect') {
+    //   // This is done to prevent auth layout during the account and credit card connection pages
+    //   // However it led to some login bugs when there was both cookies and local storage data
+    //   // This is a temp solution but a rewrite of unauth pages should fix it
+    //   return false
+    // }
+    if (user && !user.setup.bankAccountSetup && !user.setup.cardSetup) {
+      debugger
       return false
     }
     return true
