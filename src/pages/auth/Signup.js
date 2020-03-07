@@ -174,15 +174,15 @@ class Signup extends Component {
         document: data.userId,
         type: 'individualProofOfAddress',
       }
-      data.dob = String(data.dob)------------------------------------------ * ``
+      data.dob = String(data.dob)
       data.first_name =
-        String(data.firstname)------------------------------------------ * ``
+        String(data.firstname)
       data.last_name =
-        String(data.lastname)------------------------------------------ * ``
+        String(data.lastname)
       data.zip_code =
-        String(data.zipcode)------------------------------------------ * ``
+        String(data.zipcode)
       data.city_id =
-        String(data.city.value)------------------------------------------ * ``
+        String(data.city.value)
       data.country_id = String(data.country.value)
       Object.keys(data).forEach(
         key =>
