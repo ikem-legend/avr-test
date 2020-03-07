@@ -15,6 +15,7 @@ import {
 import classnames from 'classnames'
 
 import {isUserAuthenticated} from '../../helpers/authUtils'
+import {callApi} from '../../helpers/api'
 import Loader from '../../components/Loader'
 import profilePic from '../../assets/images/users/user-profile@2x.png'
 
@@ -28,19 +29,46 @@ class Account extends Component {
     super(props)
 
     this.state = {
-      stage1: true,
-      stage2: true,
-      stage3: true,
-      stage4: false,
-      stage5: false,
+      bankAccountSetup: false,
+      cardSetup: false,
+      topup: false,
+      multiplierSetup: false,
+      documentUpload: false,
+      total: 0,
       activeTab: '1',
     }
   }
 
-  updateValue = e => {
-    this.setState({
-      roundup: e.target.value,
-    })
+  componentDidMount() {
+    this.loadUserData()
+  }
+
+  loadUserData = () => {
+    const {user} = this.props
+    callApi('/auth/me', null, 'GET', user.token)
+      .then(res => {
+        const {
+          setup: {
+            bankAccountSetup,
+            cardSetup,
+            multiplierSetup,
+            topup,
+            documentUpload,
+            total,
+          },
+        } = res.data
+        this.setState({
+          bankAccountSetup: bankAccountSetup.done,
+          cardSetup: cardSetup.done,
+          multiplierSetup: multiplierSetup.done,
+          topup: topup.done,
+          documentUpload: documentUpload.done,
+          total,
+        })
+      })
+      .catch(err => {
+        this.props.showFeedback(err, 'error')
+      })
   }
 
   toggle = tab => {
@@ -64,7 +92,15 @@ class Account extends Component {
   }
 
   render() {
-    const {stage1, stage2, stage3, stage4, stage5, activeTab} = this.state
+    const {
+      bankAccountSetup,
+      cardSetup,
+      multiplierSetup,
+      topup,
+      documentUpload,
+      total,
+      activeTab,
+    } = this.state
     const {user} = this.props
 
     return (
@@ -99,20 +135,26 @@ class Account extends Component {
                   <span>{user.myPhoneNumber}</span>
                 </p>
                 <div className="mt-3">
-                  Account Setup - <span className="setup">75%</span>
+                  Account Setup - <span className="setup">{total}%</span>
                 </div>
-                <Progress value="75" className="setup-level" />
+                <Progress value={total} className="setup-level" />
                 <hr />
                 <div className="reg-status mb-3">
                   <CustomInput
                     type="checkbox"
                     id="reg-stage-1"
                     label="Link my bank account"
-                    checked={stage1}
+                    checked={bankAccountSetup}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold complete">
-                    Complete
+                  <span
+                    className={classnames(
+                      {complete: bankAccountSetup === true},
+                      {incomplete: bankAccountSetup === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
+                    {bankAccountSetup ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
                 <div className="reg-status mb-3">
@@ -120,11 +162,17 @@ class Account extends Component {
                     type="checkbox"
                     id="reg-stage-2"
                     label="Link my credit card(s)"
-                    checked={stage2}
+                    checked={cardSetup}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold complete">
-                    Complete
+                  <span
+                    className={classnames(
+                      {complete: cardSetup === true},
+                      {incomplete: cardSetup === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
+                    {cardSetup ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
                 <div className="reg-status mb-3">
@@ -132,11 +180,17 @@ class Account extends Component {
                     type="checkbox"
                     id="reg-stage-3"
                     label="Set a round-up multiplier"
-                    checked={stage3}
+                    checked={multiplierSetup}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold complete">
-                    Complete
+                  <span
+                    className={classnames(
+                      {complete: multiplierSetup === true},
+                      {incomplete: multiplierSetup === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
+                    {multiplierSetup ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
                 <div className="reg-status mb-3">
@@ -144,11 +198,17 @@ class Account extends Component {
                     type="checkbox"
                     id="reg-stage-4"
                     label="Upload User ID"
-                    checked={stage4}
+                    checked={documentUpload}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold incomplete">
-                    Incomplete
+                  <span
+                    className={classnames(
+                      {complete: documentUpload === true},
+                      {incomplete: documentUpload === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
+                    {documentUpload ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
                 <div className="reg-status">
@@ -156,11 +216,17 @@ class Account extends Component {
                     type="checkbox"
                     id="reg-stage-5"
                     label="Make your first top-up"
-                    checked={stage5}
+                    checked={topup}
                     readOnly
                   />
-                  <span className="ml-4 font-weight-bold incomplete">
-                    Incomplete
+                  <span
+                    className={classnames(
+                      {complete: topup === true},
+                      {incomplete: topup === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
+                    {topup ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
               </div>

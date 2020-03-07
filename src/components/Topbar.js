@@ -12,7 +12,7 @@ import {
   // Lock,
   LogOut,
 } from 'react-feather'
-import logo from '../assets/images/app-logo.svg'
+import logo from '../assets/images/avenir-logo-color.svg'
 // import profilePic from '../assets/images/users/avatar-7.jpg'
 import {showRightSidebar} from '../redux/actions'
 // import NotificationDropdown from './NotificationDropdown';
@@ -124,8 +124,11 @@ class Topbar extends Component {
 
             <ul className="navbar-nav flex-row ml-auto d-flex list-unstyled topnav-menu float-right mb-0">
               <li className="">
-                 <div className="nav-link right-bar-toggle">
-                  <Link to="/account/logout" className="dropdown-item notify-item">
+                <div className="nav-link right-bar-toggle">
+                  <Link
+                    to="/account/logout"
+                    className="dropdown-item notify-item"
+                  >
                     <LogOut className="icon-dual icon-xs mr-2" />
                     <span>Logout</span>
                   </Link>

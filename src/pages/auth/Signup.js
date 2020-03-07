@@ -1,6 +1,8 @@
-import React, {Component, Fragment} from 'react'
+/* eslint-disable camelcase */
+import React, {Component, Fragment, createRef} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
+import {Cookies} from 'react-cookie'
 import subYears from 'date-fns/subYears'
 
 import {
@@ -21,9 +23,9 @@ import {
 } from 'availity-reactstrap-validation'
 import Select from 'react-select'
 import Flatpickr from 'react-flatpickr'
-import MaskedInput from 'react-text-mask'
 
 import {callApi} from '../../helpers/api'
+import {toFormData} from '../../helpers/utils'
 import {registerUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -42,7 +44,7 @@ class Signup extends Component {
         email: '',
         password: '',
         confirmPassword: '',
-        userId: '',
+        userId: null,
         address: '',
         zipcode: '',
         city: '',
@@ -50,8 +52,11 @@ class Signup extends Component {
       },
       terms: false,
       signupError: '',
+      documentUploadError: false,
     }
-    this.handleValidSubmit = this.handleValidSubmit.bind(this)
+    // this.handleValidSubmit = this.handleValidSubmit.bind(this)
+    this.idFileInput = createRef()
+    // this.idFileInput = React.createRef();
   }
 
   async componentDidMount() {
@@ -86,52 +91,6 @@ class Signup extends Component {
     document.body.classList.remove('authentication-bg')
   }
 
-  /**
-   * Handles the submit
-   * @param {object} event The event object
-   * @param {object} values Values to be submitted
-   * @returns {function} showFeedback Displays feedback
-   */
-  handleValidSubmit = async () => {
-    const {inputs: {userId, city, country}} = this.state
-    if (!userId) {
-      return this.props.showFeedback('Please select an image or document for upload', 'error')
-    }
-    if (!city.value) {
-      return this.props.showFeedback('Please select your city', 'error')
-    }
-    if (!country.value) {
-      return this.props.showFeedback('Please select your country', 'error')
-    }
-    if (this.state.terms) {
-      const data = {...this.state.inputs}
-      const {history} = this.props
-      // data.ssn = data.ssn.replace(/-/g, '')
-      data.dob = String(data.dob)
-      data.first_name = String(data.firstname)
-      data.last_name = String(data.lastname)
-      data.zip_code = String(data.zipcode)
-      data.city_id = String(data.city.value)
-      data.country_id = String(data.country.value)
-      Object.keys(data).forEach(
-        key =>
-          (key === 'firstname' ||
-            key === 'lastname' ||
-            key === 'zipcode' ||
-            key === 'city' ||
-            key === 'country') &&
-          delete data[key],
-      )
-      await this.props.registerUser(data, history)
-      // const formData = new FormData()
-    } else {
-      this.props.showFeedback(
-        'Please agree to the terms and conditions',
-        'error',
-      )
-    }
-  }
-
   activateField = e => {
     document
       .querySelector(`.float-container #${e.target.name}`)
@@ -162,9 +121,9 @@ class Signup extends Component {
         ...prevState,
         inputs: {
           ...prevState.inputs,
-          userId: files[0]
-        }
-      }));
+          userId: files[0],
+        },
+      }))
     } else {
       this.setState(prevState => ({
         ...prevState,
@@ -184,6 +143,105 @@ class Signup extends Component {
   }
 
   /**
+   * Handles the submit
+   * @returns {function} showFeedback Displays feedback
+   **/
+  handleValidSubmit = async () => {
+    const {
+      documentUploadError,
+      inputs: {userId, password, confirmPassword, city, country},
+    } = this.state
+    const {history, user} = this.props
+    const cookies = new Cookies()
+    if (!userId) {
+      return this.props.showFeedback(
+        'Please select an image or document for upload',
+        'error',
+      )
+    }
+    if (!city.value) {
+      return this.props.showFeedback('Please select your city', 'error')
+    }
+    if (!country.value) {
+      return this.props.showFeedback('Please select your country', 'error')
+    }
+    if (password !== confirmPassword) {
+      this.props.showFeedback('Passwords do not match', 'error')
+    }
+    if (this.state.terms) {
+      const data = {...this.state.inputs}
+      const uploadData = {
+        document: data.userId,
+        type: 'individualProofOfAddress',
+      }
+      data.dob = String(data.dob)------------------------------------------ * ``
+      data.first_name =
+        String(data.firstname)------------------------------------------ * ``
+      data.last_name =
+        String(data.lastname)------------------------------------------ * ``
+      data.zip_code =
+        String(data.zipcode)------------------------------------------ * ``
+      data.city_id =
+        String(data.city.value)------------------------------------------ * ``
+      data.country_id = String(data.country.value)
+      Object.keys(data).forEach(
+        key =>
+          (key === 'firstname' ||
+            key === 'lastname' ||
+            key === 'confirmPassword' ||
+            key === 'userId' ||
+            key === 'zipcode' ||
+            key === 'city' ||
+            key === 'country') &&
+          delete data[key],
+      )
+      // debugger
+      const userIdData = toFormData(uploadData)
+      await this.props.registerUser(data, history, userIdData)
+      /* if (documentUploadError) {
+        const token = cookies.get('avenirUser').token
+        callApi('/user/sendwyre/document/upload', userIdData, 'POST', token)
+          .then((res) => {
+            console.log(res)
+            debugger
+            this.setState({documentUploadError: false});
+            this.props.showFeedback('ID upload successful', 'success')
+            history.push('/account/account-connect')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.setState({documentUploadError: true});
+            this.props.showFeedback('Error uploading document, please try again')
+          })
+      } else {
+        // await this.props.registerUser(data, history, userIdData)
+        // const formData = new FormData()
+        // formData.append('individualProofOfAddress', uploadData.individualProofOfAddress)
+        // console.log(image)
+        // console.log(formData)
+        const token = cookies.get('avenirUser') ? cookies.get('avenirUser').token : ''
+        await callApi('/user/sendwyre/document/upload', userIdData, 'POST', token)
+          .then((res) => {
+            console.log(res)
+            this.setState({documentUploadError: false});
+            this.props.showFeedback('ID upload successful', 'success')
+            history.push('/account/account-connect')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.setState({documentUploadError: true});
+            this.props.showFeedback('Error uploading document, please try again')
+          })
+      } */
+    } else {
+      this.props.showFeedback(
+        'Please agree to the terms and conditions',
+        'error',
+      )
+    }
+  }
+
+  /**
    * Redirect to root
    * @returns {object} Redirect component
    */
@@ -196,21 +254,22 @@ class Signup extends Component {
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
-    const {terms} = this.state
     const {
-      firstname,
-      lastname,
-      phone,
-      dob,
-      email,
-      password,
-      confirmPassword,
-      userId,
-      address,
-      zipcode,
-      city,
-      country,
-    } = this.state.inputs
+      terms,
+      inputs: {
+        firstname,
+        lastname,
+        phone,
+        dob,
+        email,
+        password,
+        confirmPassword,
+        address,
+        zipcode,
+        city,
+        country,
+      },
+    } = this.state
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
@@ -231,14 +290,14 @@ class Signup extends Component {
                             Confirm your Identity
                           </p>
                           <div className="auth-user-testimonial">
-                          <p className="verify-info font-weight-bold text-muted mb-0">
-                            U.S financial regulations require your identity to
-                            be verified.
-                          </p>
-                          <p className="verify-info font-weight-bold text-muted mb-0">
-                            After you link your bank account, you can start
-                            rounding up for crypto investment
-                          </p>
+                            <p className="verify-info font-weight-bold text-muted mb-0">
+                              U.S financial regulations require your identity to
+                              be verified.
+                            </p>
+                            <p className="verify-info font-weight-bold text-muted mb-0">
+                              After you link your bank account, you can start
+                              rounding up for crypto investment
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -253,7 +312,9 @@ class Signup extends Component {
                         <div className="auth-user-testimonial d-block d-sm-none">
                           <p className="lead font-weight-bold">
                             <span>Create an Account</span>
-                            <span className="float-right back">Back to <Link to="/account/login">Login</Link></span>
+                            <span className="float-right back">
+                              Back to <Link to="/account/login">Login</Link>
+                            </span>
                           </p>
                           <p className="font-size-24 font-weight-bold mb-1">
                             Confirm your Identity
@@ -453,7 +514,9 @@ class Signup extends Component {
                           </Col>
                           <Col md={6}>
                             <AvGroup className="float-container">
-                              <Label for="confirmPassword">Confirm Password</Label>
+                              <Label for="confirmPassword">
+                                Confirm Password
+                              </Label>
                               <AvInput
                                 type="password"
                                 name="confirmPassword"
@@ -492,14 +555,12 @@ class Signup extends Component {
                             <AvGroup className="userId">
                               <Row>
                                 <Col md={6}>
-                                  <Label for="userId">
-                                    Upload User ID
-                                  </Label>
+                                  <Label for="userId">Upload User ID</Label>
                                   <p>
-                                    We need your means of identification to verify your identity
-                                    for security purposes. This information
-                                    is encrypted and not stored on Avenir
-                                    servers
+                                    We need your means of identification to
+                                    verify your identity for security purposes.
+                                    This information is encrypted and not stored
+                                    on Avenir servers
                                   </p>
                                 </Col>
                                 <Col
@@ -508,10 +569,13 @@ class Signup extends Component {
                                 >
                                   <AvInput
                                     type="file"
-                                    accept="image/*, application/pdf, application/doc"
+                                    accept="image/jpeg, image/png, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                    // accept="image/jpeg, application/pdf, application/doc, application/docx"
                                     name="userId"
                                     id="userId"
-                                    value={userId}
+                                    // ref={ref => this.idFileInput = ref}
+                                    // ref={this.idFileInput}
+                                    // value={userId}
                                     className="form-control text-center"
                                     onChange={this.updateInputValue}
                                     required

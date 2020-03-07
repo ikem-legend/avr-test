@@ -21,7 +21,7 @@ import {
   AvFeedback,
 } from 'availity-reactstrap-validation'
 
-import Logo from '../../assets/images/default-logo.svg'
+import Logo from '../../assets/images/avenir-logo-color.svg'
 import {loginUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -230,7 +230,11 @@ class Login extends Component {
                           </Link>
                         </p>
                       </Col>
-                      <Col className="order-1 order-sm-12 offset-xs-3 text-sm-right" xs={12} sm={4}>
+                      <Col
+                        className="order-1 order-sm-12 offset-xs-3 text-sm-right"
+                        xs={12}
+                        sm={4}
+                      >
                         <p className="text-muted float-sm-right">
                           <span
                             onClick={this.togglePrivacy}

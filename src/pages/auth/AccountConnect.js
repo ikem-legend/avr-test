@@ -93,7 +93,7 @@ class AccountConnect extends Component {
       .catch(err => {
         console.log(err)
         this.props.showFeedback('Error linking bank, please try again', 'error')
-        this.setState({loadingAccts: false});
+        this.setState({loadingAccts: false})
       })
   }
 
@@ -207,6 +207,11 @@ class AccountConnect extends Component {
     const isAuthTokenValid = isUserAuthenticated()
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
+    } else {
+      const url = window.location.pathname
+      if (url === '/account/account-connect') {
+        return
+      }
     }
   }
 
@@ -305,7 +310,7 @@ class AccountConnect extends Component {
                       <div className="mt-3">
                         <PlaidLink
                           clientName="Avenir app"
-                          env="sandbox"
+                          env="development"
                           product={['auth', 'transactions']}
                           publicKey="3c3d222fa56168931abed2dc785bc2"
                           onExit={this.handleOnExit}
