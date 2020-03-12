@@ -34,8 +34,8 @@ const isUserAuthenticated = () => {
     //   return false
     // }
     if (user && !user.setup.bankAccountSetup && !user.setup.cardSetup) {
-      debugger
-      return false
+      
+      return true
     }
     return true
   } else {

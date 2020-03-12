@@ -1,19 +1,11 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {Progress} from 'reactstrap'
-
 import {isMobileOnly} from 'react-device-detect'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
-// import {
-//   UncontrolledDropdown,
-//   DropdownMenu,
-//   DropdownToggle,
-//   DropdownItem,
-// } from 'reactstrap'
 import {getLoggedInUser} from '../helpers/authUtils'
-
 import profilePic from '../assets/images/users/user-profile@2x.png'
 import AppMenu from './AppMenu'
 
@@ -22,7 +14,6 @@ import AppMenu from './AppMenu'
  */
 const UserProfile = () => {
   const user = getLoggedInUser()
-  // console.log(user)
   return (
     <Fragment>
       <div className="media user-profile user-avatar mt-2">
@@ -41,8 +32,8 @@ const UserProfile = () => {
         <div className="media-body user-profile details mb-2">
           <h4 className="pro-user-name mt-2 mb-0">Hi {user.myFirstName},</h4>
           <div className="mt-2 mb-4">{user.myEmailAddress}</div>
-          <div>Account Setup - <span className="setup">75%</span></div>
-          <Progress value="75" className="setup-level"></Progress>
+          <div>Account Setup - <span className="setup">{user.setup.total}%</span></div>
+          <Progress value={user.setup.total} className="setup-level"></Progress>
         </div>
     </Fragment>
   )

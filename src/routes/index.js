@@ -23,6 +23,7 @@ const Dashboard = React.lazy(() => import('../pages/dashboard'))
 const Transactions = React.lazy(() => import('../pages/transactions'))
 const Account = React.lazy(() => import('../pages/account'))
 const Referral = React.lazy(() => import('../pages/referral'))
+const Faq = React.lazy(() => import('../pages/faq'))
 
 // handle auth and authorization
 const PrivateRoute = ({component: Component, roles, ...rest}) => (
@@ -37,13 +38,17 @@ const PrivateRoute = ({component: Component, roles, ...rest}) => (
           />
         )
       }
-
-      // const loggedInUser = getLoggedInUser();
+      const loggedInUser = isUserAuthenticated();
+			const url = window.location.pathname
       // check if route is restricted by role
       // if (roles && roles.indexOf(loggedInUser.role) === -1) {
       //   // role not authorised so redirect to home page
       //   return <Redirect to={{ pathname: '/' }} />;
       // }
+      if (loggedInUser && url === '/account/account-connect') {
+      	// authorised so return component
+      	return <Component {...props} />
+      }
 
       // authorised so return component
       return <Component {...props} />
@@ -106,12 +111,12 @@ const accountRoutes = {
 
 // faq
 const faqRoutes = {
-  path: '#',
+  path: '/faq',
   // path: '/faq',
   name: 'FAQs',
   icon: FeatherIcon.MessageSquare,
   // icon: Unicons.UilCommentAltLines,
-  component: Dashboard,
+  component: Faq,
   route: PrivateRoute,
 }
 
