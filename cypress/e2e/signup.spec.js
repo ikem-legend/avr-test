@@ -1,5 +1,6 @@
 import subYears from 'date-fns/subYears'
 import {buildUser} from '../support/generator'
+import 'cypress-file-upload'
 
 describe('Register Page', () => {
   const user = cy
@@ -9,9 +10,9 @@ describe('Register Page', () => {
 
   it('greets with create an account and confirm your identity', () => {
     user
-      .findByText(/create an account/i)
+      .findAllByText(/create an account/i)
       .should('be.visible')
-      .findByText(/confirm your identity/i)
+      .findAllByText(/confirm your identity/i)
       .should('be.visible')
   })
 
@@ -114,7 +115,7 @@ describe('Register Page', () => {
     user
       .findByText(/sign up/i)
       .click()
-      .findByTestId('password-error')
+      .findAllByTestId('password-error')
       .should('be.visible')
       .should(
         'contain',
@@ -125,10 +126,10 @@ describe('Register Page', () => {
   it(`requires password to contain at least 1 lowercase, 1 uppercase, 
     1 number and 8 characters`, () => {
     user
-      .findByLabelText(/password/i)
+      .findByLabelText('Password')
       .type('weakpwd')
       .blur()
-      .findByTestId('password-error')
+      .findAllByTestId('password-error')
       .should('be.visible')
       .should(
         'contain',
@@ -136,23 +137,47 @@ describe('Register Page', () => {
       )
   })
 
-  it('requires social security number', () => {
+  it('requires confirm password', () => {
     user
       .findByText(/sign up/i)
       .click()
-      .findByTestId('ssn-error')
+      .findAllByTestId('password-error')
       .should('be.visible')
-      .should('contain', `Social Security Number is invalid`)
+      .should('contain', `Passwords do not match`)
   })
 
-  it(`requires social security number to contain 9 characters`, () => {
+  it(`requires confirm password to not match`, () => {
     user
-      .findByLabelText(/social security number/i)
-      .type('012-34')
+      .findByLabelText('Password')
+      .type('Password1@#')
+      .findByLabelText('Confirm Password')
+      .click({force: true})
+      .type('Password')
+      .findByLabelText('Password')
+      .invoke('val')
+      .then(password => {
+        user
+          .findByLabelText('Confirm Password')
+          .should('not.have.value', password)
+      })
       .blur()
-      .findByTestId('ssn-error')
+      .findAllByTestId('password-error')
       .should('be.visible')
-      .should('contain', `Social Security Number is invalid`)
+      .should('contain', `Passwords do not match`)
+  })
+
+  it('should have 07-Apr-1995 as date selected', () => {
+    user
+      .findByLabelText(/date of birth/i)
+      .click()
+      .get('.numInput')
+      .type('1995')
+      .get('.flatpickr-monthDropdown-months')
+      .select('April')
+      .get('[aria-label="April 7, 1995"]')
+      .click()
+      .get('#dob')
+      .should('have.value', '07-Apr-1995')
   })
 
   it('requires street address', () => {
@@ -161,6 +186,104 @@ describe('Register Page', () => {
       .click()
       .findByTestId('address-error')
       .should('contain', `Address is invalid`)
+  })
+
+  it('requires city', () => {
+    const customer = buildUser()
+    user
+      .findByLabelText(/first name/i)
+      .type(customer.firstName)
+      .findByLabelText(/last name/i)
+      .type(customer.lastName)
+      .findByLabelText(/email/i)
+      .type(customer.email)
+      .findByLabelText(/phone/i)
+      .type('07036975559')
+      .findByLabelText('Password')
+      .type('Password1')
+      .findByLabelText('Confirm Password')
+      .click({force: true})
+      .type('Password1')
+      .findByLabelText(/date of birth/i)
+      .click()
+      .get('.numInput')
+      .type('1995')
+      .get('.flatpickr-monthDropdown-months')
+      .select('April')
+      .get('[aria-label="April 7, 1995"]')
+      .click()
+      .fixture('logo.png')
+      .then(fileContent => {
+        cy.get('#userId').upload({
+          fileContent,
+          fileName: 'logo.png',
+          mimeType: 'image/png',
+        })
+      })
+      .findByLabelText(/street address/i)
+      .type(customer.streetAddress)
+      .findByLabelText(/zipcode/i)
+      .click({force: true})
+      .type(customer.zipcode)
+      .findByLabelText(
+        /Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy/i,
+      )
+      .check({force: true})
+      .findByText(/sign up/i)
+      .click()
+      .findAllByText('Please select your city')
+      .should('be.visible')
+  })
+
+  it('requires country', () => {
+    const customer = buildUser()
+    user
+      .findByLabelText(/first name/i)
+      .type(customer.firstName)
+      .findByLabelText(/last name/i)
+      .type(customer.lastName)
+      .findByLabelText(/email/i)
+      .type(customer.email)
+      .findByLabelText(/phone/i)
+      .type('07036975559')
+      .findByLabelText('Password')
+      .type('Password1')
+      .findByLabelText('Confirm Password')
+      .click({force: true})
+      .type('Password1')
+      .findByLabelText(/date of birth/i)
+      .click()
+      .get('.numInput')
+      .type('1995')
+      .get('.flatpickr-monthDropdown-months')
+      .select('April')
+      .get('[aria-label="April 7, 1995"]')
+      .click()
+      .fixture('logo.png')
+      .then(fileContent => {
+        cy.get('#userId').upload({
+          fileContent,
+          fileName: 'logo.png',
+          mimeType: 'image/png',
+        })
+      })
+      .findByLabelText(/street address/i)
+      .type(customer.streetAddress)
+      .findByLabelText(/choose your city/i)
+      .click()
+      .findByText('New York')
+      .click()
+      .findByLabelText(/zipcode/i)
+      .click({force: true})
+      .type(customer.zipcode)
+      .findByLabelText(
+        /Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy/i,
+      )
+      .check({force: true})
+      .findByText(/sign up/i)
+      .click()
+      .findAllByText('Please select your country')
+      .should('be.visible')
   })
 
   it('requires zip code', () => {
@@ -172,9 +295,10 @@ describe('Register Page', () => {
       .should('contain', `Zipcode is invalid`)
   })
 
-  it('requires zip code to be five numbers', () => {
+  it('requires zip code to be valid', () => {
     user
-      .findByLabelText(/social security number/i)
+      .findByLabelText(/zipcode/i)
+      .click({force: true})
       .type('aw12-')
       .blur()
       .findByTestId('zip-error')
@@ -182,59 +306,56 @@ describe('Register Page', () => {
       .should('contain', `Zipcode is invalid`)
   })
 
-  it('requires city', () => {
-    user
-      .findByText(/sign up/i)
-      .click()
-      .findByTestId('city-error')
-      .should('be.visible')
-      .should('contain', `Please select a city`)
-  })
-
-  it('requires country', () => {
-    user
-      .findByText(/sign up/i)
-      .click()
-      .findByTestId('country-error')
-      .should('be.visible')
-      .should('contain', `This field is invalid`)
-  })
-
-  it('filters country by city selection', () => {
-    user
-      .findByLabelText(/choose your city/i)
-      .click()
-      .findByText(/london/i)
-      .click()
-      .findByLabelText(/select your country/i)
-      .click()
-      .findByText(/^united states$/i)
-      .should('not.exist')
-      .findByText(/united kingdom/i)
-      .should('exist')
-  })
-
-  it('filters city by country selection', () => {
-    user
-      .findByLabelText(/select your country/i)
-      .click()
-      .findByText(/^united states$/i)
-      .click()
-      .findByLabelText(/choose your city/i)
-      .click()
-      .findByText(/london/i)
-      .should('not.exist')
-      .findByText(/texas/i)
-      .should('exist')
-  })
-
   it('requires terms and conditions', () => {
+    const customer = buildUser()
+
     user
+      .findByLabelText(/first name/i)
+      .type(customer.firstName)
+      .findByLabelText(/last name/i)
+      .type(customer.lastName)
+      .findByLabelText(/email/i)
+      .type(customer.email)
+      .findByLabelText(/phone/i)
+      .type('07036975559')
+      .findByLabelText('Password')
+      .type('Password1')
+      .findByLabelText('Confirm Password')
+      .click({force: true})
+      .type('Password1')
+      .findByLabelText(/date of birth/i)
+      .click()
+      .get('.numInput')
+      .type('1995')
+      .get('.flatpickr-monthDropdown-months')
+      .select('April')
+      .get('[aria-label="April 7, 1995"]')
+      .click()
+      .fixture('logo.png')
+      .then(fileContent => {
+        cy.get('#userId').upload({
+          fileContent,
+          fileName: 'logo.png',
+          mimeType: 'image/png',
+        })
+      })
+      .findByLabelText(/street address/i)
+      .type(customer.streetAddress)
+      .findByLabelText(/choose your city/i)
+      .click()
+      .findByText('New York')
+      .click()
+      .findByLabelText(/select your country/i)
+      .click()
+      .findByText('United States')
+      .click()
+      .findByLabelText(/zipcode/i)
+      .click({force: true})
+      .type(customer.zipcode)
       .findByText(/sign up/i)
       .click()
-      .findByTestId('tandc-error')
+      .findAllByText('Please agree to the terms and conditions')
       .should('be.visible')
-      .should('contain', `Accept terms and conditions`)
   })
 
   it('should register a new user', () => {
@@ -245,8 +366,15 @@ describe('Register Page', () => {
       .type(customer.firstName)
       .findByLabelText(/last name/i)
       .type(customer.lastName)
+      .findByLabelText(/email/i)
+      .type(customer.email)
       .findByLabelText(/phone/i)
       .type('07036975559')
+      .findByLabelText('Password')
+      .type('Password1')
+      .findByLabelText('Confirm Password')
+      .click({force: true})
+      .type('Password1')
       .findByLabelText(/date of birth/i)
       .click()
       .get('.numInput')
@@ -255,30 +383,34 @@ describe('Register Page', () => {
       .select('April')
       .get('[aria-label="April 7, 1995"]')
       .click()
-      .findByLabelText(/email/i)
-      .type(customer.email)
-      .findByLabelText(/password/i)
-      .type(customer.password)
-      .findByLabelText(/social security number/i)
-      .type(customer.ssn)
+      .fixture('logo.png')
+      .then(fileContent => {
+        cy.get('#userId').upload({
+          fileContent,
+          fileName: 'logo.png',
+          mimeType: 'image/png',
+        })
+      })
       .findByLabelText(/street address/i)
       .type(customer.streetAddress)
-      .findByLabelText(/zipcode/i)
-      .type(customer.zipcode)
       .findByLabelText(/choose your city/i)
       .click()
-      .findByText(/london/i)
+      .findByText('New York')
       .click()
       .findByLabelText(/select your country/i)
       .click()
-      .findByText(/united kingdom/i)
+      .findByText('United States')
       .click()
+      .findByLabelText(/zipcode/i)
+      .click({force: true})
+      .type(customer.zipcode)
       .findByLabelText(
         /Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy/i,
       )
       .check({force: true})
       .findByText(/sign up/i)
       .click()
+      .wait(20000)
       .url()
       .should('include', '/account/account-connect')
   })

@@ -223,7 +223,7 @@ class Login extends Component {
                         <p className="text-muted">
                           Trouble signing in?{' '}
                           <Link
-                            to="/account/register"
+                            to="/account/customer-support"
                             className="blue-text font-weight-bold ml-1"
                           >
                             Contact Support
