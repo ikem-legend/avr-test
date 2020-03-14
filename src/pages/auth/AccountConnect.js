@@ -27,7 +27,6 @@ class AccountConnect extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      name: '',
       accountModal: false,
       cardModal: false,
       accounts: [],
@@ -93,7 +92,7 @@ class AccountConnect extends Component {
       .catch(err => {
         console.log(err)
         this.props.showFeedback('Error linking bank, please try again', 'error')
-        this.setState({loadingAccts: false})
+        this.setState({loadingAccts: false});
       })
   }
 
@@ -210,6 +209,7 @@ class AccountConnect extends Component {
     } else {
       const url = window.location.pathname
       if (url === '/account/account-connect') {
+        debugger
         return
       }
     }
@@ -217,8 +217,8 @@ class AccountConnect extends Component {
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
+    const {user} = this.props
     const {
-      name,
       accounts,
       cards,
       accountModal,
@@ -288,7 +288,7 @@ class AccountConnect extends Component {
                       </div>
                       <div className="bank-verify-info mt-4 p-3">
                         <p className="mb-0">
-                          I, {name ? name : ''}, authorize Avenir Inc. to debit
+                          I, {user.myFirstName ? user.myFirstName : ''}, authorize Avenir Inc. to debit
                           the account indicated for the recurring transactions
                           according to the terms of use and my agreement with
                           Avenir Inc. I will not dispute Avenir Inc. so long as

@@ -52,7 +52,7 @@
     "sortablejs": "^1.10.0"
   },
   "scripts": {
-    "start": "set PORT=3001 && react-scripts start",
+    "start": "set PORT=3002 && react-scripts start",
     "build": "react-scripts build",
     "test": "kcd-scripts test",
     "lint": "kcd-scripts lint",

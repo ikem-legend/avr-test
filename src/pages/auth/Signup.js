@@ -52,10 +52,10 @@ class Signup extends Component {
       },
       terms: false,
       signupError: '',
-      documentUploadError: false,
+      documentUploadError: false
     }
     // this.handleValidSubmit = this.handleValidSubmit.bind(this)
-    this.idFileInput = createRef()
+    this.idFileInput = createRef();
     // this.idFileInput = React.createRef();
   }
 
@@ -121,9 +121,9 @@ class Signup extends Component {
         ...prevState,
         inputs: {
           ...prevState.inputs,
-          userId: files[0],
-        },
-      }))
+          userId: files[0]
+        }
+      }));
     } else {
       this.setState(prevState => ({
         ...prevState,
@@ -145,19 +145,13 @@ class Signup extends Component {
   /**
    * Handles the submit
    * @returns {function} showFeedback Displays feedback
-   **/
+  **/
   handleValidSubmit = async () => {
-    const {
-      documentUploadError,
-      inputs: {userId, password, confirmPassword, city, country},
-    } = this.state
+    const {documentUploadError, inputs: {userId, password, confirmPassword, city, country}} = this.state
     const {history, user} = this.props
     const cookies = new Cookies()
     if (!userId) {
-      return this.props.showFeedback(
-        'Please select an image or document for upload',
-        'error',
-      )
+      return this.props.showFeedback('Please select an image or document for upload', 'error')
     }
     if (!city.value) {
       return this.props.showFeedback('Please select your city', 'error')
@@ -172,17 +166,13 @@ class Signup extends Component {
       const data = {...this.state.inputs}
       const uploadData = {
         document: data.userId,
-        type: 'individualProofOfAddress',
+        type: 'individualProofOfAddress'
       }
       data.dob = String(data.dob)
-      data.first_name =
-        String(data.firstname)
-      data.last_name =
-        String(data.lastname)
-      data.zip_code =
-        String(data.zipcode)
-      data.city_id =
-        String(data.city.value)
+      data.first_name = String(data.firstname)
+      data.last_name = String(data.lastname)
+      data.zip_code = String(data.zipcode)
+      data.city_id = String(data.city.value)
       data.country_id = String(data.country.value)
       Object.keys(data).forEach(
         key =>
@@ -268,7 +258,7 @@ class Signup extends Component {
         zipcode,
         city,
         country,
-      },
+      }
     } = this.state
     return (
       <Fragment>
@@ -276,13 +266,13 @@ class Signup extends Component {
 
         {(this._isMounted || !isAuthTokenValid) && (
           <div className="account-pages mt-5 mb-5">
-            <Container>
+            <Container fluid>
               <Row className="justify-content-center">
                 <Col xl={12}>
                   <Row>
                     <Col md={6} className="d-none d-md-inline-block">
-                      <div className="auth-page-sidebar">
-                        <div className="auth-user-testimonial">
+                      <div className="auth-page-sidebar px-5 py-0">
+                        <div className="auth-user-testimonial px-5 py-0">
                           <p className="lead font-weight-bold">
                             Create an Account
                           </p>
@@ -301,447 +291,449 @@ class Signup extends Component {
                           </div>
                         </div>
                       </div>
-                      <div className="overlay signup-bg"></div>
+                      <div className="overlay signup-bg h-100"></div>
                     </Col>
                     <Col md={6} className="position-relative">
-                      {/* preloader */}
-                      {this.props.loading && <Loader />}
+                      <div className="px-5">
+                        {/* preloader */}
+                        {this.props.loading && <Loader />}
 
-                      <div className="auth-page-sidebar mb-4">
-                        <div className="overlay"></div>
-                        <div className="auth-user-testimonial d-block d-sm-none">
-                          <p className="lead font-weight-bold">
-                            <span>Create an Account</span>
-                            <span className="float-right back">
-                              Back to <Link to="/account/login">Login</Link>
-                            </span>
-                          </p>
-                          <p className="font-size-24 font-weight-bold mb-1">
-                            Confirm your Identity
-                          </p>
+                        <div className="auth-page-sidebar mb-4">
+                          <div className="overlay"></div>
+                          <div className="auth-user-testimonial d-block d-sm-none">
+                            <p className="lead font-weight-bold">
+                              <span>Create an Account</span>
+                              <span className="float-right back">Back to <Link to="/account/login">Login</Link></span>
+                            </p>
+                            <p className="font-size-24 font-weight-bold mb-1">
+                              Confirm your Identity
+                            </p>
+                          </div>
                         </div>
-                      </div>
 
-                      <AvForm
-                        onValidSubmit={this.handleValidSubmit}
-                        className="authentication-form"
-                      >
-                        <Row>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
-                              <Label for="firstname">First Name</Label>
-                              <AvInput
-                                type="text"
-                                name="firstname"
-                                id="firstname"
-                                // placeholder="Avenir A"
-                                value={firstname}
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                validate={{
-                                  pattern: {
-                                    value: '^[A-Za-z ]+$',
-                                    errorMessage:
-                                      'Your name must be composed only with letters',
-                                  },
-                                  minLength: {
-                                    value: 3,
-                                    errorMessage:
-                                      'Your name must be between 3 and 20 characters',
-                                  },
-                                  maxLength: {
-                                    value: 20,
-                                    errorMessage:
-                                      'Your name must be between 3 and 20 characters',
-                                  },
-                                }}
-                                required
-                              />
-
-                              <AvFeedback data-testid="fname-error">
-                                First Name is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
-                              <Label for="lastname">Last Name</Label>
-                              <AvInput
-                                type="text"
-                                name="lastname"
-                                id="lastname"
-                                // placeholder="Avenir A"
-                                value={lastname}
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                validate={{
-                                  pattern: {
-                                    value: '^[A-Za-z]+$',
-                                    errorMessage:
-                                      'Your name must be composed only with letters',
-                                  },
-                                  minLength: {
-                                    value: 3,
-                                    errorMessage:
-                                      'Your name must be between 3 and 20 characters',
-                                  },
-                                  maxLength: {
-                                    value: 20,
-                                    errorMessage:
-                                      'Your name must be between 3 and 20 characters',
-                                  },
-                                }}
-                                required
-                              />
-
-                              <AvFeedback data-testid="lname-error">
-                                Last Name is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
-                              <Label for="email">Email</Label>
-                              <AvInput
-                                type="email"
-                                name="email"
-                                id="email"
-                                // placeholder="Avenir A"
-                                value={email}
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                validate={{
-                                  // pattern: {
-                                  //   value: '^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
-                                  //   errorMessage:
-                                  //     'Email must be valid in the format email@example.com',
-                                  // },
-                                  minLength: {
-                                    value: 5,
-                                    errorMessage:
-                                      'Your email address must be between 5 and 40 characters',
-                                  },
-                                  maxLength: {
-                                    value: 40,
-                                    errorMessage:
-                                      'Your email address must be between 5 and 40 characters',
-                                  },
-                                }}
-                                required
-                              />
-
-                              <AvFeedback data-testid="email-error">
-                                Email is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
-                              <Label for="phone">Phone</Label>
-                              <AvInput
-                                type="phone"
-                                name="phone"
-                                id="phone"
-                                value={phone}
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                validate={{
-                                  pattern: {
-                                    value: '^[0-9]+$',
-                                    errorMessage:
-                                      'Your phone number must be composed only with numbers',
-                                  },
-                                  minLength: {
-                                    value: 10,
-                                    errorMessage:
-                                      'Your phone number must be between 10 and 15 characters',
-                                  },
-                                  maxLength: {
-                                    value: 15,
-                                    errorMessage:
-                                      'Your phone number must be between 10 and 15 characters',
-                                  },
-                                }}
-                                required
-                              />
-
-                              <AvFeedback data-testid="phone-error">
-                                Phone number is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
-                              <Label for="password">Password</Label>
-                              <AvInput
-                                type="password"
-                                name="password"
-                                id="password"
-                                // placeholder="Avenir A"
-                                value={password}
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                validate={{
-                                  pattern: {
-                                    value:
-                                      '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
-                                    errorMessage:
-                                      'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
-                                  },
-                                  minLength: {
-                                    value: 8,
-                                    errorMessage:
-                                      'Your name must be between 8 and 20 characters',
-                                  },
-                                  maxLength: {
-                                    value: 20,
-                                    errorMessage:
-                                      'Your name must be between 8 and 20 characters',
-                                  },
-                                }}
-                                required
-                              />
-                              <AvFeedback data-testid="password-error">
-                                Password must contain at least 1 lowercase, 1
-                                uppercase, 1 number and 8 characters
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={6}>
-                            <AvGroup className="float-container">
-                              <Label for="confirmPassword">
-                                Confirm Password
-                              </Label>
-                              <AvInput
-                                type="password"
-                                name="confirmPassword"
-                                id="confirmPassword"
-                                // placeholder="Avenir A"
-                                value={confirmPassword}
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                validate={{
-                                  pattern: {
-                                    value:
-                                      '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
-                                    errorMessage:
-                                      'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
-                                  },
-                                  minLength: {
-                                    value: 8,
-                                    errorMessage:
-                                      'Your name must be between 8 and 20 characters',
-                                  },
-                                  maxLength: {
-                                    value: 20,
-                                    errorMessage:
-                                      'Your name must be between 8 and 20 characters',
-                                  },
-                                }}
-                                required
-                              />
-                              <AvFeedback data-testid="password-error">
-                                Passwords do not match
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={12}>
-                            <AvGroup className="userId">
-                              <Row>
-                                <Col md={6}>
-                                  <Label for="userId">Upload User ID</Label>
-                                  <p>
-                                    We need your means of identification to
-                                    verify your identity for security purposes.
-                                    This information is encrypted and not stored
-                                    on Avenir servers
-                                  </p>
-                                </Col>
-                                <Col
-                                  md={6}
-                                  className="d-flex align-items-center"
-                                >
+                        <div className="px-5">
+                          <AvForm
+                            onValidSubmit={this.handleValidSubmit}
+                            className="authentication-form"
+                          >
+                            <Row>
+                              <Col md={6}>
+                                <AvGroup className="float-container">
+                                  <Label for="firstname">First Name</Label>
                                   <AvInput
-                                    type="file"
-                                    accept="image/jpeg, image/png, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                    // accept="image/jpeg, application/pdf, application/doc, application/docx"
-                                    name="userId"
-                                    id="userId"
-                                    // ref={ref => this.idFileInput = ref}
-                                    // ref={this.idFileInput}
-                                    // value={userId}
-                                    className="form-control text-center"
+                                    type="text"
+                                    name="firstname"
+                                    id="firstname"
+                                    // placeholder="Avenir A"
+                                    value={firstname}
+                                    onFocus={this.activateField}
+                                    onBlur={this.deactivateField}
+                                    onChange={this.updateInputValue}
+                                    validate={{
+                                      pattern: {
+                                        value: '^[A-Za-z ]+$',
+                                        errorMessage:
+                                          'Your name must be composed only with letters',
+                                      },
+                                      minLength: {
+                                        value: 3,
+                                        errorMessage:
+                                          'Your name must be between 3 and 20 characters',
+                                      },
+                                      maxLength: {
+                                        value: 20,
+                                        errorMessage:
+                                          'Your name must be between 3 and 20 characters',
+                                      },
+                                    }}
+                                    required
+                                  />
+
+                                  <AvFeedback data-testid="fname-error">
+                                    First Name is invalid
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={6}>
+                                <AvGroup className="float-container">
+                                  <Label for="lastname">Last Name</Label>
+                                  <AvInput
+                                    type="text"
+                                    name="lastname"
+                                    id="lastname"
+                                    // placeholder="Avenir A"
+                                    value={lastname}
+                                    onFocus={this.activateField}
+                                    onBlur={this.deactivateField}
+                                    onChange={this.updateInputValue}
+                                    validate={{
+                                      pattern: {
+                                        value: '^[A-Za-z]+$',
+                                        errorMessage:
+                                          'Your name must be composed only with letters',
+                                      },
+                                      minLength: {
+                                        value: 3,
+                                        errorMessage:
+                                          'Your name must be between 3 and 20 characters',
+                                      },
+                                      maxLength: {
+                                        value: 20,
+                                        errorMessage:
+                                          'Your name must be between 3 and 20 characters',
+                                      },
+                                    }}
+                                    required
+                                  />
+
+                                  <AvFeedback data-testid="lname-error">
+                                    Last Name is invalid
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={6}>
+                                <AvGroup className="float-container">
+                                  <Label for="email">Email</Label>
+                                  <AvInput
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    // placeholder="Avenir A"
+                                    value={email}
+                                    onFocus={this.activateField}
+                                    onBlur={this.deactivateField}
+                                    onChange={this.updateInputValue}
+                                    validate={{
+                                      // pattern: {
+                                      //   value: '^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+                                      //   errorMessage:
+                                      //     'Email must be valid in the format email@example.com',
+                                      // },
+                                      minLength: {
+                                        value: 5,
+                                        errorMessage:
+                                          'Your email address must be between 5 and 40 characters',
+                                      },
+                                      maxLength: {
+                                        value: 40,
+                                        errorMessage:
+                                          'Your email address must be between 5 and 40 characters',
+                                      },
+                                    }}
+                                    required
+                                  />
+
+                                  <AvFeedback data-testid="email-error">
+                                    Email is invalid
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={6}>
+                                <AvGroup className="float-container">
+                                  <Label for="phone">Phone</Label>
+                                  <AvInput
+                                    type="phone"
+                                    name="phone"
+                                    id="phone"
+                                    value={phone}
+                                    onFocus={this.activateField}
+                                    onBlur={this.deactivateField}
+                                    onChange={this.updateInputValue}
+                                    validate={{
+                                      pattern: {
+                                        value: '^[0-9]+$',
+                                        errorMessage:
+                                          'Your phone number must be composed only with numbers',
+                                      },
+                                      minLength: {
+                                        value: 10,
+                                        errorMessage:
+                                          'Your phone number must be between 10 and 15 characters',
+                                      },
+                                      maxLength: {
+                                        value: 15,
+                                        errorMessage:
+                                          'Your phone number must be between 10 and 15 characters',
+                                      },
+                                    }}
+                                    required
+                                  />
+
+                                  <AvFeedback data-testid="phone-error">
+                                    Phone number is invalid
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={6}>
+                                <AvGroup className="float-container">
+                                  <Label for="password">Password</Label>
+                                  <AvInput
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    // placeholder="Avenir A"
+                                    value={password}
+                                    onFocus={this.activateField}
+                                    onBlur={this.deactivateField}
+                                    onChange={this.updateInputValue}
+                                    validate={{
+                                      pattern: {
+                                        value:
+                                          '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
+                                        errorMessage:
+                                          'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
+                                      },
+                                      minLength: {
+                                        value: 8,
+                                        errorMessage:
+                                          'Your name must be between 8 and 20 characters',
+                                      },
+                                      maxLength: {
+                                        value: 20,
+                                        errorMessage:
+                                          'Your name must be between 8 and 20 characters',
+                                      },
+                                    }}
+                                    required
+                                  />
+                                  <AvFeedback data-testid="password-error">
+                                    Password must contain at least 1 lowercase, 1
+                                    uppercase, 1 number and 8 characters
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={6}>
+                                <AvGroup className="float-container">
+                                  <Label for="confirmPassword">Confirm Password</Label>
+                                  <AvInput
+                                    type="password"
+                                    name="confirmPassword"
+                                    id="confirmPassword"
+                                    // placeholder="Avenir A"
+                                    value={confirmPassword}
+                                    onFocus={this.activateField}
+                                    onBlur={this.deactivateField}
+                                    onChange={this.updateInputValue}
+                                    validate={{
+                                      pattern: {
+                                        value:
+                                          '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
+                                        errorMessage:
+                                          'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
+                                      },
+                                      minLength: {
+                                        value: 8,
+                                        errorMessage:
+                                          'Your name must be between 8 and 20 characters',
+                                      },
+                                      maxLength: {
+                                        value: 20,
+                                        errorMessage:
+                                          'Your name must be between 8 and 20 characters',
+                                      },
+                                    }}
+                                    required
+                                  />
+                                  <AvFeedback data-testid="password-error">
+                                    Passwords do not match
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={12}>
+                                <AvGroup className="userId">
+                                  <Row>
+                                    <Col md={6}>
+                                      <Label for="userId">
+                                        Upload User ID
+                                      </Label>
+                                      <p>
+                                        We need your means of identification to verify your identity
+                                        for security purposes. This information
+                                        is encrypted and not stored on Avenir
+                                        servers
+                                      </p>
+                                    </Col>
+                                    <Col
+                                      md={6}
+                                      className="d-flex align-items-center"
+                                    >
+                                      <AvInput
+                                        type="file"
+                                        accept="image/jpeg, image/png, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                        // accept="image/jpeg, application/pdf, application/doc, application/docx"
+                                        name="userId"
+                                        id="userId"
+                                        // ref={ref => this.idFileInput = ref}
+                                        // ref={this.idFileInput}
+                                        // value={userId}
+                                        className="form-control text-center"
+                                        onChange={this.updateInputValue}
+                                        required
+                                      />
+                                      <AvFeedback data-testid="ssn-error">
+                                        Please select image
+                                      </AvFeedback>
+                                    </Col>
+                                  </Row>
+                                </AvGroup>
+                              </Col>
+                              <Col md={4}>
+                                <AvGroup className="float-container active">
+                                  <Label for="dob">Date of Birth</Label>
+                                  <div className="form-group mb-sm-0 mr-2">
+                                    <Flatpickr
+                                      id="dob"
+                                      name="dob"
+                                      value={dob}
+                                      onChange={date =>
+                                        this.setState(prevState => ({
+                                          ...prevState,
+                                          inputs: {
+                                            ...prevState.inputs,
+                                            dob: date,
+                                          },
+                                        }))
+                                      }
+                                      className="form-control"
+                                      options={{
+                                        maxDate: subYears(new Date(), 16),
+                                        defaultDate: dob,
+                                        dateFormat: 'd-M-Y',
+                                      }}
+                                    />
+                                  </div>
+                                  <AvFeedback>This field is invalid</AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={8}>
+                                <AvGroup className="float-container mb-3">
+                                  <Label for="address">Street address</Label>
+                                  <AvInput
+                                    type="address"
+                                    name="address"
+                                    id="address"
+                                    value={address}
+                                    // placeholder="Enter your password"
+                                    onFocus={this.activateField}
+                                    onBlur={this.deactivateField}
                                     onChange={this.updateInputValue}
                                     required
                                   />
-                                  <AvFeedback data-testid="ssn-error">
-                                    Please select image
+                                  <AvFeedback data-testid="address-error">
+                                    Address is invalid
                                   </AvFeedback>
-                                </Col>
-                              </Row>
-                            </AvGroup>
-                          </Col>
-                          <Col md={4}>
-                            <AvGroup className="float-container active">
-                              <Label for="dob">Date of Birth</Label>
-                              <div className="form-group mb-sm-0 mr-2">
-                                <Flatpickr
-                                  id="dob"
-                                  name="dob"
-                                  value={dob}
-                                  onChange={date =>
-                                    this.setState(prevState => ({
-                                      ...prevState,
-                                      inputs: {
-                                        ...prevState.inputs,
-                                        dob: date,
+                                </AvGroup>
+                              </Col>
+                              <Col md={5}>
+                                <AvGroup className="float-container">
+                                  <Label for="city">Choose your city</Label>
+                                  <Select
+                                    id="city"
+                                    options={this.state.cities}
+                                    value={city}
+                                    onChange={val =>
+                                      this.setState(prevState => ({
+                                        ...prevState,
+                                        inputs: {
+                                          ...prevState.inputs,
+                                          city: val,
+                                        },
+                                      }))
+                                    }
+                                    required
+                                  />
+                                  <AvFeedback data-testid="city-error">
+                                    Please select a city
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={4}>
+                                <AvGroup className="float-container">
+                                  <Label for="country">Select your country</Label>
+                                  <Select
+                                    id="country"
+                                    options={this.state.countries}
+                                    value={country}
+                                    onChange={val =>
+                                      this.setState(prevState => ({
+                                        ...prevState,
+                                        inputs: {
+                                          ...prevState.inputs,
+                                          country: val,
+                                        },
+                                      }))
+                                    }
+                                    required
+                                  />
+                                  <AvFeedback data-testid="country-error">
+                                    This field is invalid
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={3}>
+                                <AvGroup className="float-container">
+                                  <Label for="zipcode">Zipcode</Label>
+                                  <AvInput
+                                    type="zipcode"
+                                    name="zipcode"
+                                    id="zipcode"
+                                    value={zipcode}
+                                    onFocus={this.activateField}
+                                    onBlur={this.deactivateField}
+                                    onChange={this.updateInputValue}
+                                    validate={{
+                                      pattern: {
+                                        value: '^[0-9]{5}$',
+                                        errorMessage:
+                                          'Your zipcode must be composed only with numbers',
                                       },
-                                    }))
-                                  }
-                                  className="form-control"
-                                  options={{
-                                    maxDate: subYears(new Date(), 16),
-                                    defaultDate: dob,
-                                    dateFormat: 'd-M-Y',
-                                  }}
-                                />
-                              </div>
-                              <AvFeedback>This field is invalid</AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={8}>
-                            <AvGroup className="float-container mb-3">
-                              <Label for="address">Street address</Label>
-                              <AvInput
-                                type="address"
-                                name="address"
-                                id="address"
-                                value={address}
-                                // placeholder="Enter your password"
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                required
-                              />
-                              <AvFeedback data-testid="address-error">
-                                Address is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={5}>
-                            <AvGroup className="float-container">
-                              <Label for="city">Choose your city</Label>
-                              <Select
-                                id="city"
-                                options={this.state.cities}
-                                value={city}
-                                onChange={val =>
-                                  this.setState(prevState => ({
-                                    ...prevState,
-                                    inputs: {
-                                      ...prevState.inputs,
-                                      city: val,
-                                    },
-                                  }))
-                                }
-                                required
-                              />
-                              <AvFeedback data-testid="city-error">
-                                Please select a city
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={4}>
-                            <AvGroup className="float-container">
-                              <Label for="country">Select your country</Label>
-                              <Select
-                                id="country"
-                                options={this.state.countries}
-                                value={country}
-                                onChange={val =>
-                                  this.setState(prevState => ({
-                                    ...prevState,
-                                    inputs: {
-                                      ...prevState.inputs,
-                                      country: val,
-                                    },
-                                  }))
-                                }
-                                required
-                              />
-                              <AvFeedback data-testid="country-error">
-                                This field is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={3}>
-                            <AvGroup className="float-container">
-                              <Label for="zipcode">Zipcode</Label>
-                              <AvInput
-                                type="zipcode"
-                                name="zipcode"
-                                id="zipcode"
-                                value={zipcode}
-                                onFocus={this.activateField}
-                                onBlur={this.deactivateField}
-                                onChange={this.updateInputValue}
-                                validate={{
-                                  pattern: {
-                                    value: '^[0-9]{5}$',
-                                    errorMessage:
-                                      'Your zipcode must be composed only with numbers',
-                                  },
-                                  maxLength: {value: 5},
-                                }}
-                                required
-                              />
+                                      maxLength: {value: 5},
+                                    }}
+                                    required
+                                  />
 
-                              <AvFeedback data-testid="zip-error">
-                                Zipcode is invalid
-                              </AvFeedback>
-                            </AvGroup>
-                          </Col>
-                          <Col md={12} className="mb-4">
-                            <AvGroup check className="mb-4">
-                              <CustomInput
-                                type="checkbox"
-                                id="terms"
-                                // value={terms}
-                                checked={terms}
-                                onChange={this.updateTerms}
-                                className="pl-1 mb-2"
-                                label="By using our services, you agree to Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy"
-                              />
-                            </AvGroup>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col md={6}>
-                            <FormGroup className="form-group mb-0 text-center">
-                              <Button color="blue" className="btn-block">
-                                Sign Up
-                              </Button>
-                            </FormGroup>
-                          </Col>
-                          <Col md={6}>
-                            <p className="text-muted login">
-                              Got an account?{' '}
-                              <Link
-                                to="/account/login"
-                                className="font-weight-bold ml-1"
-                              >
-                                Login here
-                              </Link>
-                            </p>
-                          </Col>
-                        </Row>
-                      </AvForm>
+                                  <AvFeedback data-testid="zip-error">
+                                    Zipcode is invalid
+                                  </AvFeedback>
+                                </AvGroup>
+                              </Col>
+                              <Col md={12} className="mb-4">
+                                <AvGroup check className="mb-4">
+                                  <CustomInput
+                                    type="checkbox"
+                                    id="terms"
+                                    // value={terms}
+                                    checked={terms}
+                                    onChange={this.updateTerms}
+                                    className="pl-1 mb-2"
+                                    label="By using our services, you agree to Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy"
+                                  />
+                                </AvGroup>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col md={6}>
+                                <FormGroup className="form-group mb-0 text-center">
+                                  <Button color="blue" className="btn-block">
+                                    Sign Up
+                                  </Button>
+                                </FormGroup>
+                              </Col>
+                              <Col md={6}>
+                                <p className="text-muted login">
+                                  Got an account?{' '}
+                                  <Link
+                                    to="/account/login"
+                                    className="font-weight-bold ml-1"
+                                  >
+                                    Login here
+                                  </Link>
+                                </p>
+                              </Col>
+                            </Row>
+                          </AvForm>
+                        </div>
+                      </div>
                     </Col>
                   </Row>
                 </Col>
