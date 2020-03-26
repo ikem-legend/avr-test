@@ -17,7 +17,7 @@ import {
 import AccountList from '../../components/AccountList'
 import CardList from '../../components/CardList'
 import {callApi} from '../../helpers/api'
-import {loginUser, showFeedback} from '../../redux/actions'
+import {loginUser, showFeedback, showRightSidebar, hideRightSidebar} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 
@@ -41,6 +41,8 @@ class AccountConnect extends Component {
   componentDidMount() {
     this._isMounted = true
     document.body.classList.add('authentication-bg')
+    this.props.showRightSidebar()
+    this.props.hideRightSidebar()
     // const {firstname, lastname} = this.state
 
     // const user = JSON.parse(localStorage.getItem('avenir'))
@@ -48,6 +50,7 @@ class AccountConnect extends Component {
     // this.setState({
     //   name: user.myFirstName,
     // })
+    // Use local storage to check or pass in a check via the route
   }
 
   componentWillUnmount() {
@@ -143,7 +146,8 @@ class AccountConnect extends Component {
     callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
       .then(() => {
         this.props.showFeedback('Account(s) successfully linked', 'success')
-        this.displayCards()
+        // this.displayCards()
+        this.props.history.push('/my-account')
       })
       .catch(err => {
         console.log(err)
@@ -206,12 +210,6 @@ class AccountConnect extends Component {
     const isAuthTokenValid = isUserAuthenticated()
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
-    } else {
-      const url = window.location.pathname
-      if (url === '/account/account-connect') {
-        debugger
-        return
-      }
     }
   }
 
@@ -288,7 +286,7 @@ class AccountConnect extends Component {
                       </div>
                       <div className="bank-verify-info mt-4 p-3">
                         <p className="mb-0">
-                          I, {user.myFirstName ? user.myFirstName : ''}, authorize Avenir Inc. to debit
+                          I, {user && user.myFirstName ? user.myFirstName : ''}, authorize Avenir Inc. to debit
                           the account indicated for the recurring transactions
                           according to the terms of use and my agreement with
                           Avenir Inc. I will not dispute Avenir Inc. so long as
@@ -310,7 +308,7 @@ class AccountConnect extends Component {
                       <div className="mt-3">
                         <PlaidLink
                           clientName="Avenir app"
-                          env="development"
+                          env="sandbox"
                           product={['auth', 'transactions']}
                           publicKey="3c3d222fa56168931abed2dc785bc2"
                           onExit={this.handleOnExit}
@@ -401,6 +399,6 @@ const mapStateToProps = state => {
   return {user, error}
 }
 
-export default connect(mapStateToProps, {loginUser, showFeedback})(
+export default connect(mapStateToProps, {loginUser, showFeedback, showRightSidebar, hideRightSidebar})(
   withRouter(AccountConnect),
 )

@@ -7,7 +7,7 @@ import * as layoutConstants from '../constants/layout'
 import Loader from './Loader'
 
 // Lazy loading and code splitting -
-// Derieved idea from https://blog.logrocket.com/lazy-loading-components-in-react-16-6-6cea535c0b52
+// Derived idea from https://blog.logrocket.com/lazy-loading-components-in-react-16-6-6cea535c0b52
 const loading = () => 
   <div>
     <Loader />
@@ -21,17 +21,25 @@ const HorizontalLayout = React.lazy(() => import('../layouts/Horizontal'))
 /**
  * Exports the component with layout wrapped to it
  * @param {} WrappedComponent
+ * @returns {object} HOC
  */
 const withLayout = WrappedComponent => {
   const HOC = class extends Component {
     /**
      * Returns the layout component based on different properties
+     * @returns {object} Layout component
      */
     getLayout = () => {
-      if (!isUserAuthenticated()) return AuthLayout
+      const url = window.location.pathname
+      // debugger
+      if (isUserAuthenticated() && url === '/account/account-connect') return VerticalLayout
+      // if (isUserAuthenticated() && url === '/account/account-connect') {debugger; return VerticalLayout}
+      if (!isUserAuthenticated()) return AuthLayout;
+      // if (!isUserAuthenticated()) {debugger; return AuthLayout;}
+      // if (!isUserAuthenticated() && url !== '/account/account-connect') return AuthLayout
 
       let layoutCls = VerticalLayout
-
+// debugger
       switch (this.props.layout.layoutType) {
         case layoutConstants.LAYOUT_HORIZONTAL:
           layoutCls = HorizontalLayout

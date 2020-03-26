@@ -14,7 +14,7 @@ const Home = React.lazy(() => import('../pages/home'))
 const Login = React.lazy(() => import('../pages/auth/Login'))
 const Logout = React.lazy(() => import('../pages/auth/Logout'))
 const Signup = React.lazy(() => import('../pages/auth/Signup'))
-const Verify = React.lazy(() => import('../pages/auth/Verify'))
+// const Verify = React.lazy(() => import('../pages/auth/Verify'))
 const AccountConnect = React.lazy(() => import('../pages/auth/AccountConnect'))
 const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
 
@@ -26,7 +26,7 @@ const Referral = React.lazy(() => import('../pages/referral'))
 const Faq = React.lazy(() => import('../pages/faq'))
 
 // handle auth and authorization
-const PrivateRoute = ({component: Component, roles, ...rest}) => (
+const PrivateRoute = ({component: Component, ...rest}) => (
   <Route
     {...rest}
     render={props => {
@@ -154,12 +154,12 @@ const authRoutes = {
       component: Signup,
       route: Route,
     },
-    {
-      path: '/account/verify',
-      name: 'Verify',
-      component: Verify,
-      route: Route,
-    },
+    // {
+    //   path: '/account/verify',
+    //   name: 'Verify',
+    //   component: Verify,
+    //   route: Route,
+    // },
     {
       path: '/account/account-connect',
       name: 'AccountConnect',
