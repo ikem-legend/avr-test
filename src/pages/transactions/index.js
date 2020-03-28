@@ -36,10 +36,12 @@ class Transactions extends Component {
     invPause: false,
     currDstrbn: [],
     loadingTopup: false,
+    txnList: []
   }
 
   componentDidMount() {
     this.loadUserData()
+    this.loadTxns()
   }
 
   loadUserData = () => {
@@ -63,6 +65,17 @@ class Transactions extends Component {
         console.log(err)
         this.props.showFeedback(err, 'error')
         // this.props.history.push('/account/login')
+      })
+  }
+
+  loadTxns = () => {
+    const {user} = this.props
+    callApi('/user/plaid/bank/get/transactions', null, 'GET', user.token)
+      .then(res => {
+        this.setState({txnList: res.data});
+      })
+      .catch(() => {
+        this.props.showFeedback('Error retrieving transactions, please try again', 'error')
       })
   }
 
@@ -127,6 +140,7 @@ class Transactions extends Component {
       multiplier,
       invPause,
       loadingTopup,
+      txnList
     } = this.state
 
     return (
@@ -225,7 +239,7 @@ class Transactions extends Component {
               <TabContent activeTab={activeTab}>
                 <TabPane tabId="1">
                   <Row>
-                    <RoundUpsTable />
+                    <RoundUpsTable txnList={txnList} />
                   </Row>
                 </TabPane>
                 <TabPane tabId="2">

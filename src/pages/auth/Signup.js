@@ -2,7 +2,7 @@
 import React, {Component, Fragment, createRef} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
-import {Cookies} from 'react-cookie'
+// import {Cookies} from 'react-cookie'
 import subYears from 'date-fns/subYears'
 
 import {
@@ -54,9 +54,7 @@ class Signup extends Component {
       signupError: '',
       documentUploadError: false
     }
-    // this.handleValidSubmit = this.handleValidSubmit.bind(this)
     this.idFileInput = createRef();
-    // this.idFileInput = React.createRef();
   }
 
   async componentDidMount() {
@@ -147,9 +145,8 @@ class Signup extends Component {
    * @returns {function} showFeedback Displays feedback
   **/
   handleValidSubmit = async () => {
-    const {documentUploadError, inputs: {userId, password, confirmPassword, city, country}} = this.state
-    const {history, user} = this.props
-    const cookies = new Cookies()
+    const {inputs: {userId, password, confirmPassword, city, country}} = this.state
+    const {history} = this.props
     if (!userId) {
       return this.props.showFeedback('Please select an image or document for upload', 'error')
     }
@@ -185,44 +182,8 @@ class Signup extends Component {
             key === 'country') &&
           delete data[key],
       )
-      // debugger
       const userIdData = toFormData(uploadData)
       await this.props.registerUser(data, history, userIdData)
-      /* if (documentUploadError) {
-        const token = cookies.get('avenirUser').token
-        callApi('/user/sendwyre/document/upload', userIdData, 'POST', token)
-          .then((res) => {
-            console.log(res)
-            debugger
-            this.setState({documentUploadError: false});
-            this.props.showFeedback('ID upload successful', 'success')
-            history.push('/account/account-connect')
-          })
-          .catch((err) => {
-            console.log(err)
-            this.setState({documentUploadError: true});
-            this.props.showFeedback('Error uploading document, please try again')
-          })
-      } else {
-        // await this.props.registerUser(data, history, userIdData)
-        // const formData = new FormData()
-        // formData.append('individualProofOfAddress', uploadData.individualProofOfAddress)
-        // console.log(image)
-        // console.log(formData)
-        const token = cookies.get('avenirUser') ? cookies.get('avenirUser').token : ''
-        await callApi('/user/sendwyre/document/upload', userIdData, 'POST', token)
-          .then((res) => {
-            console.log(res)
-            this.setState({documentUploadError: false});
-            this.props.showFeedback('ID upload successful', 'success')
-            history.push('/account/account-connect')
-          })
-          .catch((err) => {
-            console.log(err)
-            this.setState({documentUploadError: true});
-            this.props.showFeedback('Error uploading document, please try again')
-          })
-      } */
     } else {
       this.props.showFeedback(
         'Please agree to the terms and conditions',
@@ -404,11 +365,6 @@ class Signup extends Component {
                                     onBlur={this.deactivateField}
                                     onChange={this.updateInputValue}
                                     validate={{
-                                      // pattern: {
-                                      //   value: '^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
-                                      //   errorMessage:
-                                      //     'Email must be valid in the format email@example.com',
-                                      // },
                                       minLength: {
                                         value: 5,
                                         errorMessage:
@@ -471,7 +427,6 @@ class Signup extends Component {
                                     type="password"
                                     name="password"
                                     id="password"
-                                    // placeholder="Avenir A"
                                     value={password}
                                     onFocus={this.activateField}
                                     onBlur={this.deactivateField}
@@ -563,9 +518,6 @@ class Signup extends Component {
                                         // accept="image/jpeg, application/pdf, application/doc, application/docx"
                                         name="userId"
                                         id="userId"
-                                        // ref={ref => this.idFileInput = ref}
-                                        // ref={this.idFileInput}
-                                        // value={userId}
                                         className="form-control text-center"
                                         onChange={this.updateInputValue}
                                         required
@@ -613,7 +565,6 @@ class Signup extends Component {
                                     name="address"
                                     id="address"
                                     value={address}
-                                    // placeholder="Enter your password"
                                     onFocus={this.activateField}
                                     onBlur={this.deactivateField}
                                     onChange={this.updateInputValue}
@@ -751,5 +702,4 @@ const mapStateToProps = state => {
   return {user, loading, error}
 }
 
-// export default connect(null, {registerUser})(Signup)
 export default connect(mapStateToProps, {registerUser, showFeedback})(Signup)
