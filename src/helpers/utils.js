@@ -3,8 +3,11 @@ export const toFormData = values => {
   Object.keys(values).forEach(key => {
     formData.append(key, values[key])
   })
-  for (var pair of formData.entries()) {
-    console.log(pair[0] + ', ' + pair[1])
-  }
+ //  for (const pair of formData.entries()) {
+ //    console.log(pair[0]+ ', ' + pair[1]);
+	// }
   return formData
 }
+
+export const numberWithCommas = x =>
+  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
