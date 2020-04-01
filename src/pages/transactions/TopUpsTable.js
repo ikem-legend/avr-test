@@ -8,71 +8,7 @@ class TopUpsTable extends Component {
   constructor() {
     super()
     this.state = {
-      topups: [
-        {
-          date: '12-02-2020',          
-          amount: '$5',
-          status: 'Completed',
-          btc: '$5',
-          eth: '$0',
-        },
-        {
-          date: '27-08-2020',          
-          amount: '$5',
-          status: 'Completed',
-          btc: '$4',
-          eth: '$1',
-        },
-        {
-          date: '31-07-2020',
-          amount: '$5',
-          status: 'Completed',
-          btc: '$0',
-          eth: '$5',
-        },
-        {
-          date: '16-05-2020',
-          amount: '$5',
-          status: 'Completed',
-          btc: '$5',
-          eth: '$0',
-        },
-        {
-          date: '07-03-2020',
-          amount: '$5',
-          status: 'Pending',
-          btc: '$1',
-          eth: '$4',
-        },
-        { 
-          date: '14-06-2020',
-          amount: '$5',
-          status: 'Completed',
-          btc: '$3',
-          eth: '$2',
-        },
-        {
-          date: '28-12-2020',
-          amount: '$5',
-          status: 'Pending',
-          btc: '$4',
-          eth: '$1',
-        },
-        {
-          date: '17-03-2020',
-          amount: '$5',
-          status: 'Pending',
-          btc: '$2',
-          eth: '$3',
-        },
-        { 
-          date: '14-09-2020',
-          amount: '$5',
-          status: 'Completed',
-          btc: '$3',
-          eth: '$2',
-        }
-      ],
+      topups: [],
       columns: [
         {
             dataField: 'date',
@@ -116,7 +52,7 @@ class TopUpsTable extends Component {
 
     const sizePerPageRenderer = ({ options, currSizePerPage, onSizePerPageChange }) => (
       <Fragment>
-        <label className="d-inline mr-1">Show</label>
+        <label htmlFor="pageSize" className="d-inline mr-1">Show</label>
         <Input
           type="select" 
           name="select" 

@@ -8,70 +8,28 @@ class WithdrawalTable extends Component {
   constructor() {
     super()
     this.state = {
-      topups: [
-        {
-          date: '12-02-2020',   
-          account: '*****9806',       
-          amount: '$15.34',
-          status: 'Sent',
-          source: 'BTC'
-        },
-        {
-          date: '27-08-2020',  
-          account: '*****8319',        
-          amount: '$15.34',
-          status: 'Sent',
-          source: 'ETH'
-        },
-        {
-          date: '31-07-2020',
-          account: '*****1076',
-          amount: '$15.34',
-          status: 'Sent',
-          source: 'BTC'
-        },
-        {
-          date: '16-05-2020',
-          account: '*****2152',
-          amount: '$15.34',
-          status: 'Pending',
-          source: 'BTC'
-        },
-        {
-          date: '07-03-2020',
-          account: '*****9806',
-          amount: '$15.34',
-          status: 'Pending',
-          source: 'ETH'
-        },
-        { 
-          date: '14-06-2020',
-          account: '*****3263',
-          amount: '$15.34',
-          status: 'Sent',
-          source: 'BTC'
-        },
-        {
-          date: '28-12-2020',
-          account: '*****9806',
-          amount: '$15.34',
-          status: 'Pending',
-          source: 'ETH'
-        },
-        {
-          date: '17-03-2020',
-          account: '*****2152',
-          amount: '$15.34',
-          status: 'Pending',
-          source: 'BTC'
-        },
-        { 
-          date: '14-09-2020',
-          account: '*****8319',
-          amount: '$15.34',
-          status: 'Sent',
-          source: 'BTC'
-        }
+      withdrawals: [
+        // {
+        //   date: '12-02-2020',   
+        //   account: '*****9806',       
+        //   amount: '$15.34',
+        //   status: 'Sent',
+        //   source: 'BTC'
+        // },
+        // {
+        //   date: '27-08-2020',  
+        //   account: '*****8319',        
+        //   amount: '$15.34',
+        //   status: 'Sent',
+        //   source: 'ETH'
+        // },
+        // {
+        //   date: '31-07-2020',
+        //   account: '*****1076',
+        //   amount: '$15.34',
+        //   status: 'Sent',
+        //   source: 'BTC'
+        // },
       ],
       columns: [
         {
@@ -103,7 +61,7 @@ class WithdrawalTable extends Component {
     }
   }
   render() {
-    const {topups, columns} = this.state
+    const {withdrawals, columns} = this.state
     const { SearchBar } = Search;
     const { ExportCSVButton } = CSVExport;
 
@@ -116,7 +74,7 @@ class WithdrawalTable extends Component {
 
     const sizePerPageRenderer = ({ options, currSizePerPage, onSizePerPageChange }) => (
       <Fragment>
-        <label className="d-inline mr-1">Show</label>
+        <label htmlFor="pageSize" className="d-inline mr-1">Show</label>
         <Input
           type="select" 
           name="select" 
@@ -139,7 +97,7 @@ class WithdrawalTable extends Component {
             <ToolkitProvider
               bootstrap4
               keyField="id"
-              data={topups}
+              data={withdrawals}
               columns={columns}
               search
               exportCSV={{onlyExportFiltered: true, exportAll: false}}>
@@ -160,7 +118,7 @@ class WithdrawalTable extends Component {
                     {...props.baseProps}
                     bordered={false}
                     defaultSorted={defaultSorted}
-                    pagination={paginationFactory({ sizePerPage: 5, sizePerPageRenderer, sizePerPageList: [{ text: '5', value: 5, }, { text: '10', value: 10 }, { text: '25', value: 25 }, { text: 'All', value: topups.length }] })}
+                    pagination={paginationFactory({ sizePerPage: 5, sizePerPageRenderer, sizePerPageList: [{ text: '5', value: 5, }, { text: '10', value: 10 }, { text: '25', value: 25 }, { text: 'All', value: withdrawals.length }] })}
                     wrapperClasses="table-responsive withdrawal-table text-center"
                   />
                 </Fragment>

@@ -11,14 +11,14 @@ import {
   SHOW_RIGHT_SIDEBAR,
   HIDE_RIGHT_SIDEBAR,
   SHOW_FEEDBACK,
-  HIDE_FEEDBACK,
+  // HIDE_FEEDBACK,
 } from './constants'
 import {
   changeSidebarTheme as changeLeftSidebarThemeAction,
   changeSidebarType as changeSidebarTypeAction,
   showFeedback as showNotification,
   showFeedbackSuccess,
-  showFeedbackError
+  // showFeedbackError
 } from './actions'
 
 /**
@@ -171,7 +171,6 @@ function* hideRightSidebar() {
  */
 function* showFeedback({payload}) {
   try {
-  console.log(payload)
     yield put(showFeedbackSuccess(payload))
   } catch (error) {
     yield put(showFeedbackSuccess(error))

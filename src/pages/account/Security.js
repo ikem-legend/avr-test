@@ -6,43 +6,66 @@ import {
   Col,
   CustomInput
 } from 'reactstrap'
+import {callApi} from '../../helpers/api'
+import {showFeedback} from '../../redux/actions'
 
 class Security  extends Component {
 	constructor() {
 		super()
 		this.state = {
-			name: '',
-			email: '',
-			phone: '',
-			dob: '',
-			address: '',
-			referralUrl: ''
+			twoFA: '',
+			notifications: '',
 		}
 	}
 
-  // componentDidMount() {
-  //   const {user} = this.props
-  //   console.log(user)
-  //   this.setState({
-  //     name: `${user.myFirstName} ${user.myLastName}`,
-  //     email: user.myEmailAddress,
-  //     phone: user.myPhoneNumber,
-  //     dob: '',
-  //     address: 'Sample address',
-  //     referralUrl: ''
-  //   });
-  // }
+  componentDidUpdate(prevProps) {
+    if (prevProps.twofactorAuthStatus !== this.props.twofactorAuthStatus) {
+      this.loadUserData()
+    }
+  }
+
+  loadUserData = () => {
+    const {twoFA, notifications} = this.props
+    this.setState({
+      twoFA,
+      notifications
+    });
+  }
 
 	updateFields = e => {
-		const {name, value} = e.target
+		const {name, checked} = e.target
+    const {user, updateUserData} = this.props
 		this.setState((prevState) => ({
 			...prevState,
-			[name]: [value]
+			[name]: checked
 		}));
+    if (name === 'twoFA') {
+      const twoFactorStatus = {two_factor_auth: checked}
+      callApi('/user/two-factor-auth/status', twoFactorStatus, 'POST', user.token)
+        .then(() => {
+          updateUserData()
+          this.props.showFeedback('Two-factor setting successfully updated', 'success')
+        })
+        .catch(() => {
+          updateUserData()
+          this.props.showFeedback('Error updating Two-factor setting', 'error')
+        })
+      } else {
+        const notificationStatus = {app_notification: checked}
+        callApi('/user/notification/status', notificationStatus, 'POST', user.token)
+          .then(() => {
+            updateUserData()
+            this.props.showFeedback('Notifications setting successfully updated', 'success')
+          })
+          .catch(() => {
+            updateUserData()
+            this.props.showFeedback('Error updating Notifications setting', 'error')
+          })
+    }
 	}
 
 	render() {
-		// const {name, email, phone, dob, address, referralUrl} = this.state
+		const {twoFA, notifications} = this.props
 		return (
       <div className="mt-2">
         <Row>
@@ -58,14 +81,14 @@ class Security  extends Component {
           </Col>
           <Col md={3} className="d-flex align-items-center">
             <div>
-              <span className="mr-1 font-weight-bold">PAUSE</span>
               <CustomInput 
                 type="switch"
-                id="roundupsSwitch"
-                name="roundupsSwitch"
-                className="roundup-switch"
-                label="RESUME"
-                onClick={this.switchRoundup}
+                id="twoFASwitch"
+                name="twoFA"
+                className="security-switch"
+                onClick={this.updateFields}
+                onChange={this.updateFields}
+                checked={twoFA}
               />
             </div>
           </Col>
@@ -84,14 +107,14 @@ class Security  extends Component {
           </Col>
   				 <Col md={3} className="d-flex align-items-center">
             <div>
-              <span className="mr-1 font-weight-bold">PAUSE</span>
               <CustomInput 
                 type="switch"
-                id="roundupsSwitch"
-                name="roundupsSwitch"
-                className="roundup-switch"
-                label="RESUME"
-                onClick={this.switchRoundup}
+                id="notificationsSwitch"
+                name="notifications"
+                className="security-switch"
+                onClick={this.updateFields}
+                onChange={this.updateFields}
+                checked={notifications}
               />
             </div>
           </Col>
@@ -105,4 +128,4 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps)(Security)
+export default connect(mapStateToProps, {showFeedback})(Security)

@@ -12,6 +12,7 @@ import Loader from '../../components/Loader'
 import {showFeedback} from '../../redux/actions'
 
 import TopUp from '../../assets/images/topups.svg'
+import TopUpLoader from '../../assets/images/spin-loader.gif'
 import btcImg from '../../assets/images/layouts/btc.svg'
 import ethImg from '../../assets/images/layouts/eth.svg'
 import WalletStatistics from './WalletStatistics'
@@ -35,9 +36,11 @@ class Dashboard extends Component {
       walletTotal: 0,
       cryptos: {
         btc: 'Bitcoin',
-        eth: 'Etherum',
+        eth: 'Ethereum',
       },
+      myCurrencyDistributions: [],
       exchangeRates: {},
+      loadingTopup: false,
     }
   }
 
@@ -67,18 +70,21 @@ class Dashboard extends Component {
         } = this.state
         callApi('/auth/me', null, 'GET', user.token)
           .then(res => {
-            const {myWallets} = res.data
+            const {myWallets, myCurrencyDistributions} = res.data
             const btcVal =
               myWallets.filter(coin => coin.currency === btc)[0].myBalance *
               exchangeRates.USDBTC
             const ethVal =
               myWallets.filter(coin => coin.currency === eth)[0].myBalance *
               exchangeRates.USDETH
+            // console.log(myCurrencyDistributions)
             this.setState({
               btcVal,
               ethVal,
               btcRate: exchangeRates.USDBTC,
               ethRate: exchangeRates.USDETH,
+              myCurrencyDistributions,
+              // walletTotal: parseInt(0, 10) + parseInt(0, 10),
               walletTotal: parseInt(btcVal, 10) + parseInt(ethVal, 10),
             })
           })
@@ -96,6 +102,52 @@ class Dashboard extends Component {
     this.setState({
       topupModal: !topupModal,
     })
+  }
+
+  updateTopup = e => {
+    const {value} = e.target
+    this.setState({topup: value})
+  }
+
+  setTopup = () => {
+    this.setState({loadingTopup: true})
+    const {myCurrencyDistributions, topup} = this.state
+    const {user} = this.props
+    if (topup && topup > 0) {
+      // item + 2 to reflect coin IDs
+      const newCurrDstrbn = myCurrencyDistributions.map((curr, item) => ({
+        currency_id: item + 2,
+        amount: (parseInt(curr.percentage, 10) / 100) * parseInt(topup, 10),
+      }))
+      const fundObj = {total: parseInt(topup, 10), amount_split: newCurrDstrbn}
+      callApi('/user/wallet/fund', fundObj, 'POST', user.token)
+        .then(() => {
+          this.setState({
+            loadingTopup: false,
+            topup: 0,
+          })
+          this.props.showFeedback(
+            `$${parseInt(topup, 10)} Top-up made successfully`,
+            'success',
+          )
+        })
+        .catch(() => {
+          this.setState({loadingTopup: false})
+          this.props.showFeedback(
+            'Error making top-up, please check the amount and try again',
+            'error',
+          )
+        })
+    } else {
+      this.props.showFeedback(
+        'Error making top-up, please check the amount and try again',
+        'error',
+      )
+    }
+    // } else {
+    //   this.setState({loadingTopup: false})
+    //   this.props.showFeedback('Please set roundup amount', 'error')
+    // }
   }
 
   toggleWithdraw = () => {
@@ -133,7 +185,9 @@ class Dashboard extends Component {
       ethVal,
       btcRate,
       ethRate,
+      myCurrencyDistributions,
       walletTotal,
+      loadingTopup,
     } = this.state
     return (
       <Fragment>
@@ -209,7 +263,11 @@ class Dashboard extends Component {
               <RevenueChart />
             </Col>
             <Col xl={5}>
-              <InvestmentChart />
+              <InvestmentChart
+                myCurrencyDistributions={myCurrencyDistributions}
+                btcVal={`$${numberWithCommas(parseInt(btcVal, 10).toFixed(2))}`}
+                ethVal={`$${numberWithCommas(parseInt(ethVal, 10).toFixed(2))}`}
+              />
             </Col>
           </Row>
 
@@ -221,7 +279,7 @@ class Dashboard extends Component {
                 <p className="mt-4 mb-0">Top-ups are an easy way to</p>
                 <p>make one-time investments</p>
                 <img src={TopUp} alt="Top Up" className="img-fluid" />
-                <h4>$10,273</h4>
+                <h4>{`$${numberWithCommas(walletTotal.toFixed(2))}`}</h4>
                 <p>Total Wallet Balance</p>
                 <Form row>
                   <Col md={{offset: 2, size: 8}}>
@@ -229,6 +287,7 @@ class Dashboard extends Component {
                       name="topup"
                       type="number"
                       placeholder="Enter Amount"
+                      onChange={this.updateTopup}
                       value={topup}
                     />
                   </Col>
@@ -245,9 +304,22 @@ class Dashboard extends Component {
                         </Button>
                       </Col>
                       <Col md={6}>
-                        <Button color="inv-blue" className="mt-4 mb-4" block>
-                          Fund Wallet
-                        </Button>
+                        {loadingTopup ? (
+                          <img
+                            src={TopUpLoader}
+                            alt="loader"
+                            style={{height: '40px'}}
+                          />
+                        ) : (
+                          <Button
+                            color="inv-blue"
+                            className="mt-4 mb-4"
+                            block
+                            onClick={this.setTopup}
+                          >
+                            Fund Wallet
+                          </Button>
+                        )}
                       </Col>
                     </Row>
                   </Col>

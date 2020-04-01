@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-// import {Redirect} from 'react-router-dom'
 import {
   Row,
   Col,
@@ -25,34 +24,9 @@ class EditProfile  extends Component {
 			phone: '',
 			dob: '',
 			address: '',
-			referralUrl: '',
-      urlExists: false
+			referralUrl: ''
 		}
 	}
-
-  componentDidMount() {
-    this.loadUserData()
-  }
-
-  loadUserData = () => {
-    const {user} = this.props
-    callApi('/auth/me', null, 'GET', user.token)
-      .then(res => {
-        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myIdentifier} = res.data
-        this.setState({
-          name: `${myFirstName} ${myLastName}`,
-          email: myEmailAddress,
-          phone: myPhoneNumber ? myPhoneNumber : '',
-          dob: myBirthDay,
-          address: myContactAddress ? myContactAddress : '',
-          referralUrl: myIdentifier ? myIdentifier : '',
-          urlExists: myIdentifier
-        });
-      })
-      .catch(err => {
-        this.props.showFeedback(err, 'error')
-      })
-  }
 
 	updateFields = e => {
 		const {name, value} = e.target
@@ -63,13 +37,13 @@ class EditProfile  extends Component {
 	}
 
   updateProfile = () => {
-    const {name, dob, phone, email, address, referralUrl} = this.state
+    const {name, dob, phone, email, address, referralUrl, loadUserData} = this.props
     const [first_name, last_name] = String(name).split(' ')
     const userData = {first_name, last_name, email, phone, dob, address, identifier: referralUrl}
     callApi('/user/profile/update', userData, 'POST', this.props.user.token)
       .then(() => {
+        loadUserData()
         this.props.showFeedback('Profile updated successfully', 'success')
-        this.loadUserData()
       })
       .catch(err => {
         console.log(err)
@@ -78,7 +52,7 @@ class EditProfile  extends Component {
   }
 
 	render() {
-		const {name, email, phone, dob, address, referralUrl, urlExists} = this.state
+		const {name, email, phone, dob, address, referralUrl} = this.props
 		return (
 			<Row>
 				<Col>
@@ -124,7 +98,7 @@ class EditProfile  extends Component {
                 <InputGroupAddon addonType="prepend">
                   <InputGroupText>https://avenir-app.com/r/</InputGroupText>
                 </InputGroupAddon>
-                <Input type="text" name="referralUrl" value={referralUrl} onChange={this.updateFields} readOnly={Boolean(urlExists)} />
+                <Input type="text" name="referralUrl" value={referralUrl} onChange={this.updateFields} readOnly={Boolean(referralUrl)} />
               </InputGroup>
 						</FormGroup>
             <Row>

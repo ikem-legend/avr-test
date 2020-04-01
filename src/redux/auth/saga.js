@@ -1,5 +1,5 @@
 // @flow
-import {Cookies} from 'react-cookie'
+import Cookies from 'universal-cookie'
 import {toast} from 'react-toastify'
 import {all, call, fork, put, takeLatest} from 'redux-saga/effects'
 
@@ -28,7 +28,10 @@ import {
 const setSession = user => {
   const cookies = new Cookies()
   // console.log(cookies, user)
-  if (user) cookies.set('avenirUser', JSON.stringify(user), {path: '/'})
+  if (user) {
+  	cookies.set('avenirUser', JSON.stringify(user), {path: '/'})
+  	// console.log('Cookies: ', cookies.get('avenirUser'))
+  }
   else cookies.remove('avenirUser', {path: '/'})
 }
 /**
@@ -52,14 +55,14 @@ function* login({payload: {user, history}}) {
         result.token,
       )
       const {
-        data,
-        // data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+        // data,
+        data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
       } = response
       const userObj = {}
       Object.assign(
         userObj,
-        {...data},
-        // {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+        // {...data},
+        {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
         {token: result.token},
       )
       setSession(userObj)
@@ -103,7 +106,6 @@ function* logout({payload: {history}}) {
  */
 function* register({payload: {user, history}}) {
   // console.log(user, history)
-  // localStorage.setItem('avenir', 'abcd')
   try {
   	const queryString = history.location.search
   	const urlParams = new URLSearchParams(queryString);

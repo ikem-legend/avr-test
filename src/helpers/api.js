@@ -13,7 +13,7 @@ const config = {
 const callPlainApi = (url, data, method) =>
   new Promise((resolve, reject) => {
     const axiosOptions = {
-      timeout: 15000,
+      timeout: 30000,
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
@@ -36,7 +36,10 @@ const callPlainApi = (url, data, method) =>
           resolve(response.data)
         })
         .catch(err => {
-          console.log(err)
+          reject(err)
+          if (err.response && err.response.data && err.response.data.data) {
+            reject(err.response.data.data.error)
+          }
           reject(err)
         })
     } else {
@@ -46,6 +49,10 @@ const callPlainApi = (url, data, method) =>
           resolve(response.data)
         })
         .catch(err => {
+          reject(err)
+          if (err.response && err.response.data && err.response.data.data) {
+            reject(err.response.data.data.error)
+          }
           reject(err)
         })
     }
@@ -59,7 +66,7 @@ const callSecuredApi = (url, data, method, token, callback) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     }
-    axiosOptions.timeout = 15000
+    axiosOptions.timeout = 30000
   }
   return new Promise((resolve, reject) => {
     if (method === 'PUT') {
@@ -74,7 +81,6 @@ const callSecuredApi = (url, data, method, token, callback) => {
           if (callback) {
             callback()
           }
-          console.log(response)
           resolve(response.data)
         })
         .catch(err => {
@@ -96,7 +102,6 @@ const callSecuredApi = (url, data, method, token, callback) => {
           resolve(response.data)
         })
         .catch(err => {
-          console.log(err)
           if (err.response && err.response.status === 403) {
             reject('You are not authorized to perform this action')
           }
@@ -109,6 +114,10 @@ const callSecuredApi = (url, data, method, token, callback) => {
           if (err.response && err.response.status) {
             reject(err.response.status)
           }
+          if (err.response && err.response.data && err.response.data.data) {
+            reject(err.response.data.data.error)
+          }
+          reject(err)
         })
     } else if (method === 'PATCH') {
       axios
@@ -168,15 +177,61 @@ const callSecuredApi = (url, data, method, token, callback) => {
           if (err.response && err.response.status === 401) {
             reject("You've been logged out, log in to continue.")
           }
+          if (err.response && err.response.data && err.response.data.data) {
+            reject(err.response.data.data.error)
+          }
           reject(err)
         })
     }
   })
 }
 
+const callExternalApi = (url, data, method) =>
+  new Promise((resolve, reject) => {
+    const axiosOptions = {
+      timeout: 30000,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+    if (method === 'PUT') {
+      axios
+        .put(`${url}`, data, {...axiosOptions})
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(err => {
+          reject(err)
+        })
+    }
+    if (method === 'POST') {
+      axios
+        .post(`${url}`, data, axiosOptions)
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(err => {
+          reject(err)
+        })
+    } else {
+      axios
+        .get(`${url}`, {...axiosOptions})
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(err => {
+          reject(err)
+        })
+    }
+  })
+
 const callApi = (url, data, method, token, callback) => {
   if (token) {
     return callSecuredApi(url, data, method, token, callback)
+  }
+  if (/https/.test(url)) {
+    return callExternalApi(url, data, method, callback)
   }
   return callPlainApi(url, data, method, callback)
 }
