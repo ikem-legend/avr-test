@@ -23,6 +23,7 @@ import EditProfile from './EditProfile'
 import AccountSettings from './AccountSettings'
 import Security from './Security'
 import BanksCards from './BanksCards'
+import {showFeedback} from '../../redux/actions'
 
 class Account extends Component {
   constructor(props) {
@@ -47,15 +48,24 @@ class Account extends Component {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        const {setup: {bankAccountSetup, cardSetup, multiplierSetup, topup, documentUpload, total}} = res.data
+        const {
+          setup: {
+            bankAccountSetup,
+            cardSetup,
+            multiplierSetup,
+            topup,
+            documentUpload,
+            total,
+          },
+        } = res.data
         this.setState({
           bankAccountSetup: bankAccountSetup.done,
           cardSetup: cardSetup.done,
           multiplierSetup: multiplierSetup.done,
           topup: topup.done,
           documentUpload: documentUpload.done,
-          total
-        });
+          total,
+        })
       })
       .catch(err => {
         this.props.showFeedback(err, 'error')
@@ -83,7 +93,15 @@ class Account extends Component {
   }
 
   render() {
-    const {bankAccountSetup, cardSetup, multiplierSetup, topup, documentUpload, total, activeTab} = this.state
+    const {
+      bankAccountSetup,
+      cardSetup,
+      multiplierSetup,
+      topup,
+      documentUpload,
+      total,
+      activeTab,
+    } = this.state
     const {user} = this.props
 
     return (
@@ -130,7 +148,13 @@ class Account extends Component {
                     checked={bankAccountSetup}
                     readOnly
                   />
-                  <span className={classnames({complete: bankAccountSetup === true}, {incomplete: bankAccountSetup === false}, "ml-4 font-weight-bold")}>
+                  <span
+                    className={classnames(
+                      {complete: bankAccountSetup === true},
+                      {incomplete: bankAccountSetup === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
                     {bankAccountSetup ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
@@ -142,7 +166,13 @@ class Account extends Component {
                     checked={cardSetup}
                     readOnly
                   />
-                  <span className={classnames({complete: cardSetup === true}, {incomplete: cardSetup === false}, "ml-4 font-weight-bold")}>
+                  <span
+                    className={classnames(
+                      {complete: cardSetup === true},
+                      {incomplete: cardSetup === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
                     {cardSetup ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
@@ -154,7 +184,13 @@ class Account extends Component {
                     checked={multiplierSetup}
                     readOnly
                   />
-                  <span className={classnames({complete: multiplierSetup === true}, {incomplete: multiplierSetup === false}, "ml-4 font-weight-bold")}>
+                  <span
+                    className={classnames(
+                      {complete: multiplierSetup === true},
+                      {incomplete: multiplierSetup === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
                     {multiplierSetup ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
@@ -166,7 +202,13 @@ class Account extends Component {
                     checked={documentUpload}
                     readOnly
                   />
-                  <span className={classnames({complete: documentUpload === true}, {incomplete: documentUpload === false}, "ml-4 font-weight-bold")}>
+                  <span
+                    className={classnames(
+                      {complete: documentUpload === true},
+                      {incomplete: documentUpload === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
                     {documentUpload ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
@@ -178,7 +220,13 @@ class Account extends Component {
                     checked={topup}
                     readOnly
                   />
-                  <span className={classnames({complete: topup === true}, {incomplete: topup === false}, "ml-4 font-weight-bold")}>
+                  <span
+                    className={classnames(
+                      {complete: topup === true},
+                      {incomplete: topup === false},
+                      'ml-4 font-weight-bold',
+                    )}
+                  >
                     {topup ? 'Complete' : 'Incomplete'}
                   </span>
                 </div>
@@ -295,4 +343,4 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps)(Account)
+export default connect(mapStateToProps, {showFeedback})(Account)

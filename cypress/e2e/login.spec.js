@@ -57,18 +57,18 @@ describe('Login Page', () => {
       .should('contain', `This field is invalid`)
   })
 
-  // it('requires correct email and password combination', () => {
-  //   user
-  //     .findByLabelText(/email/i)
-  //     .type('frank@ocean.com')
-  //     .findByLabelText(/password/i)
-  //     .type('wrongpwd')
-  //     .findByText(/login/i)
-  //     .click()
-  //     .findByRole('alert')
-  //     .should('be.visible')
-  //     .should('contain', `Email or password is incorrect`)
-  // })
+  it('requires correct email and password combination', () => {
+    user
+      .findByLabelText(/email/i)
+      .type('frank@ocean.com')
+      .findByLabelText(/password/i)
+      .type('wrongpwd')
+      .findByText(/login/i)
+      .click()
+      .findByRole('alert')
+      .should('be.visible')
+      .should('contain', `Invalid email or password`)
+  })
 
   it('should login a user', () => {
     user

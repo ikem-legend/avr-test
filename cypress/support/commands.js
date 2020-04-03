@@ -31,16 +31,16 @@ Cypress.Commands.add('assertHome', () => {
 Cypress.Commands.add('login', () => {
   cy.request({
     method: 'POST',
-    url: 'https://avenirapp.herokuapp.com/api/v1/auth/signin',
+    url: 'https://myavenir.herokuapp.com/api/v1/auth/signin',
     body: {
-      email: 'frank@ocean.com',
+      email: 'a.phillip@gmail.com',
       password: 'Password@1',
     },
   })
     .then(resp => {
       cy.request({
         method: 'GET',
-        url: 'https://avenirapp.herokuapp.com/api/v1/auth/me',
+        url: 'https://myavenir.herokuapp.com/api/v1/auth/me',
         headers: {
           Authorization: `Bearer ${resp.body.token}`,
           'Content-Type': 'application/json',
