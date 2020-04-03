@@ -33,8 +33,8 @@ const isUserAuthenticated = () => {
     //   // This is a temp solution but a rewrite of unauth pages should fix it
     //   return false
     // }
-    if (user && !user.setup.bankAccountSetup && !user.setup.cardSetup) {
-      
+    if (!user.setup.bankAccountSetup.done) {
+      // debugger
       return true
     }
     return true

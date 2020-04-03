@@ -1,24 +1,15 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
-import {
-  Row,
-  Col,
-  Progress,
-  CustomInput,
-  TabPane,
-  TabContent,
-  Nav,
-  NavItem,
-  NavLink,
-} from 'reactstrap'
+import {Row, Col, TabPane, TabContent, Nav, NavItem, NavLink} from 'reactstrap'
 import classnames from 'classnames'
 
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import {callApi} from '../../helpers/api'
+import {showFeedback} from '../../redux/actions'
 import Loader from '../../components/Loader'
-import profilePic from '../../assets/images/users/user-profile@2x.png'
 
+import {AccountProfile} from './AccountProfile'
 import EditProfile from './EditProfile'
 import AccountSettings from './AccountSettings'
 import Security from './Security'
@@ -30,12 +21,20 @@ class Account extends Component {
     super(props)
 
     this.state = {
+      name: '',
+      email: '',
+      phone: '',
+      dob: 0,
+      address: '',
+      referralUrl: '',
       bankAccountSetup: false,
-      cardSetup: false,
       topup: false,
       multiplierSetup: false,
+      documentUploadStatus: '',
       documentUpload: false,
       total: 0,
+      twofactorAuth: false,
+      notifications: false,
       activeTab: '1',
     }
   }
@@ -49,6 +48,16 @@ class Account extends Component {
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
         const {
+          myFirstName,
+          myLastName,
+          myEmailAddress,
+          myPhoneNumber,
+          myBirthDay,
+          myContactAddress,
+          myIdentifier,
+          plaidBankAccounts,
+          appNotifications,
+          twofactorAuthStatus,
           setup: {
             bankAccountSetup,
             cardSetup,
@@ -59,12 +68,21 @@ class Account extends Component {
           },
         } = res.data
         this.setState({
+          name: `${myFirstName} ${myLastName}`,
+          email: myEmailAddress,
+          phone: myPhoneNumber ? myPhoneNumber : '',
+          dob: myBirthDay,
+          address: myContactAddress ? myContactAddress : '',
+          referralUrl: myIdentifier ? myIdentifier : '',
+          accounts: plaidBankAccounts,
           bankAccountSetup: bankAccountSetup.done,
-          cardSetup: cardSetup.done,
           multiplierSetup: multiplierSetup.done,
           topup: topup.done,
           documentUpload: documentUpload.done,
+          documentUploadStatus: documentUpload.status,
           total,
+          notifications: appNotifications,
+          twofactorAuth: twofactorAuthStatus,
         })
       })
       .catch(err => {
@@ -85,7 +103,6 @@ class Account extends Component {
    * @returns {object} Redirect component
    */
   renderRedirectToRoot = () => {
-    console.log('look here')
     const isAuthTokenValid = isUserAuthenticated()
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
@@ -94,12 +111,21 @@ class Account extends Component {
 
   render() {
     const {
+      name,
+      email,
+      phone,
+      dob,
+      address,
+      referralUrl,
+      accounts,
       bankAccountSetup,
-      cardSetup,
       multiplierSetup,
       topup,
       documentUpload,
+      documentUploadStatus,
       total,
+      notifications,
+      twofactorAuth,
       activeTab,
     } = this.state
     const {user} = this.props
@@ -113,124 +139,15 @@ class Account extends Component {
 
           <Row className="page-title">
             <Col md={3}>
-              <div className="account-profile">
-                <h6>My Account</h6>
-                <div className="media user-profile user-avatar mt-2">
-                  <img
-                    src={profilePic}
-                    className="avatar-lg rounded-circle mr-2"
-                    alt="Avenir"
-                  />
-                  <img
-                    src={profilePic}
-                    className="avatar-xs rounded-circle mr-2"
-                    alt="Avenir"
-                  />
-                </div>
-                <h4 data-testid="username-display" className="mb-4">
-                  {user.myFirstName} {user.myLastName}
-                </h4>
-                <hr />
-                <span data-testid="email-display">{user.myEmailAddress}</span>
-                <p data-testid="phone-display" className="mt-1 mb-3">
-                  <span>{user.myPhoneNumber}</span>
-                </p>
-                <div className="mt-3">
-                  Account Setup - <span className="setup">{total}%</span>
-                </div>
-                <Progress value={total} className="setup-level" />
-                <hr />
-                <div className="reg-status mb-3">
-                  <CustomInput
-                    type="checkbox"
-                    id="reg-stage-1"
-                    label="Link my bank account"
-                    checked={bankAccountSetup}
-                    readOnly
-                  />
-                  <span
-                    className={classnames(
-                      {complete: bankAccountSetup === true},
-                      {incomplete: bankAccountSetup === false},
-                      'ml-4 font-weight-bold',
-                    )}
-                  >
-                    {bankAccountSetup ? 'Complete' : 'Incomplete'}
-                  </span>
-                </div>
-                <div className="reg-status mb-3">
-                  <CustomInput
-                    type="checkbox"
-                    id="reg-stage-2"
-                    label="Link my credit card(s)"
-                    checked={cardSetup}
-                    readOnly
-                  />
-                  <span
-                    className={classnames(
-                      {complete: cardSetup === true},
-                      {incomplete: cardSetup === false},
-                      'ml-4 font-weight-bold',
-                    )}
-                  >
-                    {cardSetup ? 'Complete' : 'Incomplete'}
-                  </span>
-                </div>
-                <div className="reg-status mb-3">
-                  <CustomInput
-                    type="checkbox"
-                    id="reg-stage-3"
-                    label="Set a round-up multiplier"
-                    checked={multiplierSetup}
-                    readOnly
-                  />
-                  <span
-                    className={classnames(
-                      {complete: multiplierSetup === true},
-                      {incomplete: multiplierSetup === false},
-                      'ml-4 font-weight-bold',
-                    )}
-                  >
-                    {multiplierSetup ? 'Complete' : 'Incomplete'}
-                  </span>
-                </div>
-                <div className="reg-status mb-3">
-                  <CustomInput
-                    type="checkbox"
-                    id="reg-stage-4"
-                    label="Upload User ID"
-                    checked={documentUpload}
-                    readOnly
-                  />
-                  <span
-                    className={classnames(
-                      {complete: documentUpload === true},
-                      {incomplete: documentUpload === false},
-                      'ml-4 font-weight-bold',
-                    )}
-                  >
-                    {documentUpload ? 'Complete' : 'Incomplete'}
-                  </span>
-                </div>
-                <div className="reg-status">
-                  <CustomInput
-                    type="checkbox"
-                    id="reg-stage-5"
-                    label="Make your first top-up"
-                    checked={topup}
-                    readOnly
-                  />
-                  <span
-                    className={classnames(
-                      {complete: topup === true},
-                      {incomplete: topup === false},
-                      'ml-4 font-weight-bold',
-                    )}
-                  >
-                    {topup ? 'Complete' : 'Incomplete'}
-                  </span>
-                </div>
-              </div>
+              <AccountProfile
+                user={user}
+                bankAccountSetup={bankAccountSetup}
+                total={total}
+                multiplierSetup={multiplierSetup}
+                documentUpload={documentUpload}
+                documentUploadStatus={documentUploadStatus}
+                topup={topup}
+              />
             </Col>
             <Col md={9}>
               <div className="account-settings">
@@ -308,7 +225,15 @@ class Account extends Component {
                       <TabContent activeTab={activeTab}>
                         <TabPane tabId="1">
                           <div className="p-4">
-                            <EditProfile />
+                            <EditProfile
+                              name={name}
+                              email={email}
+                              phone={phone}
+                              dob={dob}
+                              address={address}
+                              referralUrl={referralUrl}
+                              loadUserData={this.loadUserData}
+                            />
                           </div>
                         </TabPane>
                         <TabPane tabId="2">
@@ -318,12 +243,17 @@ class Account extends Component {
                         </TabPane>
                         <TabPane tabId="3">
                           <div className="p-4">
-                            <BanksCards />
+                            <BanksCards bankAccounts={accounts} />
                           </div>
                         </TabPane>
                         <TabPane tabId="4">
                           <div className="p-4">
-                            <Security />
+                            <Security
+                              user={user}
+                              twoFA={twofactorAuth}
+                              notifications={notifications}
+                              updateUserData={this.loadUserData}
+                            />
                           </div>
                         </TabPane>
                       </TabContent>

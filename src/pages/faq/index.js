@@ -3,13 +3,11 @@ import {withRouter} from 'react-router-dom'
 
 class Faq extends Component {
   componentDidMount() {
-    window.open('https://avenir-app.com/faq')
+    window.open('http://avenir-app.com/faq')
     this.props.history.goBack()
   }
   render() {
-  	return (
-  		<Fragment />
-  	)
+    return <Fragment />
   }
 }
 

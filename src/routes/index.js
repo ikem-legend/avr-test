@@ -22,7 +22,7 @@ const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword'))
 const Dashboard = React.lazy(() => import('../pages/dashboard'))
 const Transactions = React.lazy(() => import('../pages/transactions'))
 const Account = React.lazy(() => import('../pages/account'))
-const Referral = React.lazy(() => import('../pages/referral'))
+// const Referral = React.lazy(() => import('../pages/referral'))
 const Faq = React.lazy(() => import('../pages/faq'))
 
 // handle auth and authorization
@@ -38,16 +38,16 @@ const PrivateRoute = ({component: Component, ...rest}) => (
           />
         )
       }
-      const loggedInUser = isUserAuthenticated();
-			const url = window.location.pathname
+      const loggedInUser = isUserAuthenticated()
+      const url = window.location.pathname
       // check if route is restricted by role
       // if (roles && roles.indexOf(loggedInUser.role) === -1) {
       //   // role not authorised so redirect to home page
       //   return <Redirect to={{ pathname: '/' }} />;
       // }
       if (loggedInUser && url === '/account/account-connect') {
-      	// authorised so return component
-      	return <Component {...props} />
+        // authorised so return component
+        return <Component {...props} />
       }
 
       // authorised so return component
@@ -63,7 +63,7 @@ const homeRoutes = {
   icon: FeatherIcon.Home,
   component: Home,
   route: Route,
-  exact: true
+  exact: true,
 }
 
 // dashboards
@@ -91,13 +91,13 @@ const transactionRoutes = {
 }
 
 // referrals
-const referralRoutes = {
-  path: '/referral',
-  name: 'Referral',
-  icon: FeatherIcon.Share2,
-  component: Referral,
-  route: PrivateRoute,
-}
+// const referralRoutes = {
+//   path: '/referral',
+//   name: 'Referral',
+//   icon: FeatherIcon.Share2,
+//   component: Referral,
+//   route: PrivateRoute,
+// }
 
 // accounts
 const accountRoutes = {
@@ -120,16 +120,16 @@ const faqRoutes = {
   route: PrivateRoute,
 }
 
-// support
-const supportRoutes = {
-  path: '#',
-  // path: '/faq',
-  name: 'Support',
-  icon: FeatherIcon.MessageSquare,
-  // icon: Unicons.UilCommentAltNotes,
-  component: Dashboard,
-  route: PrivateRoute,
-}
+// // support
+// const supportRoutes = {
+//   path: '#',
+//   // path: '/faq',
+//   name: 'Support',
+//   icon: FeatherIcon.MessageSquare,
+//   // icon: Unicons.UilCommentAltNotes,
+//   component: Dashboard,
+//   route: PrivateRoute,
+// }
 
 // auth
 const authRoutes = {
@@ -175,8 +175,8 @@ const authRoutes = {
   ],
 }
 
-const appRoutes = [transactionRoutes, accountRoutes, referralRoutes, faqRoutes, supportRoutes]
-// const appRoutes = [transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
+const appRoutes = [transactionRoutes, accountRoutes, faqRoutes]
+// const appRoutes = [transactionRoutes, accountRoutes, referralRoutes, faqRoutes, supportRoutes]
 
 // flatten the list of all nested routes
 const flattenRoutes = routes => {
@@ -199,9 +199,9 @@ const authProtectedRoutes = [
   dashboardRoutes,
   transactionRoutes,
   accountRoutes,
-  referralRoutes,
+  // referralRoutes,
   faqRoutes,
-  supportRoutes,
+  // supportRoutes,
 ]
 // const authProtectedRoutes = [dashboardRoutes, transactionRoutes, referralRoutes, accountRoutes, learnRoutes, faqRoutes]
 const allFlattenRoutes = flattenRoutes(allRoutes)

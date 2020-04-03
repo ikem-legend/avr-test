@@ -36,7 +36,7 @@ class Transactions extends Component {
     invPause: false,
     currDstrbn: [],
     loadingTopup: false,
-    txnList: []
+    txnList: [],
   }
 
   componentDidMount() {
@@ -61,10 +61,11 @@ class Transactions extends Component {
           currDstrbn: myCurrencyDistributions,
         })
       })
-      .catch(err => {
-        console.log(err)
-        this.props.showFeedback(err, 'error')
-        // this.props.history.push('/account/login')
+      .catch(() => {
+        this.props.showFeedback(
+          'Error retrieving user details. Please try again',
+          'error',
+        )
       })
   }
 
@@ -72,10 +73,11 @@ class Transactions extends Component {
     const {user} = this.props
     callApi('/user/plaid/bank/get/transactions', null, 'GET', user.token)
       .then(res => {
-        this.setState({txnList: res.data});
+        this.setState({txnList: res.data})
       })
-      .catch(() => {
-        this.props.showFeedback('Error retrieving transactions, please try again', 'error')
+      .catch(err => {
+        this.props.showFeedback(err, 'error')
+        // this.props.showFeedback('Error retrieving transactions, please try again', 'error')
       })
   }
 
@@ -100,20 +102,27 @@ class Transactions extends Component {
     if (roundup && roundup > 0) {
       // item + 2 to reflect coin IDs
       const newCurrDstrbn = currDstrbn.map((curr, item) => ({
-        currency_id: item + 2, 
-        amount: parseInt(curr.percentage, 10) / 100 * parseInt(roundup, 10)}))
-      const fundObj = {total: parseInt(roundup, 10), amount_split: newCurrDstrbn}
+        currency_id: item + 2,
+        amount: (parseInt(curr.percentage, 10) / 100) * parseInt(roundup, 10),
+      }))
+      const fundObj = {
+        total: parseInt(roundup, 10),
+        amount_split: newCurrDstrbn,
+      }
       callApi('/user/wallet/fund', fundObj, 'POST', user.token)
         .then(() => {
           this.setState({
             loadingTopup: false,
-            roundup: 0
-          });
+            roundup: 0,
+          })
           this.props.showFeedback('Top-up made successfully', 'success')
         })
         .catch(() => {
-          this.setState({loadingTopup: false});
-          this.props.showFeedback('Error making top-up, please check the amount and try again', 'error')
+          this.setState({loadingTopup: false})
+          this.props.showFeedback(
+            'Error making top-up, please check the amount and try again',
+            'error',
+          )
         })
     } else {
       this.setState({loadingTopup: false})
@@ -140,7 +149,7 @@ class Transactions extends Component {
       multiplier,
       invPause,
       loadingTopup,
-      txnList
+      txnList,
     } = this.state
 
     return (

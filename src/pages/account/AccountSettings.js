@@ -24,7 +24,7 @@ class AccountSettings extends Component {
   constructor() {
     super()
     this.state = {
-      multiplier: '2',
+      multiplier: '1',
       btc: 50,
       eth: 50,
       invPause: false,
@@ -71,35 +71,27 @@ class AccountSettings extends Component {
       invPause: !checked,
       loading: true,
     })
-    if (checked) {
-      callApi('/user/investment/continue', null, 'GET', user.token)
-        .then(() => {
-          this.setState({
-            loading: false,
-          })
-          this.props.showFeedback('Round-up successfully updated', 'success')
-        })
-        .catch(() => {
-          this.setState({
-            loading: false,
-          })
-          this.props.showFeedback('Error updating round-up', 'error')
-        })
-    } else {
-      callApi('/user/investment/pause', null, 'GET', user.token)
-        .then(() => {
-          this.setState({
-            loading: false,
-          })
-          this.props.showFeedback('Round-up successfully updated', 'success')
-        })
-        .catch(() => {
-          this.setState({
-            loading: false,
-          })
-          this.props.showFeedback('Error updating round-up', 'error')
-        })
+    const invStatus = {
+      pause_investment: !checked,
     }
+    callApi('/user/investment/status', invStatus, 'POST', user.token)
+      .then(({data}) => {
+        console.log(data)
+        this.setState({
+          loading: false,
+        })
+        this.props.showFeedback('Round-up successfully updated', 'success')
+      })
+      .catch(() => {
+        this.setState({
+          loading: false,
+          invPause: checked,
+        })
+        this.props.showFeedback(
+          'Error updating round-up. Please try again',
+          'error',
+        )
+      })
   }
 
   selectMultiplier = e => {
@@ -111,16 +103,21 @@ class AccountSettings extends Component {
 
   updateRatio = e => {
     const {name, value} = e.target
-    if (name === 'btc') {
-      this.setState({
-        btc: parseInt(value, 10),
-        eth: parseInt(100 - value, 10),
-      })
+    if (value.length > 2 && value > 100) {
+      this.props.showFeedback('Please enter valid amount', 'error')
+      return false
     } else {
-      this.setState({
-        btc: parseInt(100 - value, 10),
-        eth: parseInt(value, 10),
-      })
+      if (name === 'btc') {
+        this.setState({
+          btc: parseInt(value, 10),
+          eth: parseInt(100 - value, 10),
+        })
+      } else {
+        this.setState({
+          btc: parseInt(100 - value, 10),
+          eth: parseInt(value, 10),
+        })
+      }
     }
   }
 
@@ -324,7 +321,8 @@ class AccountSettings extends Component {
             <p className="font-weight-bold">
               Your Bitcoin to Ethereum % ratio is{' '}
               <span className="inv-ratio">
-                {currDist.btc}% : {currDist.eth}%
+                {currDist.btc ? currDist.btc : 50}% :{' '}
+                {currDist.eth ? currDist.eth : 50}%
               </span>
             </p>
           </Col>
@@ -388,12 +386,7 @@ class AccountSettings extends Component {
             </Row>
             <Row className="mt-2">
               <Col md={{size: 2, offset: 10}}>
-                <Button
-                  color="red"
-                  data-cy="account-setting-save"
-                  block
-                  onClick={this.saveMultiplier}
-                >
+                <Button color="red" block onClick={this.saveMultiplier}>
                   Save
                 </Button>
               </Col>

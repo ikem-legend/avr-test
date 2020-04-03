@@ -16,8 +16,14 @@ import {
 
 import AccountList from '../../components/AccountList'
 import CardList from '../../components/CardList'
+import RatioDistribution from '../../components/RatioDistribution'
 import {callApi} from '../../helpers/api'
-import {loginUser, showFeedback, showRightSidebar, hideRightSidebar} from '../../redux/actions'
+import {
+  loginUser,
+  showFeedback,
+  showRightSidebar,
+  hideRightSidebar,
+} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 
@@ -29,12 +35,16 @@ class AccountConnect extends Component {
     this.state = {
       accountModal: false,
       cardModal: false,
+      invModal: false,
       accounts: [],
       accountsLinkedList: [],
       cards: [],
       cardsLinkedList: [],
       loadingAccts: true,
       loadingCards: true,
+      loadingDstrbn: false,
+      btc: 50,
+      eth: 50,
     }
   }
 
@@ -95,7 +105,7 @@ class AccountConnect extends Component {
       .catch(err => {
         console.log(err)
         this.props.showFeedback('Error linking bank, please try again', 'error')
-        this.setState({loadingAccts: false});
+        this.setState({loadingAccts: false})
       })
   }
 
@@ -114,11 +124,11 @@ class AccountConnect extends Component {
       return acc
     })
     // console.log(tempList)
-    // const noLinkedAccts = tempList.filter(acct => acct.link === true)
-    // console.log(noLinkedAccts.length)
+    const noLinkedAccts = tempList.filter(acct => acct.link === true)
+    console.log(noLinkedAccts.length)
     this.setState({
       accountsLinkedList: tempList,
-      // disableConnectBtn: !Boolean(noLinkedAccts.length),
+      disableConnectBtn: !Boolean(noLinkedAccts.length),
     })
   }
 
@@ -147,7 +157,10 @@ class AccountConnect extends Component {
       .then(() => {
         this.props.showFeedback('Account(s) successfully linked', 'success')
         // this.displayCards()
-        this.props.history.push('/my-account')
+        this.setState({
+          accountModal: false,
+          invModal: true,
+        })
       })
       .catch(err => {
         console.log(err)
@@ -196,9 +209,60 @@ class AccountConnect extends Component {
         // this.props.loginUser()
         this.props.history.push('/my-account')
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
+        // console.log(err)
         this.props.showFeedback('Error linking card(s)', 'error')
+      })
+  }
+
+  updateRatio = e => {
+    const {name, value} = e.target
+    if (value.length > 2 && value > 100) {
+      this.props.showFeedback('Please enter valid amount', 'error')
+      return false
+    } else {
+      if (name === 'btc') {
+        this.setState({
+          btc: parseInt(value, 10),
+          eth: parseInt(100 - value, 10),
+        })
+      } else {
+        this.setState({
+          btc: parseInt(100 - value, 10),
+          eth: parseInt(value, 10),
+        })
+      }
+    }
+  }
+
+  saveRatio = () => {
+    const {btc, eth} = this.state
+    const {user} = this.props
+    this.setState({loadingDstrbn: true})
+    // Created temporarily
+    const currArray = [
+      {id: 2, percentage: btc},
+      {id: 3, percentage: eth},
+    ]
+    const currObj = {currencies: currArray}
+    callApi('/user/distributions', currObj, 'POST', user.token)
+      .then(() => {
+        this.props.showFeedback(
+          'Currency ratio successfully updated',
+          'success',
+        )
+        this.setState({
+          loadingDstrbn: false,
+        })
+        this.props.history.push('/my-account')
+      })
+      .catch(() => {
+        this.props.showFeedback(
+          'Error updating currency ratio, please try again',
+        )
+        this.setState({
+          loadingDstrbn: false,
+        })
       })
   }
 
@@ -212,7 +276,7 @@ class AccountConnect extends Component {
       return <Redirect to="/account/login" />
     }
   }
-
+  // eslint-disable-next-line max-lines-per-function
   render() {
     const isAuthTokenValid = isUserAuthenticated()
     const {user} = this.props
@@ -221,10 +285,14 @@ class AccountConnect extends Component {
       cards,
       accountModal,
       cardModal,
-      // disableConnectBtn,
+      invModal,
+      disableConnectBtn,
       // disableConnectCardBtn,
       loadingAccts,
       loadingCards,
+      loadingDstrbn,
+      btc,
+      eth,
     } = this.state
 
     const accountList = accounts.map(acc => (
@@ -286,12 +354,13 @@ class AccountConnect extends Component {
                       </div>
                       <div className="bank-verify-info mt-4 p-3">
                         <p className="mb-0">
-                          I, {user && user.myFirstName ? user.myFirstName : ''}, authorize Avenir Inc. to debit
-                          the account indicated for the recurring transactions
-                          according to the terms of use and my agreement with
-                          Avenir Inc. I will not dispute Avenir Inc. so long as
-                          the transactions correspond to the terms of use and my
-                          agreement with Avenir Inc.
+                          I, {user && user.myFirstName ? user.myFirstName : ''},
+                          authorize Avenir Inc. to debit the account indicated
+                          for the recurring transactions according to the terms
+                          of use and my agreement with Avenir Inc. I will not
+                          dispute Avenir Inc. so long as the transactions
+                          correspond to the terms of use and my agreement with
+                          Avenir Inc.
                         </p>
                         <p className="mb-0 mt-4">
                           This payment authorization is valid and will remain
@@ -337,7 +406,8 @@ class AccountConnect extends Component {
                             color="success"
                             block
                             onClick={this.connectSelectedAccts}
-                            // disabled={disableConnectBtn}
+                            // disabled={accountsLinkedList.length > 0}
+                            disabled={disableConnectBtn}
                           >
                             Continue
                           </Button>
@@ -370,6 +440,18 @@ class AccountConnect extends Component {
                         </ModalBody>
                       </Modal>
 
+                      <Modal isOpen={invModal} size="lg">
+                        <ModalBody>
+                          <RatioDistribution
+                            btc={btc}
+                            eth={eth}
+                            updateRatio={this.updateRatio}
+                            saveRatio={this.saveRatio}
+                            loadingDstrbn={loadingDstrbn}
+                          />
+                        </ModalBody>
+                      </Modal>
+
                       {this.props.error && (
                         <Alert
                           color="danger"
@@ -399,6 +481,9 @@ const mapStateToProps = state => {
   return {user, error}
 }
 
-export default connect(mapStateToProps, {loginUser, showFeedback, showRightSidebar, hideRightSidebar})(
-  withRouter(AccountConnect),
-)
+export default connect(mapStateToProps, {
+  loginUser,
+  showFeedback,
+  showRightSidebar,
+  hideRightSidebar,
+})(withRouter(AccountConnect))

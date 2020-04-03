@@ -1,5 +1,5 @@
 // @flow
-import {Cookies} from 'react-cookie'
+import Cookies from 'universal-cookie'
 import {toast} from 'react-toastify'
 import {all, call, fork, put, takeLatest} from 'redux-saga/effects'
 
@@ -28,8 +28,10 @@ import {
 const setSession = user => {
   const cookies = new Cookies()
   // console.log(cookies, user)
-  if (user) cookies.set('avenirUser', JSON.stringify(user), {path: '/'})
-  else cookies.remove('avenirUser', {path: '/'})
+  if (user) {
+    cookies.set('avenirUser', JSON.stringify(user), {path: '/'})
+    // console.log('Cookies: ', cookies.get('avenirUser'))
+  } else cookies.remove('avenirUser', {path: '/'})
 }
 /**
  * Login the user
@@ -52,14 +54,36 @@ function* login({payload: {user, history}}) {
         result.token,
       )
       const {
-        data,
-        // data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+        // data,
+        data: {
+          myFirstName,
+          myLastName,
+          myEmailAddress,
+          myPhoneNumber,
+          myIdentifier,
+          myContactAddress,
+          myCurrencyDistributions,
+          myMultiplierSetting,
+          MyInvestmentPause,
+          setup,
+        },
       } = response
       const userObj = {}
       Object.assign(
         userObj,
-        {...data},
-        // {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+        // {...data},
+        {
+          myFirstName,
+          myLastName,
+          myEmailAddress,
+          myPhoneNumber,
+          myIdentifier,
+          myContactAddress,
+          myCurrencyDistributions,
+          myMultiplierSetting,
+          MyInvestmentPause,
+          setup,
+        },
         {token: result.token},
       )
       setSession(userObj)
@@ -103,16 +127,15 @@ function* logout({payload: {history}}) {
  */
 function* register({payload: {user, history}}) {
   // console.log(user, history)
-  // localStorage.setItem('avenir', 'abcd')
   try {
-  	const queryString = history.location.search
-  	const urlParams = new URLSearchParams(queryString);
-  	let result
-  	if (urlParams === '') {
-    	result = yield call(callApi, '/auth/signup', user, 'POST')
-  	} else {
-  		result = yield call(callApi, `/auth/signup${urlParams}`, user, 'POST')
-  	}
+    const queryString = history.location.search
+    const urlParams = new URLSearchParams(queryString)
+    let result
+    if (urlParams === '') {
+      result = yield call(callApi, '/auth/signup', user, 'POST')
+    } else {
+      result = yield call(callApi, `/auth/signup${urlParams}`, user, 'POST')
+    }
     // console.log(result.data.message.token)
     const response = yield call(
       callApi,
@@ -123,7 +146,7 @@ function* register({payload: {user, history}}) {
     )
     // console.log(response)
     const {
-      data
+      data,
       // data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
     } = response
     const userObj = {}
@@ -138,7 +161,7 @@ function* register({payload: {user, history}}) {
     // Save user object in local storage for the meantime then if validation successful set cookie and/else delete from local storage
     // localStorage.setItem('avenir', JSON.stringify(userObj))
     // console.log(localStorage.getItem('avenir'))
-    setSession(userObj);
+    setSession(userObj)
     yield call(() => history.push('/account/account-connect'))
   } catch (error) {
     let message
@@ -153,10 +176,9 @@ function* register({payload: {user, history}}) {
         message = error
     }
     yield put(registerUserFailed(message))
-    toast.error(
-    	'Registration error. Please check your details and try again', 
-    	{hideProgressBar: true}
-    )
+    toast.error('Registration error. Please check your details and try again', {
+      hideProgressBar: true,
+    })
   }
 }
 

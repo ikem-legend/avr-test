@@ -5,8 +5,6 @@ import {
   Form,
   FormGroup,
   CustomInput,
-  // Label,
-  // Input,
   Button,
   Progress,
 } from 'reactstrap'
@@ -19,7 +17,7 @@ class RoundUps extends Component {
   constructor() {
     super()
     this.state = {
-      multiplier: '2', // text value of multiplier
+      multiplier: '1', // text value of multiplier
       invPause: false,
       loadingRndp: false,
       loadingMlpr: false,
@@ -47,35 +45,27 @@ class RoundUps extends Component {
       invPause: !checked,
       loadingRndp: true,
     })
-    if (checked) {
-      callApi('/user/investment/continue', null, 'GET', user.token)
-        .then(() => {
-          this.setState({
-            loadingRndp: false,
-          })
-          this.props.showFeedback('Round-up successfully updated', 'success')
-        })
-        .catch(() => {
-          this.setState({
-            loadingRndp: false,
-          })
-          this.props.showFeedback('Error updating round-up', 'error')
-        })
-    } else {
-      callApi('/user/investment/pause', null, 'GET', user.token)
-        .then(() => {
-          this.setState({
-            loadingRndp: false,
-          })
-          this.props.showFeedback('Round-up successfully updated', 'success')
-        })
-        .catch(() => {
-          this.setState({
-            loadingRndp: false,
-          })
-          this.props.showFeedback('Error updating round-up', 'error')
-        })
+    const invStatus = {
+      pause_investment: !checked,
     }
+    callApi('/user/investment/status', invStatus, 'POST', user.token)
+      .then(({data}) => {
+        console.log(data)
+        this.setState({
+          loadingRndp: false,
+        })
+        this.props.showFeedback('Round-up successfully updated', 'success')
+      })
+      .catch(() => {
+        this.setState({
+          loadingRndp: false,
+          invPause: checked,
+        })
+        this.props.showFeedback(
+          'Error updating round-up. Please try again',
+          'error',
+        )
+      })
   }
 
   selectMultiplier = e => {

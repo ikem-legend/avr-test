@@ -1,49 +1,87 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 // import {Redirect} from 'react-router-dom'
-import {
-  Row,
-  Col,
-  CustomInput
-} from 'reactstrap'
+import {Row, Col, CustomInput} from 'reactstrap'
+import {callApi} from '../../helpers/api'
+import {showFeedback} from '../../redux/actions'
 
-class Security  extends Component {
-	constructor() {
-		super()
-		this.state = {
-			name: '',
-			email: '',
-			phone: '',
-			dob: '',
-			address: '',
-			referralUrl: ''
-		}
-	}
+class Security extends Component {
+  constructor() {
+    super()
+    this.state = {
+      twoFA: '',
+      notifications: '',
+    }
+  }
 
-  // componentDidMount() {
-  //   const {user} = this.props
-  //   console.log(user)
-  //   this.setState({
-  //     name: `${user.myFirstName} ${user.myLastName}`,
-  //     email: user.myEmailAddress,
-  //     phone: user.myPhoneNumber,
-  //     dob: '',
-  //     address: 'Sample address',
-  //     referralUrl: ''
-  //   });
-  // }
+  componentDidUpdate(prevProps) {
+    if (prevProps.twofactorAuthStatus !== this.props.twofactorAuthStatus) {
+      this.loadUserData()
+    }
+  }
 
-	updateFields = e => {
-		const {name, value} = e.target
-		this.setState((prevState) => ({
-			...prevState,
-			[name]: [value]
-		}));
-	}
+  loadUserData = () => {
+    const {twoFA, notifications} = this.props
+    this.setState({
+      twoFA,
+      notifications,
+    })
+  }
 
-	render() {
-		// const {name, email, phone, dob, address, referralUrl} = this.state
-		return (
+  updateFields = e => {
+    const {name, checked} = e.target
+    const {user, updateUserData} = this.props
+    this.setState(prevState => ({
+      ...prevState,
+      [name]: checked,
+    }))
+    if (name === 'twoFA') {
+      const twoFactorStatus = {two_factor_auth: checked}
+      callApi(
+        '/user/two-factor-auth/status',
+        twoFactorStatus,
+        'POST',
+        user.token,
+      )
+        .then(() => {
+          updateUserData()
+          this.props.showFeedback(
+            'Two-factor setting successfully updated',
+            'success',
+          )
+        })
+        .catch(() => {
+          updateUserData()
+          this.props.showFeedback('Error updating Two-factor setting', 'error')
+        })
+    } else {
+      const notificationStatus = {app_notification: checked}
+      callApi(
+        '/user/notification/status',
+        notificationStatus,
+        'POST',
+        user.token,
+      )
+        .then(() => {
+          updateUserData()
+          this.props.showFeedback(
+            'Notifications setting successfully updated',
+            'success',
+          )
+        })
+        .catch(() => {
+          updateUserData()
+          this.props.showFeedback(
+            'Error updating Notifications setting',
+            'error',
+          )
+        })
+    }
+  }
+
+  render() {
+    const {twoFA, notifications} = this.props
+    return (
       <div className="mt-2">
         <Row>
           <Col md={12}>
@@ -52,26 +90,30 @@ class Security  extends Component {
         </Row>
         <Row className="mb-4">
           <Col md={9}>
-            <p className="mb-0">For added security, enable a two-step authentication</p>
-            <p className="mb-0">Which will require a PIN when sent to your email or</p>
+            <p className="mb-0">
+              For added security, enable a two-step authentication
+            </p>
+            <p className="mb-0">
+              Which will require a PIN when sent to your email or
+            </p>
             <p className="mb-0">registered phone with Avenir</p>
           </Col>
           <Col md={3} className="d-flex align-items-center">
             <div>
-              <span className="mr-1 font-weight-bold">PAUSE</span>
-              <CustomInput 
+              <CustomInput
                 type="switch"
-                id="roundupsSwitch"
-                name="roundupsSwitch"
-                className="roundup-switch"
-                label="RESUME"
-                onClick={this.switchRoundup}
+                id="twoFASwitch"
+                name="twoFA"
+                className="security-switch"
+                onClick={this.updateFields}
+                onChange={this.updateFields}
+                checked={twoFA}
               />
             </div>
           </Col>
         </Row>
 
-  			<Row>
+        <Row>
           <Col md={12}>
             <h6 className="font-weight-bold">Notifications</h6>
           </Col>
@@ -79,30 +121,32 @@ class Security  extends Component {
         <Row>
           <Col md={9}>
             <p className="mb-0">For added security, enable notification</p>
-            <p className="mb-0">Which will require a PIN when sent to your email or</p>
+            <p className="mb-0">
+              Which will require a PIN when sent to your email or
+            </p>
             <p className="mb-0">registered phone with Avenir</p>
           </Col>
-  				 <Col md={3} className="d-flex align-items-center">
+          <Col md={3} className="d-flex align-items-center">
             <div>
-              <span className="mr-1 font-weight-bold">PAUSE</span>
-              <CustomInput 
+              <CustomInput
                 type="switch"
-                id="roundupsSwitch"
-                name="roundupsSwitch"
-                className="roundup-switch"
-                label="RESUME"
-                onClick={this.switchRoundup}
+                id="notificationsSwitch"
+                name="notifications"
+                className="security-switch"
+                onClick={this.updateFields}
+                onChange={this.updateFields}
+                checked={notifications}
               />
             </div>
           </Col>
         </Row>
       </div>
-		)
-	}
+    )
+  }
 }
 
 const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps)(Security)
+export default connect(mapStateToProps, {showFeedback})(Security)
