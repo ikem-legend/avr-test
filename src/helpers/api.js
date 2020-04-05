@@ -7,7 +7,7 @@ import axios from 'axios'
  */
 
 const config = {
-  fetchUrl: 'https://myavenir.herokuapp.com/api/v1',
+  fetchUrl: 'https://avenir-backend.herokuapp.com/api/v1',
 }
 
 const callPlainApi = (url, data, method) =>

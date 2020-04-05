@@ -71,6 +71,12 @@ describe('Login Page', () => {
   })
 
   it('should login a user', () => {
+    user.fixture('signin').as('signinJSON')
+    user.fixture('user').as('usersJSON')
+    user.server()
+    user.route('POST', '/api/v1/auth/signin', '@signinJSON')
+    user.route('GET', '/api/v1/auth/me', '@usersJSON')
+
     user
       .findByLabelText(/email/i)
       .type('a.phillip@gmail.com')
@@ -81,5 +87,7 @@ describe('Login Page', () => {
       .assertHome()
       .getCookie('avenirUser')
       .should('have.property', 'value')
+      .url()
+      .should('include', '/dashboard')
   })
 })

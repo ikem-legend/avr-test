@@ -1,4 +1,3 @@
-import subYears from 'date-fns/subYears'
 import {buildUser} from '../support/generator'
 import 'cypress-file-upload'
 
@@ -6,6 +5,10 @@ describe('Register Page', () => {
   const user = cy
   beforeEach(() => {
     user.visit('/account/signup')
+
+    user.fixture('countries').as('countriesJSON')
+    cy.server()
+    cy.route('GET', '/api/v1/data/countries', '@countriesJSON')
   })
 
   it('greets with create an account and confirm your identity', () => {
@@ -384,7 +387,13 @@ describe('Register Page', () => {
 
   it('should register a new user', () => {
     const customer = buildUser()
-
+    cy.fixture('signup').as('signupJSON')
+    user.fixture('signin').as('signinJSON')
+    user.fixture('user').as('usersJSON')
+    cy.server()
+    cy.route('POST', '/api/v1/auth/signup', '@signupJSON')
+    user.route('POST', '/api/v1/auth/signin', '@signinJSON')
+    user.route('GET', '/api/v1/auth/me', '@usersJSON')
     user
       .findByLabelText(/first name/i)
       .click({force: true})
@@ -436,7 +445,6 @@ describe('Register Page', () => {
       .check({force: true})
       .findByText(/sign up/i)
       .click()
-      .wait(20000)
       .url()
       .should('include', '/account/account-connect')
   })

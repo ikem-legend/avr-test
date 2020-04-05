@@ -31,7 +31,7 @@ Cypress.Commands.add('assertHome', () => {
 Cypress.Commands.add('login', () => {
   cy.request({
     method: 'POST',
-    url: 'https://myavenir.herokuapp.com/api/v1/auth/signin',
+    url: 'https://avenir-backend.herokuapp.com/api/v1/auth/signin',
     body: {
       email: 'a.phillip@gmail.com',
       password: 'Password@1',
@@ -40,7 +40,7 @@ Cypress.Commands.add('login', () => {
     .then(resp => {
       cy.request({
         method: 'GET',
-        url: 'https://myavenir.herokuapp.com/api/v1/auth/me',
+        url: 'https://avenir-backend.herokuapp.com/api/v1/auth/me',
         headers: {
           Authorization: `Bearer ${resp.body.token}`,
           'Content-Type': 'application/json',

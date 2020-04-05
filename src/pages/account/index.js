@@ -14,7 +14,6 @@ import EditProfile from './EditProfile'
 import AccountSettings from './AccountSettings'
 import Security from './Security'
 import BanksCards from './BanksCards'
-import {showFeedback} from '../../redux/actions'
 
 class Account extends Component {
   constructor(props) {

@@ -1,4 +1,4 @@
-describe('Login Page', () => {
+describe('Connect Account Page', () => {
   const getIframeBody = () => {
     return cy
       .get('#plaid-link-iframe-1')
@@ -18,12 +18,6 @@ describe('Login Page', () => {
     // see recipe "Stubbing window.fetch" in
     // https://github.com/cypress-io/cypress-example-recipes
     getIframeWindow().then(iframeWindow => {
-      delete iframeWindow.fetch
-      // since the application code does not ship with a polyfill
-      // load a polyfilled "fetch" from the test
-      iframeWindow.eval(polyfill)
-      iframeWindow.fetch = iframeWindow.unfetch
-
       // BUT to be able to spy on XHR or stub XHR requests
       // from the iframe we need to copy OUR window.XMLHttpRequest into the iframe
       cy.window().then(appWindow => {
@@ -32,10 +26,16 @@ describe('Login Page', () => {
     })
   }
 
-  const user = cy
   before(() => {
-    user
-      .visit('/account/login')
+    cy.fixture('signin').as('signinJSON')
+    cy.fixture('user').as('usersJSON')
+    cy.server()
+    cy.route('POST', '/api/v1/auth/signin', '@signinJSON')
+    cy.route('GET', '/api/v1/auth/me', '@usersJSON')
+    cy.route('POST', '/api/v1/user/distributions', {
+      data: {message: 'Your currency distribution has been updated'},
+    })
+    cy.visit('/account/login')
       .findByLabelText(/email/i)
       .type('a.phillip@gmail.com')
       .findByLabelText(/password/i)
@@ -44,23 +44,27 @@ describe('Login Page', () => {
       .click()
       .assertHome()
       .visit('/account/account-connect')
-
-    //   user.server()
-    //     cy.fixture('plaid').as('plaidJSON')
-    //     user.route('POST', 'https://sandbox.plaid.com/link/item/create', 'plaid').as('linkaccount')
   })
 
-  // it('should render connect page correctly', () => {
-  //   user
-  //   .findByText(/connect your bank account/i)
-  //   .should('be.visible')
-  // })
-
   it('should render plaid modal ', () => {
-    user.findByText(/connect my funding account/i).click()
+    replaceIFrameFetchWithXhr()
+    cy.fixture('account').as('accountJSON')
+    cy.fixture('plaid').as('plaidJSON')
+    cy.server()
+    cy.route('POST', '/api/v1/user/plaid/bank', '@accountJSON').as('banks')
+    cy.route('POST', '/api/v1/user/plaid/bank/account/link', {
+      data: {message: 'your account has been linked'},
+    })
+    cy.route(
+      'POST',
+      'https://sandbox.plaid.com/link/item/create',
+      '@plaidJSON',
+    ).as('create')
+
+    cy.findByText(/connect my funding account/i).click()
 
     getIframeBody()
-      .findByText('Continue')
+      .findByText('Continue', {timeout: 5000})
       .click()
     getIframeBody()
       .find('li')
@@ -71,16 +75,38 @@ describe('Login Page', () => {
       .type('user_good')
     getIframeBody()
       .findByLabelText(/password/i)
+      .click({force: true})
       .type('pass_good')
-
     getIframeBody()
       .findByText(/submit/i)
       .click({force: true})
-    // getIframeWindow().then((win) => {
-    //     cy.spy(win, 'fetch').as('fetch')
-    //    })
-    // cy.get('@fetch').should('have.been.calledOnce')
-  })
 
-  //
+    getIframeBody().wait('@create')
+
+    getIframeBody()
+      .findByText(/continue/i, {timeout: 10000})
+      .click({force: true})
+    getIframeBody()
+      .wait('@banks')
+      .get('.linked', {timeout: 20000})
+      .first()
+      .click({force: true})
+      .findByText(/continue/i, {timeout: 10000})
+      .click({force: true})
+      .get('.Toastify__toast-body', {timeout: 10000})
+      .should('contain.text', 'Account(s) successfully linked')
+      .should('be.visible')
+      .get('input[name="btc"]', {timeout: 10000})
+      .clear()
+      .type('30')
+      .get('input[name="eth"]')
+      .should('have.value', '70')
+      .findByText(/save/i, {timeout: 10000})
+      .click()
+      .get('.Toastify__toast-body', {timeout: 10000})
+      .should('contain.text', 'Currency ratio successfully updated')
+      .should('be.visible')
+      .url()
+      .should('include', '/my-account')
+  })
 })

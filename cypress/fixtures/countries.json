@@ -1,0 +1,310 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "code": "1",
+      "name": "United States",
+      "cities": [
+        {
+          "id": 1,
+          "code": null,
+          "name": "Alabama"
+        },
+        {
+          "id": 2,
+          "code": null,
+          "name": "Alaska"
+        },
+        {
+          "id": 3,
+          "code": null,
+          "name": "American Samoa"
+        },
+        {
+          "id": 4,
+          "code": null,
+          "name": "Arizona"
+        },
+        {
+          "id": 5,
+          "code": null,
+          "name": "Arkansas"
+        },
+        {
+          "id": 6,
+          "code": null,
+          "name": "California"
+        },
+        {
+          "id": 7,
+          "code": null,
+          "name": "Colorado"
+        },
+        {
+          "id": 8,
+          "code": null,
+          "name": "Connecticut"
+        },
+        {
+          "id": 9,
+          "code": null,
+          "name": "Delaware"
+        },
+        {
+          "id": 10,
+          "code": null,
+          "name": "District Of Columbia"
+        },
+        {
+          "id": 11,
+          "code": null,
+          "name": "Federated States Of Micronesia"
+        },
+        {
+          "id": 12,
+          "code": null,
+          "name": "Florida"
+        },
+        {
+          "id": 13,
+          "code": null,
+          "name": "Georgia"
+        },
+        {
+          "id": 14,
+          "code": null,
+          "name": "Guam Gu"
+        },
+        {
+          "id": 15,
+          "code": null,
+          "name": "Hawaii"
+        },
+        {
+          "id": 16,
+          "code": null,
+          "name": "Idaho"
+        },
+        {
+          "id": 17,
+          "code": null,
+          "name": "Illinois"
+        },
+        {
+          "id": 18,
+          "code": null,
+          "name": "Indiana"
+        },
+        {
+          "id": 19,
+          "code": null,
+          "name": "Iowa"
+        },
+        {
+          "id": 20,
+          "code": null,
+          "name": "Kansas"
+        },
+        {
+          "id": 21,
+          "code": null,
+          "name": "Kentucky"
+        },
+        {
+          "id": 22,
+          "code": null,
+          "name": "Louisiana"
+        },
+        {
+          "id": 23,
+          "code": null,
+          "name": "Maine"
+        },
+        {
+          "id": 24,
+          "code": null,
+          "name": "Marshall Islands"
+        },
+        {
+          "id": 25,
+          "code": null,
+          "name": "Maryland"
+        },
+        {
+          "id": 26,
+          "code": null,
+          "name": "Massachusetts"
+        },
+        {
+          "id": 27,
+          "code": null,
+          "name": "Michigan"
+        },
+        {
+          "id": 28,
+          "code": null,
+          "name": "Minnesota"
+        },
+        {
+          "id": 29,
+          "code": null,
+          "name": "Mississippi"
+        },
+        {
+          "id": 30,
+          "code": null,
+          "name": "Missouri"
+        },
+        {
+          "id": 31,
+          "code": null,
+          "name": "Montana"
+        },
+        {
+          "id": 32,
+          "code": null,
+          "name": "Nebraska"
+        },
+        {
+          "id": 33,
+          "code": null,
+          "name": "Nevada"
+        },
+        {
+          "id": 34,
+          "code": null,
+          "name": "New Hampshire"
+        },
+        {
+          "id": 35,
+          "code": null,
+          "name": "New Jersey"
+        },
+        {
+          "id": 36,
+          "code": null,
+          "name": "New Mexico"
+        },
+        {
+          "id": 37,
+          "code": null,
+          "name": "New York"
+        },
+        {
+          "id": 38,
+          "code": null,
+          "name": "North Carolina"
+        },
+        {
+          "id": 39,
+          "code": null,
+          "name": "North Dakota"
+        },
+        {
+          "id": 40,
+          "code": null,
+          "name": "Northern Mariana Islands"
+        },
+        {
+          "id": 41,
+          "code": null,
+          "name": "Ohio"
+        },
+        {
+          "id": 42,
+          "code": null,
+          "name": "Oklahoma"
+        },
+        {
+          "id": 43,
+          "code": null,
+          "name": "Oregon"
+        },
+        {
+          "id": 44,
+          "code": null,
+          "name": "Palau"
+        },
+        {
+          "id": 45,
+          "code": null,
+          "name": "Pennsylvania"
+        },
+        {
+          "id": 46,
+          "code": null,
+          "name": "Puerto Rico"
+        },
+        {
+          "id": 47,
+          "code": null,
+          "name": "Rhode Island"
+        },
+        {
+          "id": 48,
+          "code": null,
+          "name": "South Carolina"
+        },
+        {
+          "id": 49,
+          "code": null,
+          "name": "South Dakota"
+        },
+        {
+          "id": 50,
+          "code": null,
+          "name": "Tennessee"
+        },
+        {
+          "id": 51,
+          "code": null,
+          "name": "Texas"
+        },
+        {
+          "id": 52,
+          "code": null,
+          "name": "Utah"
+        },
+        {
+          "id": 53,
+          "code": null,
+          "name": "Vermont"
+        },
+        {
+          "id": 54,
+          "code": null,
+          "name": "Virgin Islands"
+        },
+        {
+          "id": 55,
+          "code": null,
+          "name": "Virginia"
+        },
+        {
+          "id": 56,
+          "code": null,
+          "name": "Washington"
+        },
+        {
+          "id": 57,
+          "code": null,
+          "name": "West Virginia"
+        },
+        {
+          "id": 58,
+          "code": null,
+          "name": "Wisconsin"
+        },
+        {
+          "id": 59,
+          "code": null,
+          "name": "Wyoming"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "api_signature": "heimdall inc",
+    "developer": "schneidershades"
+  }
+}

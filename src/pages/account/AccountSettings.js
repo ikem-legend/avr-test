@@ -386,7 +386,12 @@ class AccountSettings extends Component {
             </Row>
             <Row className="mt-2">
               <Col md={{size: 2, offset: 10}}>
-                <Button color="red" block onClick={this.saveMultiplier}>
+                <Button
+                  data-cy="account-setting-save"
+                  color="red"
+                  block
+                  onClick={this.saveMultiplier}
+                >
                   Save
                 </Button>
               </Col>
