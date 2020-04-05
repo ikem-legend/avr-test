@@ -19,8 +19,6 @@ const InvestmentChart = ({myCurrencyDistributions, btcVal, ethVal}) => {
       parentHeightOffset: 0,
     },
     colors: ['#00a4ad', '#65dbe1'],
-    // colors: ['#00a4ad78', '#25c2e3'],
-    // colors: ["#5369f8", "#43d39e", "#f77e53", "#ffbe0b"],
     grid: {
       borderColor: '#f1f3fa',
       padding: {
@@ -48,8 +46,7 @@ const InvestmentChart = ({myCurrencyDistributions, btcVal, ethVal}) => {
     labels: [
       `Bitcoin ${btcVal ? btcVal : 0.0}, ${btc ? btc.percentage : 0}%`,
       `Ethereum ${ethVal ? ethVal : 0.0}, ${eth ? eth.percentage : 0}%`,
-    ],
-    // labels: ['Clothes 44k', 'Smartphons 55k', 'Electronics 41k', 'Other 17k'],
+    ],    
     responsive: [
       {
         breakpoint: 480,
@@ -69,7 +66,7 @@ const InvestmentChart = ({myCurrencyDistributions, btcVal, ethVal}) => {
     },
   }
 
-  const data = [1, 1]
+  const data = [btc ? btc.percentage * 10 : 1, eth ? eth.percentage * 10 : 1]
 
   return (
     <Card>

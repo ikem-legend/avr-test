@@ -33,7 +33,7 @@ class WithdrawalTable extends Component {
       ],
       columns: [
         {
-            dataField: 'date',
+            dataField: 'dateCreated',
             text: 'Date',
             sort: true,
         },
@@ -44,11 +44,13 @@ class WithdrawalTable extends Component {
         },
         {
             dataField: 'amount',
+            formatter: this.formatCurr,
             text: 'Amount',
             sort: false,
         },
         {
             dataField: 'status',
+            formatter: this.formatStatus,
             text: 'Status',
             sort: true,
         },
@@ -60,6 +62,11 @@ class WithdrawalTable extends Component {
       ]
     }
   }
+
+  formatStatus = status => (<span>{`${status[0].toUpperCase()}${status.slice(1)}`}</span>)
+
+  formatCurr = amount => <span>${amount}</span>
+
   render() {
     const {withdrawals, columns} = this.state
     const { SearchBar } = Search;

@@ -34,6 +34,7 @@ class Account extends Component {
       dob: 0,
       address: '',
       referralUrl: '',
+      accounts: [],
       bankAccountSetup: false,
       topup: false,
       multiplierSetup: false,
@@ -54,7 +55,7 @@ class Account extends Component {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myIdentifier, plaidBankAccounts, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, cardSetup, multiplierSetup, topup, documentUpload, total}} = res.data
+        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myIdentifier, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, cardSetup, multiplierSetup, topup, documentUpload, total}} = res.data
         this.setState({
           name: `${myFirstName} ${myLastName}`,
           email: myEmailAddress,
@@ -62,7 +63,7 @@ class Account extends Component {
           dob: myBirthDay,
           address: myContactAddress ? myContactAddress : '',
           referralUrl: myIdentifier ? myIdentifier : '',
-          accounts: plaidBankAccounts,
+          accounts: plaidBanks,
           bankAccountSetup: bankAccountSetup.done,
           multiplierSetup: multiplierSetup.done,
           topup: topup.done,

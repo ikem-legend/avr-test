@@ -11,33 +11,53 @@ class TopUpsTable extends Component {
       topups: [],
       columns: [
         {
-            dataField: 'date',
+            dataField: 'dateCreated',
             text: 'Date',
             sort: true,
         },
         {
             dataField: 'amount',
+            formatter: this.formatCurr,
             text: 'Amount',
             sort: false,
         },
         {
             dataField: 'status',
+            formatter: this.formatStatus,
             text: 'Status',
             sort: true,
         },
         {
-            dataField: 'btc',
+            dataField: 'investment_distributions[0].amount',
+            formatter: this.formatCurr,
             text: 'BTC',
             sort: false,
         },
         {
-            dataField: 'eth',
+            dataField: 'investment_distributions[1].amount',
+            formatter: this.formatCurr,
             text: 'ETH',
             sort: false,
         }
       ]
     }
   }
+
+  formatStatus = status => (<span>{`${status[0].toUpperCase()}${status.slice(1)}`}</span>)
+
+  formatCurr = amount => <span>${amount}</span>
+
+  componentDidUpdate(prevProps) {
+    if (this.props.topupList > prevProps.topupList) {
+      this.updateTopupList(this.props.topupList)
+    }
+  }
+
+  updateTopupList = updatedList => {
+    const newList = updatedList.map((item, idx) => ({...item, name: 'Roundups', key: idx}))
+    this.setState({topups: newList})
+  }
+
   render() {
     const {topups, columns} = this.state
     const { SearchBar } = Search;
@@ -83,7 +103,7 @@ class TopUpsTable extends Component {
                 <Fragment>
                   <Row>
                     <Col md={6}>
-                      <SearchBar {...props.searchProps} placeholder="Search round-ups, top-ups or withdrawal" style={{'width': '300px'}} />
+                      <SearchBar {...props.searchProps} placeholder="Search top-ups" style={{'width': '300px'}} />
                     </Col>
                     <Col className="text-right" md={{offset: 4, size: 2}}>
                       <ExportCSVButton {...props.csvProps} className="btn btn-light-gray">

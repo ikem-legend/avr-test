@@ -15,7 +15,7 @@ import Flatpickr from 'react-flatpickr'
 import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
 
-class EditProfile  extends Component {
+class EditProfile extends Component {
 	constructor() {
 		super()
 		this.state = {
@@ -30,10 +30,29 @@ class EditProfile  extends Component {
 
 	updateFields = e => {
 		const {name, value} = e.target
+		// debugger
 		this.setState((prevState) => ({
 			...prevState,
 			[name]: value
 		}));
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.name.length > prevProps.name.length) {
+			this.getProfileDetails()
+		}
+	}
+
+	getProfileDetails = () => {
+		const {name, dob, phone, email, address, referralUrl} = this.props
+		this.setState({
+			name,
+			email,
+			phone,
+			dob,
+			address,
+			referralUrl
+		});
 	}
 
   updateProfile = () => {
@@ -45,14 +64,13 @@ class EditProfile  extends Component {
         loadUserData()
         this.props.showFeedback('Profile updated successfully', 'success')
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         this.props.showFeedback('Error updating profile, please try again', 'error')
       })
   }
 
 	render() {
-		const {name, email, phone, dob, address, referralUrl} = this.props
+		const {name, email, phone, dob, address, referralUrl} = this.state
 		return (
 			<Row>
 				<Col>
@@ -90,7 +108,7 @@ class EditProfile  extends Component {
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="home address">Home Address</label>
-							 <Input type="text" name="address" value={address} onChange={this.updateFields} />
+							<Input type="text" name="address" value={address} onChange={this.updateFields} />
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="referral link">Referral Custom URL <span className="text-muted font-size-12">(This can only be changed once)</span></label> 

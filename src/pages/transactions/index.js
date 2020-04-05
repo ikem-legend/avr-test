@@ -17,7 +17,6 @@ import {
 import classnames from 'classnames'
 
 import {isUserAuthenticated} from '../../helpers/authUtils'
-// import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../assets/images/spin-loader.gif'
 import TopUp from '../../assets/images/topups.svg'
 
@@ -30,18 +29,22 @@ import WithdrawalTable from './WithdrawalTable'
 
 class Transactions extends Component {
   state = {
-    roundup: '',
+    topup: '',
     activeTab: '1',
     multiplier: 1, // id value of multiplier
     invPause: false,
     currDstrbn: [],
     loadingTopup: false,
     txnList: [],
+    topupList: [],
+    withdrawalList: [],
   }
 
   componentDidMount() {
     this.loadUserData()
-    this.loadTxns()
+    this.loadRoundups()
+    this.loadTopups()
+    this.loadWithdrawals()
   }
 
   loadUserData = () => {
@@ -69,21 +72,51 @@ class Transactions extends Component {
       })
   }
 
-  loadTxns = () => {
+  loadRoundups = () => {
     const {user} = this.props
     callApi('/user/plaid/bank/get/transactions', null, 'GET', user.token)
       .then(res => {
         this.setState({txnList: res.data})
       })
-      .catch(err => {
-        this.props.showFeedback(err, 'error')
-        // this.props.showFeedback('Error retrieving transactions, please try again', 'error')
+      .catch(() => {
+        this.props.showFeedback(
+          'Error retrieving transactions, please try again',
+          'error',
+        )
+      })
+  }
+
+  loadTopups = () => {
+    const {user} = this.props
+    callApi('/user/wallet/fund', null, 'GET', user.token)
+      .then(res => {
+        this.setState({topupList: res.data})
+      })
+      .catch(() => {
+        this.props.showFeedback(
+          'Error retrieving topups, please try again',
+          'error',
+        )
+      })
+  }
+
+  loadWithdrawals = () => {
+    const {user} = this.props
+    callApi('/user/withdraw/fund', null, 'GET', user.token)
+      .then(res => {
+        this.setState({withdrawalList: res.data})
+      })
+      .catch(() => {
+        this.props.showFeedback(
+          'Error retrieving withdrawals, please try again',
+          'error',
+        )
       })
   }
 
   updateValue = e => {
     this.setState({
-      roundup: e.target.value,
+      topup: e.target.value,
     })
   }
 
@@ -97,25 +130,28 @@ class Transactions extends Component {
 
   setTopup = () => {
     this.setState({loadingTopup: true})
-    const {currDstrbn, roundup} = this.state
+    const {currDstrbn, topup} = this.state
     const {user} = this.props
-    if (roundup && roundup > 0) {
+    if (topup && parseInt(topup, 10) >= 10) {
       // item + 2 to reflect coin IDs
       const newCurrDstrbn = currDstrbn.map((curr, item) => ({
         currency_id: item + 2,
-        amount: (parseInt(curr.percentage, 10) / 100) * parseInt(roundup, 10),
+        amount: (parseInt(curr.percentage, 10) / 100) * parseInt(topup, 10),
       }))
       const fundObj = {
-        total: parseInt(roundup, 10),
+        total: parseInt(topup, 10),
         amount_split: newCurrDstrbn,
       }
       callApi('/user/wallet/fund', fundObj, 'POST', user.token)
         .then(() => {
           this.setState({
             loadingTopup: false,
-            roundup: 0,
+            topup: 0,
           })
-          this.props.showFeedback('Top-up made successfully', 'success')
+          this.props.showFeedback(
+            `$${parseInt(topup, 10)} Top-up made successfully`,
+            'success',
+          )
         })
         .catch(() => {
           this.setState({loadingTopup: false})
@@ -126,7 +162,7 @@ class Transactions extends Component {
         })
     } else {
       this.setState({loadingTopup: false})
-      this.props.showFeedback('Please set roundup amount', 'error')
+      this.props.showFeedback('Please set minimum topup amount of $10', 'error')
     }
   }
 
@@ -144,12 +180,14 @@ class Transactions extends Component {
   render() {
     const {
       user,
-      roundup,
+      topup,
       activeTab,
       multiplier,
       invPause,
       loadingTopup,
       txnList,
+      topupList,
+      withdrawalList,
     } = this.state
 
     return (
@@ -171,17 +209,20 @@ class Transactions extends Component {
                   </Col>
                   <Col md={3}>
                     <h6 className="top-heading">Top Up</h6>
-                    <p>Top-Ups are an easy way to make one-time investments</p>
+                    <p>
+                      Top-Ups are an easy way to make one-time minimum
+                      investments of $10
+                    </p>
                   </Col>
                   <Col md={4}>
                     <Form>
                       <FormGroup className="mt-4 mb-1">
                         <Input
                           type="text"
-                          name="roundup"
+                          name="topup"
                           className="user-input"
                           placeholder="Enter Amount"
-                          value={roundup}
+                          value={topup}
                           onChange={this.updateValue}
                         />
                       </FormGroup>
@@ -208,6 +249,7 @@ class Transactions extends Component {
             multiplier={multiplier}
             invPause={invPause}
             showFeedback={this.props.showFeedback}
+            milestone={txnList}
           />
 
           {/* table */}
@@ -253,12 +295,12 @@ class Transactions extends Component {
                 </TabPane>
                 <TabPane tabId="2">
                   <Row>
-                    <TopUpsTable />
+                    <TopUpsTable topupList={topupList} />
                   </Row>
                 </TabPane>
                 <TabPane tabId="3">
                   <Row>
-                    <WithdrawalTable />
+                    <WithdrawalTable withdrawalList={withdrawalList} />
                   </Row>
                 </TabPane>
               </TabContent>

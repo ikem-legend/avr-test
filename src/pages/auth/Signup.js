@@ -40,7 +40,7 @@ class Signup extends Component {
         firstname: '',
         lastname: '',
         phone: '',
-        dob: subYears(new Date(), 16).getTime(),
+        dob: subYears(new Date(), 18).getTime(),
         email: '',
         password: '',
         confirmPassword: '',
