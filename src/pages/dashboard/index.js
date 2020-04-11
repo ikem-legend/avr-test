@@ -3,14 +3,17 @@ import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
 import {Row, Col, Button, Modal, ModalBody, Form, Input} from 'reactstrap'
 import classnames from 'classnames'
+import {toast} from 'react-toastify'
 
 import {isUserAuthenticated} from '../../helpers/authUtils'
-import {numberWithCommas} from '../../helpers/utils'
+import {numberWithCommas, resizeImage, toFormData} from '../../helpers/utils'
 import {callApi} from '../../helpers/api'
 // import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-import {showFeedback} from '../../redux/actions'
+import StyledDropzone from '../../components/ImagePicker'
+import {showFeedback, updateUserData} from '../../redux/actions'
 
+import DefaultImage from '../../assets/images/default-image.png'
 import TopUp from '../../assets/images/topups.svg'
 import TopUpLoader from '../../assets/images/spin-loader.gif'
 import btcImg from '../../assets/images/layouts/btc.svg'
@@ -24,6 +27,10 @@ class Dashboard extends Component {
     super(props)
 
     this.state = {
+      userDocument: ['', ''],
+      userDocumentModal: true,
+      loadingUpload: false,
+      uploadStatus: 'pending',
       topupModal: false,
       topup: 10,
       withdrawModal: false,
@@ -71,7 +78,7 @@ class Dashboard extends Component {
         } = this.state
         callApi('/auth/me', null, 'GET', user.token)
           .then(res => {
-            const {myWallets, myCurrencyDistributions} = res.data
+            const {myWallets, myCurrencyDistributions, setup: {documentUpload: {status}}} = res.data
             const btcVal =
               myWallets.filter(coin => coin.currency === btc)[0].myBalance *
               exchangeRates.USDBTC
@@ -79,6 +86,13 @@ class Dashboard extends Component {
               myWallets.filter(coin => coin.currency === eth)[0].myBalance *
               exchangeRates.USDETH
             // console.log(myCurrencyDistributions)
+            const userObj = {}
+            Object.assign(
+              userObj,
+              {...res.data},
+              {token: user.token}
+            )
+            this.props.updateUserData(userObj)
             this.setState({
               btcVal,
               ethVal,
@@ -87,6 +101,12 @@ class Dashboard extends Component {
               myCurrencyDistributions,
               // walletTotal: parseInt(0, 10) + parseInt(0, 10),
               walletTotal: parseInt(btcVal, 10) + parseInt(ethVal, 10),
+              uploadStatus: status
+            }, () => {
+              const {userDocumentModal, uploadStatus} = this.state
+              if (uploadStatus === 'pending' && userDocumentModal === false) {
+                this.toggleImgUpload()
+              }
             })
           })
           .catch(() => {
@@ -202,6 +222,79 @@ class Dashboard extends Component {
       })
   }
 
+  toggleImgUpload = () => {
+    const {userDocumentModal} = this.state
+    // const {userDocumentModal, uploadStatus} = this.state
+    // if (uploadStatus === 'pending' && userDocumentModal === false) {
+      this.setState({
+        userDocumentModal: !userDocumentModal
+      });
+    // }
+  }
+
+  handleUserDocument = (file, body) => {
+    return resizeImage(file, body).then(blob => {
+      return this.setState(prevState => ({
+        userDocument: [
+          {
+            src: URL.createObjectURL(blob),
+            blob,
+          },
+          ...prevState.userDocument,
+        ],
+      }))
+    })
+  }
+
+  submitUserDocument = () => {
+    const {userDocument} = this.state
+    const {user} = this.props
+    const selectedImages = userDocument.filter(photo => photo && photo.blob)
+    if (selectedImages.length > 0) {
+      const userDocObj = selectedImages.map(img => img.blob)[0]
+      const userData = toFormData({document: userDocObj, type: 'individualProofOfAddress'})
+      // debugger
+      this.setState({loadingUpload: true});
+      callApi('/user/sendwyre/document/upload', userData, 'POST', user.token)
+        .then((res) => {
+          // console.log(res)
+          toast.success(
+            `ID upload successful, ${res.data.message}`,
+            {hideProgressBar: true}
+          )
+          this.setState({loadingUpload: false});
+          callApi('/auth/me', null, 'GET', user.token)
+            .then(response => {
+              const userObj = {}
+              Object.assign(
+                userObj,
+                {...response.data},
+                {token: user.token}
+              )
+              this.props.updateUserData(userObj)
+              this.toggleImgUpload()
+            })
+            .catch(() => {
+              this.props.showFeedback('Error updating user details, please reload', 'error')
+            })
+        })
+        .catch((err) => {
+          const {data: {error}} = err
+          this.setState({loadingUpload: false});
+          Object.keys(error).map(obj => {
+            return (
+            toast.error(
+              error[obj][0],
+              {hideProgressBar: true}
+            )
+          )})
+          // toast.error('Error uploading document, please try again')
+        })
+    } else {
+      toast.error('Please select an image to upload', {hideProgressBar: true})
+    }
+  }
+
   /**
    * Redirect to root
    * @returns {object} Redirect component
@@ -213,8 +306,13 @@ class Dashboard extends Component {
     }
   }
 
+  // eslint-disable-next-line max-lines-per-function
   render() {
     const {
+      userDocument,
+      userDocumentModal,
+      loadingUpload,
+      // uploadStatus,
       topupModal,
       topup,
       withdrawModal,
@@ -229,12 +327,60 @@ class Dashboard extends Component {
       loadingTopup,
       loadingWithdraw,
     } = this.state
+    const {user} = this.props
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
         <div className="">
           {/* preloader */}
           {this.props.loading && <Loader />}
+          
+          {/* Document upload */}
+          {/*uploadStatus === 'pending' ? (*/}
+          {/*user.setup.documentUpload.status === 'pending' ? (*/}
+          {user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'OPEN' ? (
+            <Modal isOpen={userDocumentModal} toggle={this.toggleImgUpload} backdrop="static" centered size="lg">
+              <ModalBody className="text-center">
+                <Row>
+                  <Col md={12}>
+                    <h5>Upload User ID to complete profile</h5>
+                    <p>We need your means of identification to verify your identity for security purposes. This information is encrypted and not stored on Avenir servers</p>
+                  </Col>
+                </Row>
+                <Row>
+                  {userDocument.slice(0, 2).map((image, idx) => (
+                    <Col size="6" key={idx}>
+                      <img
+                        alt="puImg"
+                        src={image && image.src ? image.src : image ? image : DefaultImage}
+                        className="img-fluid"
+                      />
+                    </Col>
+                  ))}
+                </Row>
+                <Row>
+                  <Col md={12}>
+                    <StyledDropzone
+                      onUpload={this.handleUserDocument}
+                      multiple
+                      label="Click here to select the Front & Back or drag and drop to upload"
+                      width="100%"
+                    />
+                  </Col>
+                </Row>
+                {loadingUpload ? (
+                  <img
+                    src={TopUpLoader}
+                    alt="loader"
+                    style={{height: '40px', marginTop: '20px'}}
+                  />
+                ) : (
+                  <Button onClick={this.submitUserDocument} color="inv-blue" className="mt-2">Upload</Button>
+                )}
+              </ModalBody>
+            </Modal>
+            ) : null
+          }
 
           <Row className="page-title align-items-center">
             <Col md={2} className="trading-rates">
@@ -463,4 +609,4 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps, {showFeedback})(Dashboard)
+export default connect(mapStateToProps, {showFeedback, updateUserData})(Dashboard)

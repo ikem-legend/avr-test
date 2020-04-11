@@ -1,5 +1,7 @@
 // @flow
-import Cookies from 'universal-cookie'
+// import Cookies from 'universal-cookie'
+// import {Cookies} from 'react-cookie'
+import Cookies from 'js-cookie'
 import {toast} from 'react-toastify'
 import {all, call, fork, put, takeLatest} from 'redux-saga/effects'
 
@@ -10,6 +12,7 @@ import {
   LOGOUT_USER,
   REGISTER_USER,
   FORGET_PASSWORD,
+  UPDATE_USER_DATA,
 } from './constants'
 
 import {
@@ -19,20 +22,29 @@ import {
   registerUserFailed,
   forgetPasswordSuccess,
   forgetPasswordFailed,
+  updateUserDataSuccess,
 } from './actions'
 
 /**
  * Sets the session
- * @param {object} user User object
+ * @param {object} userData User object
  */
-const setSession = user => {
-  const cookies = new Cookies()
-  // console.log(cookies, user)
-  if (user) {
-    cookies.set('avenirUser', JSON.stringify(user), {path: '/'})
-    // console.log('Cookies: ', cookies.get('avenirUser'))
-  } else cookies.remove('avenirUser', {path: '/'})
+const setSession = userData => {
+  // const cookies = new Cookies()
+  // console.log(cookies, userData)
+  if (userData) {
+  	// debugger
+  	Cookies.set('avenirUser', userData)
+  	localStorage.setItem('avenirApp', userData)
+  }
+  else {
+  	Cookies.remove('avenirUser')
+  	localStorage.removeItem('avenirApp')
+	}
+	// debugger
+  // console.log('Cookies: ', Cookies.get('avenirUser'))
 }
+
 /**
  * Login the user
  * @param {*} payload - username and password
@@ -40,56 +52,35 @@ const setSession = user => {
 function* login({payload: {user, history}}) {
   // console.log(user, history)
   try {
-    if (user.token) {
-      setSession(user)
-      yield put(loginUserSuccess(user))
-      history.push('/account/account-connect')
-    } else {
-      const result = yield call(callApi, '/auth/signin', user, 'POST')
-      const response = yield call(
-        callApi,
-        '/auth/me',
-        user,
-        'GET',
-        result.token,
-      )
-      const {
-        // data,
-        data: {
-          myFirstName,
-          myLastName,
-          myEmailAddress,
-          myPhoneNumber,
-          myIdentifier,
-          myContactAddress,
-          myCurrencyDistributions,
-          myMultiplierSetting,
-          MyInvestmentPause,
-          setup,
-        },
-      } = response
-      const userObj = {}
-      Object.assign(
-        userObj,
-        // {...data},
-        {
-          myFirstName,
-          myLastName,
-          myEmailAddress,
-          myPhoneNumber,
-          myIdentifier,
-          myContactAddress,
-          myCurrencyDistributions,
-          myMultiplierSetting,
-          MyInvestmentPause,
-          setup,
-        },
-        {token: result.token},
-      )
-      setSession(userObj)
-      yield put(loginUserSuccess(userObj))
-      history.push('/dashboard')
-    }
+    // if (user.token) {
+    //   setSession(user)
+    //   yield put(loginUserSuccess(user))
+    //   history.push('/account/account-connect')
+    // } else {
+    const result = yield call(callApi, '/auth/signin', user, 'POST')
+    const response = yield call(
+      callApi,
+      '/auth/me',
+      user,
+      'GET',
+      result.token,
+    )
+    const {
+      // data,
+      data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
+    } = response
+    const userObj = {}
+    Object.assign(
+      userObj,
+      // {...data},
+      {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
+      {token: result.token},
+    )
+    const userObjStr = JSON.stringify(userObj)
+    setSession(userObjStr)
+    yield put(loginUserSuccess(userObj))
+    history.push('/dashboard')
+    // }
   } catch (error) {
     let message
     switch (error.status) {
@@ -156,14 +147,20 @@ function* register({payload: {user, history}}) {
       // {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
       {token: result.data.message.token},
     )
+    const userObjStr = JSON.stringify(userObj)
+    setSession(userObjStr)
     yield put(registerUserSuccess(userObj))
-    // console.log(userObj)
-    // Save user object in local storage for the meantime then if validation successful set cookie and/else delete from local storage
-    // localStorage.setItem('avenir', JSON.stringify(userObj))
-    // console.log(localStorage.getItem('avenir'))
-    setSession(userObj)
-    yield call(() => history.push('/account/account-connect'))
+    // debugger
+    history.push('/account/account-connect')
   } catch (error) {
+  	console.log(error)
+  	Object.keys(error).map(obj => (
+	    toast.error(
+	    	error[obj][0],
+	    	{hideProgressBar: true}
+	    )
+  	))
+  	// console.log(error.email[0])
     let message
     switch (error.status) {
       case 500:
@@ -176,9 +173,10 @@ function* register({payload: {user, history}}) {
         message = error
     }
     yield put(registerUserFailed(message))
-    toast.error('Registration error. Please check your details and try again', {
-      hideProgressBar: true,
-    })
+    // toast.error(
+    // 	'Registration error. Please check your details and try again',
+    // 	{hideProgressBar: true}
+    // )
   }
 }
 
@@ -211,6 +209,16 @@ function* forgetPassword({payload: {username}}) {
   }
 }
 
+function* updateData({payload: {userData}}) {
+	try {
+		const userDataStr = JSON.stringify(userData)
+    setSession(userDataStr)
+		yield put(updateUserDataSuccess(userData))
+	} catch(err) {
+		console.log(err)
+	}
+}
+
 export function* watchLoginUser() {
   yield takeLatest(LOGIN_USER, login)
 }
@@ -227,12 +235,17 @@ export function* watchForgetPassword() {
   yield takeLatest(FORGET_PASSWORD, forgetPassword)
 }
 
+export function* watchUpdateData() {
+  yield takeLatest(UPDATE_USER_DATA, updateData)
+}
+
 function* authSaga() {
   yield all([
     fork(watchLoginUser),
     fork(watchLogoutUser),
     fork(watchRegisterUser),
     fork(watchForgetPassword),
+    fork(watchUpdateData),
   ])
 }
 

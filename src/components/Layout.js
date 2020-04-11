@@ -66,10 +66,11 @@ const withLayout = WrappedComponent => {
   const mapStateToProps = state => {
     return {
       layout: state.Layout,
+      auth: state.Auth,
     }
   }
 
-  return connect(mapStateToProps, null)(HOC)
+  return connect(mapStateToProps)(HOC)
 }
 
 export default withLayout

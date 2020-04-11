@@ -11,11 +11,13 @@ import {
   ModalBody,
 } from 'reactstrap'
 import PlaidLink from 'react-plaid-link'
-import classnames from 'classnames'
+// import classnames from 'classnames'
 import AccountList from '../../components/AccountList'
+import FundingSourceList from '../../components/FundingSourceList'
 import Loader from '../../components/Loader'
 import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
+import AcctLinkLoader from '../../assets/images/spin-loader.gif'
 
 class BanksCards extends Component {
   constructor() {
@@ -25,9 +27,23 @@ class BanksCards extends Component {
       accountsLinkedList: [],
       loadingAccts: false,
       accountModal: false,
-    }
-  }
+		}
+	}
 
+  // componentDidUpdate(prevProps) {
+  //   if (prevProps.bankAccounts.length < this.props.bankAccounts.length) {
+  //     const accountsLinkedList = this.props.bankAccounts.map(acc => {
+  //       acc.accounts.map(details => {
+  //         details.link = true
+  //         return details
+  //       })
+  //       return acc
+  //       // Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
+  //     })
+  //     console.log(accountsLinkedList)
+  //   }
+  // }
+  
   displayAccountList = () => {
     const {accounts} = this.state
     const accountList = accounts.map(acc => (
@@ -89,52 +105,36 @@ class BanksCards extends Component {
       })
   }
 
-  render() {
-    const {bankAccounts} = this.props
-    const {accountModal, loadingAccts} = this.state
-    const acctList =
-      bankAccounts &&
-      bankAccounts.map(acct => (
-        <Card key={acct.id}>
-          <CardBody>
-            <Row>
-              <Col md={12} className="font-weight-bold acct-name">
-                {acct.institutionName}
-              </Col>
-              <Col md={12}>
-                {acct.accounts.map(acctDetail => (
-                  <Row
+	render() {
+    const {bankAccounts, accountsLinked, connectSelectedAccts, loadingAcctLink} = this.props
+    const {
+      accountModal,
+      loadingAccts,
+    } = this.state
+    const acctList = bankAccounts && bankAccounts.map(acct => (
+      <Card key={acct.id}>
+        <CardBody>
+          <Row>
+            <Col md={12} className="font-weight-bold acct-name">
+              {acct.institutionName}
+            </Col>
+            <Col md={12}>
+              {
+                acct.accounts.map(acctDetail => (
+                  <FundingSourceList
                     key={`${acct.institutionId}-${acctDetail.id}`}
-                    className="mb-2"
-                  >
-                    <Col md={6} className="font-weight-bold acct-name">
-                      {acctDetail.accountName}
-                    </Col>
-                    <Col md={3}>****{acctDetail.accountMask}</Col>
-                    <Col md={3}>
-                      <Button
-                        data-cy="account-linked-unliked-btn"
-                        block
-                        color="transparent"
-                        className={classnames(
-                          {
-                            linked: acctDetail.accountLink === true,
-                            unlinked: acctDetail.accountLink === false,
-                          },
-                          'float-right',
-                        )}
-                      >
-                        {acctDetail.accountLink ? 'Linked' : 'Unlinked'}
-                      </Button>
-                    </Col>
-                  </Row>
-                ))}
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
-      ))
-    return (
+                    acct={acct}
+                    acctDetail={acctDetail}
+                    accountsLinked={accountsLinked}
+                  />
+                ))
+              }
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>
+    ))
+		return (
       <Fragment>
         <Row>
           <Col md={8}>
@@ -171,7 +171,22 @@ class BanksCards extends Component {
           </Col>
         </Row>
         <Row>
-          <Col md={12}>{acctList}</Col>
+          <Col md={12}>
+            {acctList}
+            <Row>
+              <Col md={{size: 2, offset: 10}}>
+                {loadingAcctLink ? (
+                  <img
+                    src={AcctLinkLoader}
+                    alt="loader"
+                    style={{height: '40px', marginTop: '20px'}}
+                  />
+                ) : (
+                  <Button block onClick={connectSelectedAccts} color="red">Save</Button>
+                )}
+              </Col>
+            </Row>
+          </Col>
           <Modal isOpen={accountModal} toggle={this.toggle}>
             <ModalHeader>Select accounts to be linked</ModalHeader>
             <ModalBody>
