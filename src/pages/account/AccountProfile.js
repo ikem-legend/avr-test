@@ -3,7 +3,16 @@ import {Progress, CustomInput} from 'reactstrap'
 import classnames from 'classnames'
 import profilePic from '../../assets/images/users/user-profile@2x.png'
 
-export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, documentUpload, documentUploadStatus, documentUploadError, topup}) => {
+export const AccountProfile = ({
+  user,
+  bankAccountSetup,
+  total,
+  multiplierSetup,
+  documentUpload,
+  documentUploadStatus,
+  documentUploadError,
+  topup,
+}) => {
   return (
     <div className="account-profile">
       <h6>My Account</h6>
@@ -76,8 +85,20 @@ export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, 
           checked={documentUpload}
           readOnly
         />
-        <span className={classnames({complete: documentUpload === true && documentUploadStatus === 'APPROVED'}, {incomplete: documentUpload === false}, 'ml-4 font-weight-bold')}>
-          {documentUpload === true && documentUploadStatus === 'APPROVED' ? 'Complete' : 'Incomplete'} - {documentUploadStatus ? documentUploadStatus : ''}
+        <span
+          className={classnames(
+            {
+              complete:
+                documentUpload === true && documentUploadStatus === 'APPROVED',
+            },
+            {incomplete: documentUpload === false},
+            'ml-4 font-weight-bold',
+          )}
+        >
+          {documentUpload === true && documentUploadStatus === 'APPROVED'
+            ? 'Complete'
+            : 'Incomplete'}{' '}
+          - {documentUploadStatus ? documentUploadStatus : ''}
         </span>
         <span className={classnames('ml-4 font-weight-bold')}>
           {documentUploadError ? documentUploadError : null}

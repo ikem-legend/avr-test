@@ -33,15 +33,14 @@ const setSession = userData => {
   // const cookies = new Cookies()
   // console.log(cookies, userData)
   if (userData) {
-  	// debugger
-  	Cookies.set('avenirUser', userData)
-  	localStorage.setItem('avenirApp', userData)
+    // debugger
+    Cookies.set('avenirUser', userData)
+    localStorage.setItem('avenirApp', userData)
+  } else {
+    Cookies.remove('avenirUser')
+    localStorage.removeItem('avenirApp')
   }
-  else {
-  	Cookies.remove('avenirUser')
-  	localStorage.removeItem('avenirApp')
-	}
-	// debugger
+  // debugger
   // console.log('Cookies: ', Cookies.get('avenirUser'))
 }
 
@@ -58,22 +57,38 @@ function* login({payload: {user, history}}) {
     //   history.push('/account/account-connect')
     // } else {
     const result = yield call(callApi, '/auth/signin', user, 'POST')
-    const response = yield call(
-      callApi,
-      '/auth/me',
-      user,
-      'GET',
-      result.token,
-    )
+    const response = yield call(callApi, '/auth/me', user, 'GET', result.token)
     const {
       // data,
-      data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
+      data: {
+        myFirstName,
+        myLastName,
+        myEmailAddress,
+        myPhoneNumber,
+        myIdentifier,
+        myContactAddress,
+        myCurrencyDistributions,
+        myMultiplierSetting,
+        MyInvestmentPause,
+        setup,
+      },
     } = response
     const userObj = {}
     Object.assign(
       userObj,
       // {...data},
-      {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
+      {
+        myFirstName,
+        myLastName,
+        myEmailAddress,
+        myPhoneNumber,
+        myIdentifier,
+        myContactAddress,
+        myCurrencyDistributions,
+        myMultiplierSetting,
+        MyInvestmentPause,
+        setup,
+      },
       {token: result.token},
     )
     const userObjStr = JSON.stringify(userObj)
@@ -153,14 +168,11 @@ function* register({payload: {user, history}}) {
     // debugger
     history.push('/account/account-connect')
   } catch (error) {
-  	console.log(error)
-  	Object.keys(error).map(obj => (
-	    toast.error(
-	    	error[obj][0],
-	    	{hideProgressBar: true}
-	    )
-  	))
-  	// console.log(error.email[0])
+    console.log(error)
+    Object.keys(error).map(obj =>
+      toast.error(error[obj][0], {hideProgressBar: true}),
+    )
+    // console.log(error.email[0])
     let message
     switch (error.status) {
       case 500:
@@ -210,13 +222,13 @@ function* forgetPassword({payload: {username}}) {
 }
 
 function* updateData({payload: {userData}}) {
-	try {
-		const userDataStr = JSON.stringify(userData)
+  try {
+    const userDataStr = JSON.stringify(userData)
     setSession(userDataStr)
-		yield put(updateUserDataSuccess(userData))
-	} catch(err) {
-		console.log(err)
-	}
+    yield put(updateUserDataSuccess(userData))
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 export function* watchLoginUser() {

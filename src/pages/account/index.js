@@ -49,7 +49,25 @@ class Account extends Component {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myIdentifier, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, multiplierSetup, topup, documentUpload, total}} = res.data
+        const {
+          myFirstName,
+          myLastName,
+          myEmailAddress,
+          myPhoneNumber,
+          myBirthDay,
+          myContactAddress,
+          myIdentifier,
+          plaidBanks,
+          appNotifications,
+          twofactorAuthStatus,
+          setup: {
+            bankAccountSetup,
+            multiplierSetup,
+            topup,
+            documentUpload,
+            total,
+          },
+        } = res.data
         const acctArr = []
         const accountsLinkedList = plaidBanks.map(acc => {
           acc.accounts.map(details => {
@@ -61,10 +79,14 @@ class Account extends Component {
           // Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
         })
         // Deep copy needed to avoid overwriting account details
-        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(acctDet => {
-          Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'link') && delete acctDet[key])
-          return acctDet
-        })
+        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(
+          acctDet => {
+            Object.keys(acctDet).forEach(
+              key => key !== 'id' && key !== 'link' && delete acctDet[key],
+            )
+            return acctDet
+          },
+        )
         this.setState({
           name: `${myFirstName} ${myLastName}`,
           email: myEmailAddress,
@@ -118,16 +140,16 @@ class Account extends Component {
     const {accountsConnectList} = this.state
     const {user} = this.props
     const accountsObj = {accounts_link: accountsConnectList}
-    this.setState({loadingAcctLink: true});
+    this.setState({loadingAcctLink: true})
     callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
       .then(() => {
         this.props.showFeedback('Account(s) successfully linked', 'success')
-        this.setState({loadingAcctLink: false});
+        this.setState({loadingAcctLink: false})
         this.loadUserData()
       })
       .catch(err => {
         console.log(err)
-        this.setState({loadingAcctLink: false});
+        this.setState({loadingAcctLink: false})
         this.props.showFeedback('Error linking account(s)', 'error')
       })
   }
@@ -144,7 +166,26 @@ class Account extends Component {
   }
 
   render() {
-    const {name, email, phone, dob, address, referralUrl, accounts, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
+    const {
+      name,
+      email,
+      phone,
+      dob,
+      address,
+      referralUrl,
+      accounts,
+      bankAccountSetup,
+      multiplierSetup,
+      topup,
+      documentUpload,
+      documentUploadStatus,
+      documentUploadError,
+      total,
+      notifications,
+      twofactorAuth,
+      activeTab,
+      loadingAcctLink,
+    } = this.state
     const {user} = this.props
 
     return (
@@ -261,7 +302,7 @@ class Account extends Component {
                         </TabPane>
                         <TabPane tabId="3">
                           <div className="p-4">
-                            <BanksCards 
+                            <BanksCards
                               bankAccounts={accounts}
                               accountsLinked={this.accountsLinked}
                               loadingAcctLink={loadingAcctLink}

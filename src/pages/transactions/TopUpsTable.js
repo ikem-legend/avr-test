@@ -41,13 +41,8 @@ class TopUpsTable extends Component {
           formatter: this.formatCurr,
           text: 'ETH',
           sort: false,
-<<<<<<< HEAD
         },
       ],
-=======
-        }
-      ]
->>>>>>> 691448d5d346ef76967761d7a0abcc2ed58873a8
     }
   }
 
@@ -99,7 +94,8 @@ class TopUpsTable extends Component {
           id="no-entries"
           className="custom-select custom-select-sm d-inline col-1"
           defaultValue={currSizePerPage}
-          onChange={(e) => onSizePerPageChange(e.target.value)}>
+          onChange={e => onSizePerPageChange(e.target.value)}
+        >
           {options.map((option, idx) => (
             <option key={idx}>{option.text}</option>
           ))}

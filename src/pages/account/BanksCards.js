@@ -27,8 +27,8 @@ class BanksCards extends Component {
       accountsLinkedList: [],
       loadingAccts: false,
       accountModal: false,
-		}
-	}
+    }
+  }
 
   // componentDidUpdate(prevProps) {
   //   if (prevProps.bankAccounts.length < this.props.bankAccounts.length) {
@@ -43,7 +43,7 @@ class BanksCards extends Component {
   //     console.log(accountsLinkedList)
   //   }
   // }
-  
+
   displayAccountList = () => {
     const {accounts} = this.state
     const accountList = accounts.map(acc => (
@@ -105,36 +105,38 @@ class BanksCards extends Component {
       })
   }
 
-	render() {
-    const {bankAccounts, accountsLinked, connectSelectedAccts, loadingAcctLink} = this.props
+  render() {
     const {
-      accountModal,
-      loadingAccts,
-    } = this.state
-    const acctList = bankAccounts && bankAccounts.map(acct => (
-      <Card key={acct.id}>
-        <CardBody>
-          <Row>
-            <Col md={12} className="font-weight-bold acct-name">
-              {acct.institutionName}
-            </Col>
-            <Col md={12}>
-              {
-                acct.accounts.map(acctDetail => (
+      bankAccounts,
+      accountsLinked,
+      connectSelectedAccts,
+      loadingAcctLink,
+    } = this.props
+    const {accountModal, loadingAccts} = this.state
+    const acctList =
+      bankAccounts &&
+      bankAccounts.map(acct => (
+        <Card key={acct.id}>
+          <CardBody>
+            <Row>
+              <Col md={12} className="font-weight-bold acct-name">
+                {acct.institutionName}
+              </Col>
+              <Col md={12}>
+                {acct.accounts.map(acctDetail => (
                   <FundingSourceList
                     key={`${acct.institutionId}-${acctDetail.id}`}
                     acct={acct}
                     acctDetail={acctDetail}
                     accountsLinked={accountsLinked}
                   />
-                ))
-              }
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-    ))
-		return (
+                ))}
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+      ))
+    return (
       <Fragment>
         <Row>
           <Col md={8}>
@@ -182,7 +184,9 @@ class BanksCards extends Component {
                     style={{height: '40px', marginTop: '20px'}}
                   />
                 ) : (
-                  <Button block onClick={connectSelectedAccts} color="red">Save</Button>
+                  <Button block onClick={connectSelectedAccts} color="red">
+                    Save
+                  </Button>
                 )}
               </Col>
             </Row>

@@ -145,7 +145,9 @@ class Signup extends Component {
    * @returns {function} showFeedback Displays feedback
    **/
   handleValidSubmit = async () => {
-    const {inputs: {password, confirmPassword, city, country}} = this.state
+    const {
+      inputs: {password, confirmPassword, city, country},
+    } = this.state
     const {history} = this.props
     if (!city.value) {
       return this.props.showFeedback('Please select your city', 'error')

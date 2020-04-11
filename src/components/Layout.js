@@ -8,10 +8,11 @@ import Loader from './Loader'
 
 // Lazy loading and code splitting -
 // Derived idea from https://blog.logrocket.com/lazy-loading-components-in-react-16-6-6cea535c0b52
-const loading = () => 
+const loading = () => (
   <div>
     <Loader />
   </div>
+)
 
 // All layouts/containers
 const AuthLayout = React.lazy(() => import('../layouts/Auth'))
@@ -32,14 +33,15 @@ const withLayout = WrappedComponent => {
     getLayout = () => {
       const url = window.location.pathname
       // debugger
-      if (isUserAuthenticated() && url === '/account/account-connect') return VerticalLayout
+      if (isUserAuthenticated() && url === '/account/account-connect')
+        return VerticalLayout
       // if (isUserAuthenticated() && url === '/account/account-connect') {debugger; return VerticalLayout}
-      if (!isUserAuthenticated()) return AuthLayout;
+      if (!isUserAuthenticated()) return AuthLayout
       // if (!isUserAuthenticated()) {debugger; return AuthLayout;}
       // if (!isUserAuthenticated() && url !== '/account/account-connect') return AuthLayout
 
       let layoutCls = VerticalLayout
-// debugger
+      // debugger
       switch (this.props.layout.layoutType) {
         case layoutConstants.LAYOUT_HORIZONTAL:
           layoutCls = HorizontalLayout

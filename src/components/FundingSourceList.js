@@ -10,7 +10,7 @@ class FundingSourceList extends Component {
     super()
     this.state = {
       linked: props.acctDetail.accountLink,
-      linkText: props.acctDetail.accountLink ? 'Link' : 'Unlink'
+      linkText: props.acctDetail.accountLink ? 'Link' : 'Unlink',
     }
   }
 
@@ -21,8 +21,8 @@ class FundingSourceList extends Component {
     accountsLinked(acctDetail.id, !linked)
     this.setState({
       linked: !linked,
-      linkText: linkText === 'Unlink' ? 'Link' : 'Unlink'
-    });
+      linkText: linkText === 'Unlink' ? 'Link' : 'Unlink',
+    })
   }
 
   render() {
@@ -33,11 +33,19 @@ class FundingSourceList extends Component {
         <Col md={6} className="font-weight-bold acct-name">
           {acctDetail.accountName}
         </Col>
+        <Col md={3}>****{acctDetail.accountMask}</Col>
         <Col md={3}>
-          ****{acctDetail.accountMask}
-        </Col>
-        <Col md={3}>
-          <Button block color="transparent" className={classnames({'linked': linked === true, 'unlinked': linked === false}, 'float-right')} onClick={this.modify}>{linkText}</Button>
+          <Button
+            block
+            color="transparent"
+            className={classnames(
+              {linked: linked === true, unlinked: linked === false},
+              'float-right',
+            )}
+            onClick={this.modify}
+          >
+            {linkText}
+          </Button>
         </Col>
       </Row>
     )

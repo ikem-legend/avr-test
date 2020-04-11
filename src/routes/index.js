@@ -26,7 +26,6 @@ const Account = React.lazy(() => import('../pages/account'))
 // const Referral = React.lazy(() => import('../pages/referral'))
 const Faq = React.lazy(() => import('../pages/faq'))
 
-
 // handle auth and authorization
 const PrivateRoute = ({component: Component, user, ...rest}) => (
   <Route

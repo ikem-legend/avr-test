@@ -13,7 +13,7 @@ import Loader from '../../components/Loader'
 import StyledDropzone from '../../components/ImagePicker'
 import {showFeedback, updateUserData} from '../../redux/actions'
 
-import DefaultImage from '../../assets/images/default-image.png'
+// import DefaultImage from '../../assets/images/default-image.png'
 import TopUp from '../../assets/images/topups.svg'
 import TopUpLoader from '../../assets/images/spin-loader.gif'
 import btcImg from '../../assets/images/layouts/btc.svg'
@@ -78,7 +78,13 @@ class Dashboard extends Component {
         } = this.state
         callApi('/auth/me', null, 'GET', user.token)
           .then(res => {
-            const {myWallets, myCurrencyDistributions, setup: {documentUpload: {status}}} = res.data
+            const {
+              myWallets,
+              myCurrencyDistributions,
+              setup: {
+                documentUpload: {status},
+              },
+            } = res.data
             const btcVal =
               myWallets.filter(coin => coin.currency === btc)[0].myBalance *
               exchangeRates.USDBTC
@@ -87,27 +93,26 @@ class Dashboard extends Component {
               exchangeRates.USDETH
             // console.log(myCurrencyDistributions)
             const userObj = {}
-            Object.assign(
-              userObj,
-              {...res.data},
-              {token: user.token}
-            )
+            Object.assign(userObj, {...res.data}, {token: user.token})
             this.props.updateUserData(userObj)
-            this.setState({
-              btcVal,
-              ethVal,
-              btcRate: exchangeRates.USDBTC,
-              ethRate: exchangeRates.USDETH,
-              myCurrencyDistributions,
-              // walletTotal: parseInt(0, 10) + parseInt(0, 10),
-              walletTotal: parseInt(btcVal, 10) + parseInt(ethVal, 10),
-              uploadStatus: status
-            }, () => {
-              const {userDocumentModal, uploadStatus} = this.state
-              if (uploadStatus === 'pending' && userDocumentModal === false) {
-                this.toggleImgUpload()
-              }
-            })
+            this.setState(
+              {
+                btcVal,
+                ethVal,
+                btcRate: exchangeRates.USDBTC,
+                ethRate: exchangeRates.USDETH,
+                myCurrencyDistributions,
+                // walletTotal: parseInt(0, 10) + parseInt(0, 10),
+                walletTotal: parseInt(btcVal, 10) + parseInt(ethVal, 10),
+                uploadStatus: status,
+              },
+              () => {
+                const {userDocumentModal, uploadStatus} = this.state
+                if (uploadStatus === 'pending' && userDocumentModal === false) {
+                  this.toggleImgUpload()
+                }
+              },
+            )
           })
           .catch(() => {
             this.props.showFeedback('Error retrieving wallet balance', 'error')
@@ -226,9 +231,9 @@ class Dashboard extends Component {
     const {userDocumentModal} = this.state
     // const {userDocumentModal, uploadStatus} = this.state
     // if (uploadStatus === 'pending' && userDocumentModal === false) {
-      this.setState({
-        userDocumentModal: !userDocumentModal
-      });
+    this.setState({
+      userDocumentModal: !userDocumentModal,
+    })
     // }
   }
 
@@ -252,42 +257,41 @@ class Dashboard extends Component {
     const selectedImages = userDocument.filter(photo => photo && photo.blob)
     if (selectedImages.length > 0) {
       const userDocObj = selectedImages.map(img => img.blob)[0]
-      const userData = toFormData({document: userDocObj, type: 'individualProofOfAddress'})
+      const userData = toFormData({
+        document: userDocObj,
+        type: 'individualProofOfAddress',
+      })
       // debugger
-      this.setState({loadingUpload: true});
+      this.setState({loadingUpload: true})
       callApi('/user/sendwyre/document/upload', userData, 'POST', user.token)
-        .then((res) => {
+        .then(res => {
           // console.log(res)
-          toast.success(
-            `ID upload successful, ${res.data.message}`,
-            {hideProgressBar: true}
-          )
-          this.setState({loadingUpload: false});
+          toast.success(`ID upload successful, ${res.data.message}`, {
+            hideProgressBar: true,
+          })
+          this.setState({loadingUpload: false})
           callApi('/auth/me', null, 'GET', user.token)
             .then(response => {
               const userObj = {}
-              Object.assign(
-                userObj,
-                {...response.data},
-                {token: user.token}
-              )
+              Object.assign(userObj, {...response.data}, {token: user.token})
               this.props.updateUserData(userObj)
               this.toggleImgUpload()
             })
             .catch(() => {
-              this.props.showFeedback('Error updating user details, please reload', 'error')
+              this.props.showFeedback(
+                'Error updating user details, please reload',
+                'error',
+              )
             })
         })
-        .catch((err) => {
-          const {data: {error}} = err
-          this.setState({loadingUpload: false});
+        .catch(err => {
+          const {
+            data: {error},
+          } = err
+          this.setState({loadingUpload: false})
           Object.keys(error).map(obj => {
-            return (
-            toast.error(
-              error[obj][0],
-              {hideProgressBar: true}
-            )
-          )})
+            return toast.error(error[obj][0], {hideProgressBar: true})
+          })
           // toast.error('Error uploading document, please try again')
         })
     } else {
@@ -334,27 +338,44 @@ class Dashboard extends Component {
         <div className="">
           {/* preloader */}
           {this.props.loading && <Loader />}
-          
+
           {/* Document upload */}
           {/*uploadStatus === 'pending' ? (*/}
           {/*user.setup.documentUpload.status === 'pending' ? (*/}
-          {user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'OPEN' ? (
-            <Modal isOpen={userDocumentModal} toggle={this.toggleImgUpload} backdrop="static" centered size="lg">
+          {user.setup.documentUpload.done === false &&
+          user.setup.documentUpload.status === 'OPEN' ? (
+            <Modal
+              isOpen={userDocumentModal}
+              toggle={this.toggleImgUpload}
+              backdrop="static"
+              centered
+              size="lg"
+            >
               <ModalBody className="text-center">
                 <Row>
                   <Col md={12}>
                     <h5>Upload User ID to complete profile</h5>
-                    <p>We need your means of identification to verify your identity for security purposes. This information is encrypted and not stored on Avenir servers</p>
+                    <p>
+                      We need your means of identification to verify your
+                      identity for security purposes. This information is
+                      encrypted and not stored on Avenir servers
+                    </p>
                   </Col>
                 </Row>
                 <Row>
                   {userDocument.slice(0, 2).map((image, idx) => (
                     <Col size="6" key={idx}>
-                      <img
+                      {/* <img
                         alt="puImg"
-                        src={image && image.src ? image.src : image ? image : DefaultImage}
+                        src={
+                          image && image.src
+                            ? image.src
+                            : image
+                            ? image
+                            : DefaultImage
+                        }
                         className="img-fluid"
-                      />
+                      /> */}
                     </Col>
                   ))}
                 </Row>
@@ -375,12 +396,17 @@ class Dashboard extends Component {
                     style={{height: '40px', marginTop: '20px'}}
                   />
                 ) : (
-                  <Button onClick={this.submitUserDocument} color="inv-blue" className="mt-2">Upload</Button>
+                  <Button
+                    onClick={this.submitUserDocument}
+                    color="inv-blue"
+                    className="mt-2"
+                  >
+                    Upload
+                  </Button>
                 )}
               </ModalBody>
             </Modal>
-            ) : null
-          }
+          ) : null}
 
           <Row className="page-title align-items-center">
             <Col md={2} className="trading-rates">
@@ -609,4 +635,6 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps, {showFeedback, updateUserData})(Dashboard)
+export default connect(mapStateToProps, {showFeedback, updateUserData})(
+  Dashboard,
+)
