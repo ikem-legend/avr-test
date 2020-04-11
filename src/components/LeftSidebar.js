@@ -6,14 +6,15 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
 import {getLoggedInUser} from '../helpers/authUtils'
-import profilePic from '../assets/images/users/user-profile@2x.png'
+import profilePic from '../assets/images/users/default-avatar.png'
+// import profilePic from '../assets/images/users/user-profile@2x.png'
 import AppMenu from './AppMenu'
 
 /**
  * User Widget
  */
-const UserProfile = () => {
-  const user = getLoggedInUser()
+const UserProfile = ({user}) => {
+  // const user = getLoggedInUser()
   return (
     <Fragment>
       <div className="media user-profile user-avatar mt-2">
@@ -32,8 +33,8 @@ const UserProfile = () => {
         <div className="media-body user-profile details mb-2">
           <h4 className="pro-user-name mt-2 mb-0">Hi {user.myFirstName},</h4>
           <div className="mt-2 mb-4">{user.myEmailAddress}</div>
-          <div>Account Setup - <span className="setup">{user.setup.total}%</span></div>
-          <Progress value={user.setup.total} className="setup-level"></Progress>
+          <div>Account Setup - <span className="setup">{user.setup && user.setup.total}%</span></div>
+          <Progress value={user.setup && user.setup.total} className="setup-level"></Progress>
         </div>
     </Fragment>
   )
@@ -57,7 +58,9 @@ class LeftSidebar extends Component {
 
   constructor(props) {
     super(props)
-
+    this.state = {
+      userData: getLoggedInUser()
+    }
     this.handleClick = this.handleClick.bind(this)
     this.handleOtherClick = this.handleOtherClick.bind(this)
   }
@@ -69,11 +72,25 @@ class LeftSidebar extends Component {
     document.addEventListener('mousedown', this.handleOtherClick, false)
   }
 
+  componentDidUpdate = (prevProps) => {
+    // const user = getLoggedInUser()
+    // debugger
+    if (prevProps.auth.user.setup.total < this.props.auth.user.setup.total) {
+      this.updateUserData(this.props.auth.user)
+    }
+  }
+
   /**
    * Bind event
    */
   componentWillUnmount = () => {
     document.removeEventListener('mousedown', this.handleOtherClick, false)
+  }
+
+  updateUserData = (value) => {
+    this.setState({
+      userData: value
+    });
   }
 
   /**
@@ -98,11 +115,11 @@ class LeftSidebar extends Component {
 
   render() {
     const isCondensed = this.props.isCondensed || false
-
+    const {userData} = this.state
     return (
       <Fragment>
         <div className="left-side-menu" ref={node => (this.menuNodeRef = node)}>
-          <UserProfile />
+          <UserProfile user={userData} />
           {!isCondensed && (
             <PerfectScrollbar>
               <SideNav />

@@ -1,4 +1,5 @@
 import React from 'react'
+import {connect} from 'react-redux'
 import {Route, Redirect} from 'react-router-dom'
 import * as FeatherIcon from 'react-feather'
 // import * as Unicons from '@iconscout/react-unicons'
@@ -25,11 +26,16 @@ const Account = React.lazy(() => import('../pages/account'))
 // const Referral = React.lazy(() => import('../pages/referral'))
 const Faq = React.lazy(() => import('../pages/faq'))
 
+
 // handle auth and authorization
-const PrivateRoute = ({component: Component, ...rest}) => (
+const PrivateRoute = ({component: Component, user, ...rest}) => (
   <Route
     {...rest}
+    debugger
     render={props => {
+      // debugger
+      // console.log(Component.WrappedComponent)
+      // console.log(Component)
       if (!isUserAuthenticated()) {
         // not logged in so redirect to login page with the return url
         return (
@@ -55,6 +61,13 @@ const PrivateRoute = ({component: Component, ...rest}) => (
     }}
   />
 )
+
+const mapStateToProps = state => {
+  const {user} = state.Auth
+  return {user}
+}
+
+export default connect(mapStateToProps)(PrivateRoute)
 
 // home
 const homeRoutes = {
@@ -164,7 +177,7 @@ const authRoutes = {
       path: '/account/account-connect',
       name: 'AccountConnect',
       component: AccountConnect,
-      route: Route,
+      route: PrivateRoute,
     },
     {
       path: '/account/forgot-password',

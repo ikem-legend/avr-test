@@ -35,10 +35,12 @@ class Account extends Component {
       address: '',
       referralUrl: '',
       accounts: [],
+      loadingAcctLink: false,
       bankAccountSetup: false,
       topup: false,
       multiplierSetup: false,
       documentUploadStatus: '',
+      documentUploadError: null,
       documentUpload: false,
       total: 0,
       twofactorAuth: false,
@@ -50,12 +52,27 @@ class Account extends Component {
   componentDidMount() {
     this.loadUserData()
   }
-
+  // document
   loadUserData = () => {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myIdentifier, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, cardSetup, multiplierSetup, topup, documentUpload, total}} = res.data
+        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myIdentifier, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, multiplierSetup, topup, documentUpload, total}} = res.data
+        const acctArr = []
+        const accountsLinkedList = plaidBanks.map(acc => {
+          acc.accounts.map(details => {
+            details.link = details.accountLink
+            acctArr.push(details)
+            return details
+          })
+          return acc
+          // Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
+        })
+        // Deep copy needed to avoid overwriting account details
+        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(acctDet => {
+          Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'link') && delete acctDet[key])
+          return acctDet
+        })
         this.setState({
           name: `${myFirstName} ${myLastName}`,
           email: myEmailAddress,
@@ -63,12 +80,15 @@ class Account extends Component {
           dob: myBirthDay,
           address: myContactAddress ? myContactAddress : '',
           referralUrl: myIdentifier ? myIdentifier : '',
-          accounts: plaidBanks,
+          accounts: accountsLinkedList,
+          // accounts: plaidBanks,
+          accountsConnectList: accountsConnectArr,
           bankAccountSetup: bankAccountSetup.done,
           multiplierSetup: multiplierSetup.done,
           topup: topup.done,
           documentUpload: documentUpload.done,
           documentUploadStatus: documentUpload.status,
+          documentUploadError: documentUpload.error,
           total,
           notifications: appNotifications,
           twofactorAuth: twofactorAuthStatus
@@ -87,6 +107,39 @@ class Account extends Component {
     }
   }
 
+  accountsLinked = (id, val) => {
+    // console.log(id, val)
+    const {accountsConnectList} = this.state
+    const tempList = accountsConnectList.map(acc => {
+      if (acc.id === id) {
+        return {...acc, link: val}
+      }
+      return acc
+    })
+    // console.log(tempList)
+    this.setState({
+      accountsConnectList: tempList,
+    })
+  }
+
+  connectSelectedAccts = () => {
+    const {accountsConnectList} = this.state
+    const {user} = this.props
+    const accountsObj = {accounts_link: accountsConnectList}
+    this.setState({loadingAcctLink: true});
+    callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+      .then(() => {
+        this.props.showFeedback('Account(s) successfully linked', 'success')
+        this.setState({loadingAcctLink: false});
+        this.loadUserData()
+      })
+      .catch(err => {
+        console.log(err)
+        this.setState({loadingAcctLink: false});
+        this.props.showFeedback('Error linking account(s)', 'error')
+      })
+  }
+
   /**
    * Redirect to root
    * @returns {object} Redirect component
@@ -99,7 +152,7 @@ class Account extends Component {
   }
 
   render() {
-    const {name, email, phone, dob, address, referralUrl, accounts, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, total, notifications, twofactorAuth, activeTab} = this.state
+    const {name, email, phone, dob, address, referralUrl, accounts, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
     const {user} = this.props
 
     return (
@@ -118,6 +171,7 @@ class Account extends Component {
                 multiplierSetup={multiplierSetup}
                 documentUpload={documentUpload}
                 documentUploadStatus={documentUploadStatus}
+                documentUploadError={documentUploadError}
                 topup={topup}
               />
             </Col>
@@ -217,6 +271,9 @@ class Account extends Component {
                           <div className="p-4">
                             <BanksCards 
                               bankAccounts={accounts}
+                              accountsLinked={this.accountsLinked}
+                              loadingAcctLink={loadingAcctLink}
+                              connectSelectedAccts={this.connectSelectedAccts}
                             />
                           </div>
                         </TabPane>

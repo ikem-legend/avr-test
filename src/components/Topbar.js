@@ -6,7 +6,7 @@ import {
   Menu,
   X,
   // Search,
-  Settings,
+  // Settings,
   // User,
   // HelpCircle,
   // Lock,
@@ -138,14 +138,14 @@ class Topbar extends Component {
               {/*<LanguageDropdown tag="li" />
               <NotificationDropdown notifications={Notifications} />*/}
 
-              <li className="notification-list">
+              {/*<li className="notification-list">
                 <button
                   className="btn btn-link nav-link right-bar-toggle"
                   onClick={this.handleRightSideBar}
                 >
                   <Settings />
                 </button>
-              </li>
+              </li>*/}
 
               {/*<ProfileDropdown profilePic={profilePic} menuItems={ProfileMenus} username={'Shreyu N'} description="Administrator" />*/}
             </ul>

@@ -6,7 +6,7 @@ import {
 import classnames from 'classnames'
 import profilePic from '../../assets/images/users/user-profile@2x.png'
 
-export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, documentUpload, documentUploadStatus,topup}) => {
+export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, documentUpload, documentUploadStatus, documentUploadError, topup}) => {
   return (
     <div className="account-profile">
       <h6>My Account</h6>
@@ -67,8 +67,11 @@ export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, 
           checked={documentUpload}
           readOnly
         />
-        <span className={classnames({complete: documentUpload === true}, {incomplete: documentUpload === false}, 'ml-4 font-weight-bold')}>
-          {documentUpload ? 'Complete' : 'Incomplete'} - {documentUploadStatus ? documentUploadStatus : ''}
+        <span className={classnames({complete: documentUpload === true && documentUploadStatus === 'APPROVED'}, {incomplete: documentUpload === false}, 'ml-4 font-weight-bold')}>
+          {documentUpload === true && documentUploadStatus === 'APPROVED' ? 'Complete' : 'Incomplete'} - {documentUploadStatus ? documentUploadStatus : ''}
+        </span>
+        <span className={classnames('ml-4 font-weight-bold')}>
+          {documentUploadError ? documentUploadError : null}
         </span>
       </div>
       <div className="reg-status">

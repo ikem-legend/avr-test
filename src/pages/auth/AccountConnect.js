@@ -120,7 +120,7 @@ class AccountConnect extends Component {
     })
     // console.log(tempList)
     const noLinkedAccts = tempList.filter(acct => acct.link === true)
-    console.log(noLinkedAccts.length)
+    // console.log(noLinkedAccts.length)
     this.setState({
       accountsLinkedList: tempList,
       disableConnectBtn: !Boolean(noLinkedAccts.length),
@@ -259,6 +259,7 @@ class AccountConnect extends Component {
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
+    console.log(this.props)
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
     }
@@ -363,7 +364,8 @@ class AccountConnect extends Component {
                       <div className="mt-3">
                         <PlaidLink
                           clientName="Avenir app"
-                          env="sandbox"
+                          // env="sandbox"
+                          env="production"
                           product={['auth', 'transactions']}
                           publicKey="3c3d222fa56168931abed2dc785bc2"
                           onExit={this.handleOnExit}

@@ -11,33 +11,33 @@ class TopUpsTable extends Component {
       topups: [],
       columns: [
         {
-            dataField: 'dateCreated',
-            text: 'Date',
-            sort: true,
+          dataField: 'dateCreated',
+          text: 'Date',
+          sort: true,
         },
         {
-            dataField: 'amount',
-            formatter: this.formatCurr,
-            text: 'Amount',
-            sort: false,
+          dataField: 'amount',
+          formatter: this.formatCurr,
+          text: 'Amount',
+          sort: false,
         },
         {
-            dataField: 'status',
-            formatter: this.formatStatus,
-            text: 'Status',
-            sort: true,
+          dataField: 'status',
+          formatter: this.formatStatus,
+          text: 'Status',
+          sort: true,
         },
         {
-            dataField: 'investment_distributions[0].amount',
-            formatter: this.formatCurr,
-            text: 'BTC',
-            sort: false,
+          dataField: 'investment_distributions[0].amount',
+          formatter: this.formatCurr,
+          text: 'BTC',
+          sort: false,
         },
         {
-            dataField: 'investment_distributions[1].amount',
-            formatter: this.formatCurr,
-            text: 'ETH',
-            sort: false,
+          dataField: 'investment_distributions[1].amount',
+          formatter: this.formatCurr,
+          text: 'ETH',
+          sort: false,
         }
       ]
     }
@@ -80,9 +80,9 @@ class TopUpsTable extends Component {
           className="custom-select custom-select-sm d-inline col-1"
           defaultValue={currSizePerPage}
           onChange={(e) => onSizePerPageChange(e.target.value)}>
-          {options.map((option, idx) => {
-            return <option key={idx}>{option.text}</option>
-          })}
+          {options.map((option, idx) => (
+            <option key={idx}>{option.text}</option>
+          ))}
         </Input>
         <span className="d-inline ml-1">entries</span>
       </Fragment>

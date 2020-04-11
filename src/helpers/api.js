@@ -7,7 +7,8 @@ import axios from 'axios'
  */
 
 const config = {
-  fetchUrl: 'https://myavenir.herokuapp.com/api/v1',
+  fetchUrl: 'https://avenir-backend.herokuapp.com/api/v1',
+  // fetchUrl: 'https://myavenir.herokuapp.com/api/v1',
 }
 
 const callPlainApi = (url, data, method) =>
@@ -36,11 +37,10 @@ const callPlainApi = (url, data, method) =>
           resolve(response.data)
         })
         .catch(err => {
-          reject(err)
           if (err.response && err.response.data && err.response.data.data) {
-            reject(err.response.data.data.error)
+            return reject(err.response.data.data.error)
           }
-          reject(err)
+          return reject(err)
         })
     } else {
       axios
@@ -51,9 +51,9 @@ const callPlainApi = (url, data, method) =>
         .catch(err => {
           reject(err)
           if (err.response && err.response.data && err.response.data.data) {
-            reject(err.response.data.data.error)
+            return reject(err.response.data.data.error)
           }
-          reject(err)
+          return reject(err)
         })
     }
   })
@@ -115,9 +115,9 @@ const callSecuredApi = (url, data, method, token, callback) => {
             reject(err.response.status)
           }
           if (err.response && err.response.data && err.response.data.data) {
-            reject(err.response.data.data.error)
+            return reject(err.response.data.data.error)
           }
-          reject(err)
+          return reject(err)
         })
     } else if (method === 'PATCH') {
       axios

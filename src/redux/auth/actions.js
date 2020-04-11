@@ -10,6 +10,8 @@ import {
   FORGET_PASSWORD,
   FORGET_PASSWORD_SUCCESS,
   FORGET_PASSWORD_FAILED,
+  UPDATE_USER_DATA,
+  UPDATE_USER_DATA_SUCCESS,
 } from './constants'
 
 export const loginUser = (user, history) => ({
@@ -60,4 +62,14 @@ export const forgetPasswordSuccess = passwordResetStatus => ({
 export const forgetPasswordFailed = error => ({
   type: FORGET_PASSWORD_FAILED,
   payload: error,
+})
+
+export const updateUserData = userData => ({
+  type: UPDATE_USER_DATA,
+  payload: {userData},
+})
+
+export const updateUserDataSuccess = userData => ({
+  type: UPDATE_USER_DATA_SUCCESS,
+  payload: userData,
 })

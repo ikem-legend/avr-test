@@ -25,7 +25,7 @@ import Select from 'react-select'
 import Flatpickr from 'react-flatpickr'
 
 import {callApi} from '../../helpers/api'
-import {toFormData} from '../../helpers/utils'
+// import {toFormData} from '../../helpers/utils'
 import {registerUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -44,7 +44,7 @@ class Signup extends Component {
         email: '',
         password: '',
         confirmPassword: '',
-        userId: null,
+        // userId: null,
         address: '',
         zipcode: '',
         city: '',
@@ -145,11 +145,8 @@ class Signup extends Component {
    * @returns {function} showFeedback Displays feedback
   **/
   handleValidSubmit = async () => {
-    const {inputs: {userId, password, confirmPassword, city, country}} = this.state
+    const {inputs: {password, confirmPassword, city, country}} = this.state
     const {history} = this.props
-    if (!userId) {
-      return this.props.showFeedback('Please select an image or document for upload', 'error')
-    }
     if (!city.value) {
       return this.props.showFeedback('Please select your city', 'error')
     }
@@ -182,8 +179,9 @@ class Signup extends Component {
             key === 'country') &&
           delete data[key],
       )
-      const userIdData = toFormData(uploadData)
-      await this.props.registerUser(data, history, userIdData)
+      // const userIdData = toFormData(uploadData)
+      await this.props.registerUser(data, history)
+      // await this.props.registerUser(data, history, userIdData)
     } else {
       this.props.showFeedback(
         'Please agree to the terms and conditions',
@@ -464,7 +462,6 @@ class Signup extends Component {
                                     type="password"
                                     name="confirmPassword"
                                     id="confirmPassword"
-                                    // placeholder="Avenir A"
                                     value={confirmPassword}
                                     onFocus={this.activateField}
                                     onBlur={this.deactivateField}
@@ -494,41 +491,6 @@ class Signup extends Component {
                                   </AvFeedback>
                                 </AvGroup>
                               </Col>
-                              <Col md={12}>
-                                <AvGroup className="userId">
-                                  <Row>
-                                    <Col md={6}>
-                                      <Label for="userId">
-                                        Upload User ID
-                                      </Label>
-                                      <p>
-                                        We need your means of identification to verify your identity
-                                        for security purposes. This information
-                                        is encrypted and not stored on Avenir
-                                        servers
-                                      </p>
-                                    </Col>
-                                    <Col
-                                      md={6}
-                                      className="d-flex align-items-center"
-                                    >
-                                      <AvInput
-                                        type="file"
-                                        accept="image/jpeg, image/png, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                        // accept="image/jpeg, application/pdf, application/doc, application/docx"
-                                        name="userId"
-                                        id="userId"
-                                        className="form-control text-center"
-                                        onChange={this.updateInputValue}
-                                        required
-                                      />
-                                      <AvFeedback data-testid="ssn-error">
-                                        Please select image
-                                      </AvFeedback>
-                                    </Col>
-                                  </Row>
-                                </AvGroup>
-                              </Col>
                               <Col md={4}>
                                 <AvGroup className="float-container active">
                                   <Label for="dob">Date of Birth</Label>
@@ -548,7 +510,7 @@ class Signup extends Component {
                                       }
                                       className="form-control"
                                       options={{
-                                        maxDate: subYears(new Date(), 16),
+                                        maxDate: subYears(new Date(), 18),
                                         defaultDate: dob,
                                         dateFormat: 'd-M-Y',
                                       }}
