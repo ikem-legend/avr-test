@@ -18,6 +18,8 @@ class RoundUps extends Component {
     super()
     this.state = {
       multiplier: '1', // text value of multiplier
+      milestone: 0,
+      milestoneAmount: '0.00',
       invPause: false,
       loadingRndp: false,
       loadingMlpr: false,
@@ -28,6 +30,9 @@ class RoundUps extends Component {
     if (prevProps.multiplier !== this.props.multiplier) {
       this.loadUserData()
     }
+    if (prevProps.milestone.length !== this.props.milestone.length) {
+      this.loadTxnData()
+    }
   }
 
   loadUserData = () => {
@@ -35,6 +40,22 @@ class RoundUps extends Component {
     this.setState({
       multiplier,
       invPause,
+    })
+  }
+
+  loadTxnData = () => {
+    const {milestone} = this.props
+    const userMilestone =
+      milestone && milestone.length ? parseFloat(milestone[0].amount, 10) : 0
+    let milestoneProgress, result
+    if (userMilestone > 0) {
+      result = (userMilestone * 100) / 5
+      milestoneProgress = result > 100 ? 100 : result
+    }
+    this.setState({
+      milestone: milestoneProgress,
+      milestoneAmount:
+        milestone && milestone.length ? milestone[0].amount : '0.00',
     })
   }
 
@@ -50,8 +71,8 @@ class RoundUps extends Component {
     }
     callApi('/user/investment/status', invStatus, 'POST', user.token)
       .then(({data}) => {
-        console.log(data)
         this.setState({
+          invPause: !checked,
           loadingRndp: false,
         })
         this.props.showFeedback('Round-up successfully updated', 'success')
@@ -90,6 +111,7 @@ class RoundUps extends Component {
       .then(() => {
         this.loadUserData()
         this.setState({
+          multiplier,
           loadingMlpr: false,
         })
         this.props.showFeedback('Multiplier successfully updated', 'success')
@@ -107,7 +129,14 @@ class RoundUps extends Component {
   }
 
   render() {
-    const {multiplier, invPause, loadingRndp, loadingMlpr} = this.state
+    const {
+      multiplier,
+      milestone,
+      milestoneAmount,
+      invPause,
+      loadingRndp,
+      loadingMlpr,
+    } = this.state
     return (
       <Row>
         {/* milestone */}
@@ -141,8 +170,8 @@ class RoundUps extends Component {
           </Row>
           <Row>
             <Col md={8}>
-              <Progress value="52" color="blue" className="roundup-bar">
-                $2.60 Roundup (52%)
+              <Progress value={milestone} color="blue" className="roundup-bar">
+                ${milestoneAmount} Roundup ({milestone}%)
               </Progress>
             </Col>
           </Row>

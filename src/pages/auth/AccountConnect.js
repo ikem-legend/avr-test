@@ -254,7 +254,7 @@ class AccountConnect extends Component {
         this.setState({
           loadingDstrbn: false,
         })
-        this.props.history.push('/my-account')
+        this.props.history.push('/dashboard')
       })
       .catch(() => {
         this.props.showFeedback(
@@ -313,7 +313,7 @@ class AccountConnect extends Component {
 
     return (
       <Fragment>
-        {this.renderRedirectToRoot()}
+        {/*this.renderRedirectToRoot()*/}
 
         {(this._isMounted || !isAuthTokenValid) && (
           <div className="account-pages mt-5 mb-5">

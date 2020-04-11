@@ -1,9 +1,18 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
-import {Row, Col, Button, Modal, ModalHeader, ModalBody} from 'reactstrap'
+import {
+  Row,
+  Col,
+  Button,
+  Card,
+  CardBody,
+  Modal,
+  ModalHeader,
+  ModalBody,
+} from 'reactstrap'
 import PlaidLink from 'react-plaid-link'
+import classnames from 'classnames'
 import AccountList from '../../components/AccountList'
-import CardList from '../../components/CardList'
 import Loader from '../../components/Loader'
 import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
@@ -13,12 +22,9 @@ class BanksCards extends Component {
     super()
     this.state = {
       accounts: [],
-      cards: [],
       accountsLinkedList: [],
       loadingAccts: false,
-      loadingCards: false,
       accountModal: false,
-      cardModal: false,
     }
   }
 
@@ -26,18 +32,6 @@ class BanksCards extends Component {
     const {accounts} = this.state
     const accountList = accounts.map(acc => (
       <AccountList
-        details={acc}
-        key={acc.id}
-        accountsLinked={this.accountsLinked}
-      />
-    ))
-    return accountList
-  }
-
-  displayCardsList = () => {
-    const {cards} = this.state
-    const accountList = cards.map(acc => (
-      <CardList
         details={acc}
         key={acc.id}
         accountsLinked={this.accountsLinked}
@@ -64,15 +58,13 @@ class BanksCards extends Component {
           acc.link = true
           return acc
         })
-        // console.log(accountsLinkedList)
         this.setState({
           accounts: res.data.accounts,
           accountsLinkedList,
           loadingAccts: false,
         })
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         this.props.showFeedback('Error linking bank, please try again', 'error')
         this.setState({loadingAccts: false})
       })
@@ -92,64 +84,56 @@ class BanksCards extends Component {
         this.props.showFeedback('Account(s) successfully linked', 'success')
         this.displayCards()
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         this.props.showFeedback('Error linking account(s)', 'error')
       })
   }
 
-  displayCards = () => {
-    const {user} = this.props
-    this.setState({
-      accountModal: false,
-      cardModal: true,
-    })
-    callApi('/user/plaid/bank/get/cards', null, 'GET', user.token)
-      .then(res => {
-        const cardList = JSON.parse(JSON.stringify(res.data))
-        const cardsLinkedList = cardList.map(card => {
-          Object.keys(card).forEach(key => key !== 'id' && delete card[key])
-          card.link = true
-          return card
-        })
-        this.setState({
-          cards: res.data,
-          cardsLinkedList,
-          loadingCards: false,
-        })
-      })
-      .catch(() => {
-        this.props.showFeedback(
-          'Error displaying card(s), contact your banking for details',
-          'error',
-        )
-        this.setState({
-          loadingCards: false,
-        })
-      })
-  }
-
-  connectSelectedCards = () => {
-    const {cardsLinkedList} = this.state
-    const {user} = this.props
-    const cardsObj = {accounts_link: cardsLinkedList}
-    callApi('/user/plaid/bank/account/link', cardsObj, 'POST', user.token)
-      .then(() => {
-        this.props.showFeedback('Card(s) successfully linked', 'success')
-        this.setState({
-          cardModal: false,
-        })
-      })
-      .catch(err => {
-        console.log(err)
-        this.props.showFeedback('Error linking card(s)', 'error')
-      })
-  }
-
   render() {
-    // const {bankAccounts} = this.props
-    const {accountModal, loadingAccts, cardModal, loadingCards} = this.state
-    // console.log(bankAccounts)
+    const {bankAccounts} = this.props
+    const {accountModal, loadingAccts} = this.state
+    const acctList =
+      bankAccounts &&
+      bankAccounts.map(acct => (
+        <Card key={acct.id}>
+          <CardBody>
+            <Row>
+              <Col md={12} className="font-weight-bold acct-name">
+                {acct.institutionName}
+              </Col>
+              <Col md={12}>
+                {acct.accounts.map(acctDetail => (
+                  <Row
+                    key={`${acct.institutionId}-${acctDetail.id}`}
+                    className="mb-2"
+                  >
+                    <Col md={6} className="font-weight-bold acct-name">
+                      {acctDetail.accountName}
+                    </Col>
+                    <Col md={3}>****{acctDetail.accountMask}</Col>
+                    <Col md={3}>
+                      <Button
+                        data-cy="account-linked-unliked-btn"
+                        block
+                        color="transparent"
+                        className={classnames(
+                          {
+                            linked: acctDetail.accountLink === true,
+                            unlinked: acctDetail.accountLink === false,
+                          },
+                          'float-right',
+                        )}
+                      >
+                        {acctDetail.accountLink ? 'Linked' : 'Unlinked'}
+                      </Button>
+                    </Col>
+                  </Row>
+                ))}
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+      ))
     return (
       <Fragment>
         <Row>
@@ -187,7 +171,7 @@ class BanksCards extends Component {
           </Col>
         </Row>
         <Row>
-          <Col md={12}></Col>
+          <Col md={12}>{acctList}</Col>
           <Modal isOpen={accountModal} toggle={this.toggle}>
             <ModalHeader>Select accounts to be linked</ModalHeader>
             <ModalBody>
@@ -205,38 +189,6 @@ class BanksCards extends Component {
                 'Oops, no accounts found for selected bank'
               )}
               <Button color="success" block onClick={this.connectSelectedAccts}>
-                Continue
-              </Button>
-            </ModalBody>
-          </Modal>
-        </Row>
-        <Row>
-          <Col md={12}>
-            <h5>Round-up Cards (Credit & Debit)</h5>
-          </Col>
-        </Row>
-        <Row form>
-          <Col md={12}>
-            <p className="font-weight-bold mb-0">
-              Connect your credit or debit card to boost your round-up investing
-            </p>
-          </Col>
-          <Modal isOpen={cardModal} toggle={this.toggle}>
-            <ModalHeader>Select cards to be linked</ModalHeader>
-            <ModalBody>
-              {loadingCards ? <Loader /> : null}
-              {this.displayCardsList && this.displayCardsList.length ? (
-                <div>
-                  <h4 className="text-center">
-                    Your card is now linked to Avenir. You can unlink an card by
-                    clicking on it.
-                  </h4>
-                  {this.displayCardsList}
-                </div>
-              ) : (
-                'Oops, no cards found for selected bank'
-              )}
-              <Button color="success" block onClick={this.connectSelectedCards}>
                 Continue
               </Button>
             </ModalBody>

@@ -25,7 +25,7 @@ class Dashboard extends Component {
 
     this.state = {
       topupModal: false,
-      topup: 0,
+      topup: 10,
       withdrawModal: false,
       withdraw: 0,
       activeCoin: 'btc',
@@ -41,6 +41,7 @@ class Dashboard extends Component {
       myCurrencyDistributions: [],
       exchangeRates: {},
       loadingTopup: false,
+      loadingWithdraw: false,
     }
   }
 
@@ -113,7 +114,7 @@ class Dashboard extends Component {
     this.setState({loadingTopup: true})
     const {myCurrencyDistributions, topup} = this.state
     const {user} = this.props
-    if (topup && topup > 0) {
+    if (topup && parseInt(topup, 10) >= 10) {
       // item + 2 to reflect coin IDs
       const newCurrDstrbn = myCurrencyDistributions.map((curr, item) => ({
         currency_id: item + 2,
@@ -124,12 +125,13 @@ class Dashboard extends Component {
         .then(() => {
           this.setState({
             loadingTopup: false,
-            topup: 0,
+            topup: 10,
           })
           this.props.showFeedback(
             `$${parseInt(topup, 10)} Top-up made successfully`,
             'success',
           )
+          this.toggleTopup()
         })
         .catch(() => {
           this.setState({loadingTopup: false})
@@ -140,14 +142,10 @@ class Dashboard extends Component {
         })
     } else {
       this.props.showFeedback(
-        'Error making top-up, please check the amount and try again',
+        'Error making top-up, please set minimum topup amount of $10 and try again',
         'error',
       )
     }
-    // } else {
-    //   this.setState({loadingTopup: false})
-    //   this.props.showFeedback('Please set roundup amount', 'error')
-    // }
   }
 
   toggleWithdraw = () => {
@@ -161,6 +159,47 @@ class Dashboard extends Component {
     this.setState({
       activeCoin: val,
     })
+  }
+
+  updateWithdrawal = e => {
+    const {value} = e.target
+    const {activeCoin, btcVal, ethVal} = this.state
+    if (activeCoin === 'btc' && btcVal > 0 && btcVal >= value) {
+      this.setState({withdraw: value})
+    }
+    if (activeCoin === 'eth' && ethVal > 0 && ethVal >= value) {
+      this.setState({withdraw: value})
+    }
+  }
+
+  fundsWithdraw = () => {
+    const {user} = this.props
+    const {withdraw, activeCoin} = this.state
+    const coinList = {btc: 2, eth: 3}
+    const walletId = coinList[activeCoin]
+    this.setState({
+      loadingWithdraw: true,
+    })
+    const withdrawObj = {amount: withdraw, user_wallet_id: walletId}
+    callApi('/user/wallet/fund', withdrawObj, 'POST', user.token)
+      .then(() => {
+        this.setState({
+          loadingWithdraw: false,
+          withdraw: 0,
+        })
+        this.props.showFeedback(
+          `$${withdraw} withdrawal made successfully`,
+          'success',
+        )
+        this.toggleWithdraw()
+      })
+      .catch(() => {
+        this.setState({loadingWithdraw: false})
+        this.props.showFeedback(
+          'Error making withdrawal, please check the amount and try again',
+          'error',
+        )
+      })
   }
 
   /**
@@ -188,6 +227,7 @@ class Dashboard extends Component {
       myCurrencyDistributions,
       walletTotal,
       loadingTopup,
+      loadingWithdraw,
     } = this.state
     return (
       <Fragment>
@@ -277,7 +317,7 @@ class Dashboard extends Component {
               <div className="text-center">
                 <h4 className="wallet-topup mt-4">Wallet Top Up</h4>
                 <p className="mt-4 mb-0">Top-ups are an easy way to</p>
-                <p>make one-time investments</p>
+                <p>make one-time minimum investments of $10</p>
                 <img src={TopUp} alt="Top Up" className="img-fluid" />
                 <h4>{`$${numberWithCommas(walletTotal.toFixed(2))}`}</h4>
                 <p>Total Wallet Balance</p>
@@ -308,7 +348,7 @@ class Dashboard extends Component {
                           <img
                             src={TopUpLoader}
                             alt="loader"
-                            style={{height: '40px'}}
+                            style={{height: '40px', marginTop: '20px'}}
                           />
                         ) : (
                           <Button
@@ -374,6 +414,7 @@ class Dashboard extends Component {
                       type="number"
                       placeholder="Enter Amount"
                       value={withdraw}
+                      onChange={this.updateWithdrawal}
                     />
                   </Col>
                   <Col md={{offset: 2, size: 8}}>
@@ -389,9 +430,22 @@ class Dashboard extends Component {
                         </Button>
                       </Col>
                       <Col md={6}>
-                        <Button color="inv-blue" className="mt-4 mb-4" block>
-                          Withdraw
-                        </Button>
+                        {loadingWithdraw ? (
+                          <img
+                            src={TopUpLoader}
+                            alt="loader"
+                            style={{height: '40px', marginTop: '20px'}}
+                          />
+                        ) : (
+                          <Button
+                            color="inv-blue"
+                            className="mt-4 mb-4"
+                            block
+                            onClick={this.fundsWithdraw}
+                          >
+                            Withdraw
+                          </Button>
+                        )}
                       </Col>
                     </Row>
                   </Col>

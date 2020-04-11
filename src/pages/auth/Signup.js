@@ -40,7 +40,7 @@ class Signup extends Component {
         firstname: '',
         lastname: '',
         phone: '',
-        dob: subYears(new Date(), 16).getTime(),
+        dob: subYears(new Date(), 18).getTime(),
         email: '',
         password: '',
         confirmPassword: '',
@@ -52,9 +52,9 @@ class Signup extends Component {
       },
       terms: false,
       signupError: '',
-      documentUploadError: false
+      documentUploadError: false,
     }
-    this.idFileInput = createRef();
+    this.idFileInput = createRef()
   }
 
   async componentDidMount() {
@@ -119,9 +119,9 @@ class Signup extends Component {
         ...prevState,
         inputs: {
           ...prevState.inputs,
-          userId: files[0]
-        }
-      }));
+          userId: files[0],
+        },
+      }))
     } else {
       this.setState(prevState => ({
         ...prevState,
@@ -143,12 +143,17 @@ class Signup extends Component {
   /**
    * Handles the submit
    * @returns {function} showFeedback Displays feedback
-  **/
+   **/
   handleValidSubmit = async () => {
-    const {inputs: {userId, password, confirmPassword, city, country}} = this.state
+    const {
+      inputs: {userId, password, confirmPassword, city, country},
+    } = this.state
     const {history} = this.props
     if (!userId) {
-      return this.props.showFeedback('Please select an image or document for upload', 'error')
+      return this.props.showFeedback(
+        'Please select an image or document for upload',
+        'error',
+      )
     }
     if (!city.value) {
       return this.props.showFeedback('Please select your city', 'error')
@@ -163,7 +168,7 @@ class Signup extends Component {
       const data = {...this.state.inputs}
       const uploadData = {
         document: data.userId,
-        type: 'individualProofOfAddress'
+        type: 'individualProofOfAddress',
       }
       data.dob = String(data.dob)
       data.first_name = String(data.firstname)
@@ -219,7 +224,7 @@ class Signup extends Component {
         zipcode,
         city,
         country,
-      }
+      },
     } = this.state
     return (
       <Fragment>
@@ -264,7 +269,9 @@ class Signup extends Component {
                           <div className="auth-user-testimonial d-block d-sm-none">
                             <p className="lead font-weight-bold">
                               <span>Create an Account</span>
-                              <span className="float-right back">Back to <Link to="/account/login">Login</Link></span>
+                              <span className="float-right back">
+                                Back to <Link to="/account/login">Login</Link>
+                              </span>
                             </p>
                             <p className="font-size-24 font-weight-bold mb-1">
                               Confirm your Identity
@@ -452,14 +459,16 @@ class Signup extends Component {
                                     required
                                   />
                                   <AvFeedback data-testid="password-error">
-                                    Password must contain at least 1 lowercase, 1
-                                    uppercase, 1 number and 8 characters
+                                    Password must contain at least 1 lowercase,
+                                    1 uppercase, 1 number and 8 characters
                                   </AvFeedback>
                                 </AvGroup>
                               </Col>
                               <Col md={6}>
                                 <AvGroup className="float-container">
-                                  <Label for="confirmPassword">Confirm Password</Label>
+                                  <Label for="confirmPassword">
+                                    Confirm Password
+                                  </Label>
                                   <AvInput
                                     type="password"
                                     name="confirmPassword"
@@ -498,14 +507,12 @@ class Signup extends Component {
                                 <AvGroup className="userId">
                                   <Row>
                                     <Col md={6}>
-                                      <Label for="userId">
-                                        Upload User ID
-                                      </Label>
+                                      <Label for="userId">Upload User ID</Label>
                                       <p>
-                                        We need your means of identification to verify your identity
-                                        for security purposes. This information
-                                        is encrypted and not stored on Avenir
-                                        servers
+                                        We need your means of identification to
+                                        verify your identity for security
+                                        purposes. This information is encrypted
+                                        and not stored on Avenir servers
                                       </p>
                                     </Col>
                                     <Col
@@ -600,7 +607,9 @@ class Signup extends Component {
                               </Col>
                               <Col md={4}>
                                 <AvGroup className="float-container">
-                                  <Label for="country">Select your country</Label>
+                                  <Label for="country">
+                                    Select your country
+                                  </Label>
                                   <Select
                                     id="country"
                                     options={this.state.countries}

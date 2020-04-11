@@ -25,6 +25,7 @@ class RoundUpsTable extends Component {
         },
         {
           dataField: 'amount',
+          formatter: this.formatCurr,
           text: 'Round-Up',
           sort: false,
         },
@@ -36,13 +37,13 @@ class RoundUpsTable extends Component {
         },
         {
           dataField: 'investment_distributions[0].amount',
-          formatter: this.balanceDisplay,
+          formatter: this.formatCurr,
           text: 'BTC',
           sort: false,
         },
         {
           dataField: 'investment_distributions[1].amount',
-          formatter: this.balanceDisplay,
+          formatter: this.formatCurr,
           text: 'ETH',
           sort: false,
         },
@@ -54,10 +55,10 @@ class RoundUpsTable extends Component {
     <span>{`${status[0].toUpperCase()}${status.slice(1)}`}</span>
   )
 
-  balanceDisplay = amount => <span>{parseInt(amount, 10).toFixed(2)}</span>
+  formatCurr = amount => <span>${amount}</span>
 
   componentDidUpdate(prevProps) {
-    if (this.props.txnList > prevProps.txnList) {
+    if (this.props.txnList.length > prevProps.txnList.length) {
       this.updateTxnList(this.props.txnList)
     }
   }
@@ -73,7 +74,6 @@ class RoundUpsTable extends Component {
 
   render() {
     const {roundups, columns} = this.state
-    // const {txnList} = this.props
     const {SearchBar} = Search
     const {ExportCSVButton} = CSVExport
 
@@ -110,62 +110,37 @@ class RoundUpsTable extends Component {
     )
 
     const expandRow = {
-      renderer: () => (
-        <div>
-          {/* <p>expandRow.renderer callback will pass the origin row object to you</p> */}
-          <Table striped hover>
-            <thead>
-              <tr>
-                <th></th>
-                <th>Date</th>
-                <th>Transaction</th>
-                <th>Amount</th>
-                <th>Round-Up</th>
-                <th>Multiplier Amount</th>
-                <th>Multiplier</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td></td>
-                <td>12-02-2020</td>
-                <td>Amazon Store</td>
-                <td>$3.19</td>
-                <td>$0.81</td>
-                <td>$3.24</td>
-                <td>4x</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>12-02-2020</td>
-                <td>Sephora Store</td>
-                <td>$1.45</td>
-                <td>$0.55</td>
-                <td>$1.10</td>
-                <td>2x</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>12-02-2020</td>
-                <td>Dunkin Donuts</td>
-                <td>$1.45</td>
-                <td>$0.55</td>
-                <td>$1.10</td>
-                <td>2x</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>12-02-2020</td>
-                <td>Midas Salon</td>
-                <td>$1.45</td>
-                <td>$0.55</td>
-                <td>$1.10</td>
-                <td>2x</td>
-              </tr>
-            </tbody>
-          </Table>
-        </div>
-      ),
+      renderer: (row, rowIdx) => {
+        const txnDetails = row.transactions.map(item => (
+          <tr key={`${row.id}-${rowIdx}-${item.id}`}>
+            <td></td>
+            <td>{item.transaction_date}</td>
+            <td>{item.transaction}</td>
+            <td>${item.amount}</td>
+            <td>${item.remainder}</td>
+            <td>${item.transaction_investment_amount}</td>
+            <td>{item.multiplier}x</td>
+          </tr>
+        ))
+        return (
+          <div>
+            <Table striped hover>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Date</th>
+                  <th>Transaction</th>
+                  <th>Amount</th>
+                  <th>Round-Up</th>
+                  <th>Multiplier Amount</th>
+                  <th>Multiplier</th>
+                </tr>
+              </thead>
+              <tbody>{txnDetails}</tbody>
+            </Table>
+          </div>
+        )
+      },
       showExpandColumn: true,
       onlyOneExpanding: true,
       expandHeaderColumnRenderer: ({isAnyExpands}) => {
@@ -183,18 +158,6 @@ class RoundUpsTable extends Component {
         )
       },
     }
-    // {roundups[0].map(items => (
-    //             <tr>
-    //             <td></td>
-    //             <td>12-02-2020</td>
-    //             <td>Amazon Store</td>
-    //             <td>$3.19</td>
-    //             <td>$0.81</td>
-    //             <td>$3.24</td>
-    //             <td>4x</td>
-    //           </tr>
-    //             )
-    //           )}
     return (
       <Col md={12}>
         <Card>
@@ -217,7 +180,7 @@ class RoundUpsTable extends Component {
                     <Col md={6}>
                       <SearchBar
                         {...props.searchProps}
-                        placeholder="Search round-ups, top-ups or withdrawal"
+                        placeholder="Search round-ups"
                         style={{
                           width: '500px',
                           border: '1px solid #eaeaea',

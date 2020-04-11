@@ -30,10 +30,29 @@ class EditProfile extends Component {
 
   updateFields = e => {
     const {name, value} = e.target
+    // debugger
     this.setState(prevState => ({
       ...prevState,
       [name]: value,
     }))
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.name.length > prevProps.name.length) {
+      this.getProfileDetails()
+    }
+  }
+
+  getProfileDetails = () => {
+    const {name, dob, phone, email, address, referralUrl} = this.props
+    this.setState({
+      name,
+      email,
+      phone,
+      dob,
+      address,
+      referralUrl,
+    })
   }
 
   updateProfile = () => {
@@ -61,8 +80,7 @@ class EditProfile extends Component {
         loadUserData()
         this.props.showFeedback('Profile updated successfully', 'success')
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         this.props.showFeedback(
           'Error updating profile, please try again',
           'error',
@@ -71,7 +89,7 @@ class EditProfile extends Component {
   }
 
   render() {
-    const {name, email, phone, dob, address, referralUrl} = this.props
+    const {name, email, phone, dob, address, referralUrl} = this.state
     return (
       <Row>
         <Col>
