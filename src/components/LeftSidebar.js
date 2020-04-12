@@ -6,7 +6,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
 import {getLoggedInUser} from '../helpers/authUtils'
-// import profilePic from '../assets/images/users/default-avatar.png'
+import profilePic from '../assets/images/users/default-avatar.png'
 // import profilePic from '../assets/images/users/user-profile@2x.png'
 import AppMenu from './AppMenu'
 
@@ -18,16 +18,17 @@ const UserProfile = ({user}) => {
   return (
     <Fragment>
       <div className="media user-profile user-avatar mt-2">
-        {/* <img
+        <img
           src={profilePic}
+          bg
           className="avatar-lg rounded-circle mr-2"
           alt="Avenir"
-        /> */}
-        {/* <img
+        />
+        <img
           src={profilePic}
           className="avatar-xs rounded-circle mr-2"
           alt="Avenir"
-        /> */}
+        />
       </div>
 
       <div className="media-body user-profile details mb-2">
