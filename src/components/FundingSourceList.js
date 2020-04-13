@@ -10,7 +10,9 @@ class FundingSourceList extends Component {
     super()
     this.state = {
       linked: props.acctDetail.accountLink,
-      linkText: props.acctDetail.accountLink ? 'Link' : 'Unlink'
+      linkText: props.acctDetail.accountLink ? 'Link' : 'Unlink',
+      source: props.acctDetail.fundingSource,
+      sourceText: props.acctDetail.fundingSource ? 'Funding Source' : 'Regular Account',
     }
   }
 
@@ -21,12 +23,22 @@ class FundingSourceList extends Component {
     accountsLinked(acctDetail.id, !linked)
     this.setState({
       linked: !linked,
-      linkText: linkText === 'Unlink' ? 'Link' : 'Unlink'
+      linkText: linkText === 'Unlink' ? 'Link' : 'Unlink',
+    });
+  }
+
+  updateFundingSource = () => {
+    const {source, sourceText} = this.state
+    const {acctDetail, fundingSource} = this.props
+    fundingSource(acctDetail.id, !source)
+    this.setState({
+      source: !source,
+      sourceText: sourceText === 'Regular Account' ? 'Funding Source' : 'Regular Account',
     });
   }
 
   render() {
-    const {linked, linkText} = this.state
+    const {linked, linkText, source, sourceText} = this.state
     const {acct, acctDetail} = this.props
     return (
       <Row key={`${acct.institutionId}-${acctDetail.id}`} className="mb-2">
@@ -38,6 +50,9 @@ class FundingSourceList extends Component {
         </Col>
         <Col md={3}>
           <Button block color="transparent" className={classnames({'linked': linked === true, 'unlinked': linked === false}, 'float-right')} onClick={this.modify}>{linkText}</Button>
+        </Col>
+        <Col md={3}>
+          <Button block color="transparent" className={classnames({'linked': source === true, 'unlinked': source === false}, 'float-right')} onClick={this.updateFundingSource}>{sourceText}</Button>
         </Col>
       </Row>
     )

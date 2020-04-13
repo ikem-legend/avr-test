@@ -246,7 +246,7 @@ class AccountConnect extends Component {
         this.props.history.push('/dashboard')
       })
       .catch(() => {
-        this.props.showFeedback('Error updating currency ratio, please try again')
+        this.props.showFeedback('Error updating currency ratio, please try again', 'error')
         this.setState({
           loadingDstrbn: false
         });
@@ -259,7 +259,6 @@ class AccountConnect extends Component {
    */
   renderRedirectToRoot = () => {
     const isAuthTokenValid = isUserAuthenticated()
-    console.log(this.props)
     if (!isAuthTokenValid) {
       return <Redirect to="/account/login" />
     }

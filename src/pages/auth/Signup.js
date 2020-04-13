@@ -158,10 +158,6 @@ class Signup extends Component {
     }
     if (this.state.terms) {
       const data = {...this.state.inputs}
-      const uploadData = {
-        document: data.userId,
-        type: 'individualProofOfAddress'
-      }
       data.dob = String(data.dob)
       data.first_name = String(data.firstname)
       data.last_name = String(data.lastname)
@@ -179,9 +175,7 @@ class Signup extends Component {
             key === 'country') &&
           delete data[key],
       )
-      // const userIdData = toFormData(uploadData)
       await this.props.registerUser(data, history)
-      // await this.props.registerUser(data, history, userIdData)
     } else {
       this.props.showFeedback(
         'Please agree to the terms and conditions',

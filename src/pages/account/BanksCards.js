@@ -43,23 +43,12 @@ class BanksCards extends Component {
   //     console.log(accountsLinkedList)
   //   }
   // }
-  
-  displayAccountList = () => {
-    const {accounts} = this.state
-    const accountList = accounts.map(acc => (
-      <AccountList
-        details={acc}
-        key={acc.id}
-        accountsLinked={this.accountsLinked}
-      />
-    ))
-    return accountList
-  }
 
   handleOnSuccess = (token, metadata) => {
     const {user} = this.props
     this.setState({
       accountModal: true,
+      loadingAccts: true,
     })
     const institution_name = metadata.institution.name
     const {institution_id} = metadata.institution
@@ -93,26 +82,34 @@ class BanksCards extends Component {
 
   connectSelectedAccts = () => {
     const {accountsLinkedList} = this.state
-    const {user} = this.props
+    const {user, loadUserData} = this.props
     const accountsObj = {accounts_link: accountsLinkedList}
     callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
       .then(() => {
         this.props.showFeedback('Account(s) successfully linked', 'success')
-        this.displayCards()
+        loadUserData()
       })
       .catch(() => {
         this.props.showFeedback('Error linking account(s)', 'error')
       })
   }
 
+  exitAccountLink = () => {
+    // unlink selected bank
+    this.setState({
+      accountModal: false
+    });
+  }
+
 	render() {
-    const {bankAccounts, accountsLinked, connectSelectedAccts, loadingAcctLink} = this.props
+    const {bankAccounts, accountsLinked, fundingSource, connectSelectedAccts, loadingAcctLink} = this.props
     const {
+      accounts,
       accountModal,
       loadingAccts,
     } = this.state
     const acctList = bankAccounts && bankAccounts.map(acct => (
-      <Card key={acct.id}>
+      <Card key={acct.institutionId}>
         <CardBody>
           <Row>
             <Col md={12} className="font-weight-bold acct-name">
@@ -126,6 +123,7 @@ class BanksCards extends Component {
                     acct={acct}
                     acctDetail={acctDetail}
                     accountsLinked={accountsLinked}
+                    fundingSource={fundingSource}
                   />
                 ))
               }
@@ -134,6 +132,15 @@ class BanksCards extends Component {
         </CardBody>
       </Card>
     ))
+
+    const accountList = accounts && accounts.map(acc => (
+      <AccountList
+        details={acc}
+        key={acc.id}
+        accountsLinked={this.accountsLinked}
+      />
+    ))
+
 		return (
       <Fragment>
   			<Row>
@@ -181,25 +188,32 @@ class BanksCards extends Component {
           <Modal isOpen={accountModal} toggle={this.toggle}>
             <ModalHeader>Select accounts to be linked</ModalHeader>
             <ModalBody>
-              {loadingAccts ? <Loader /> : null}
-              {this.displayAccountList && this.displayAccountList.length ? (
-              // {accountList && accountList.length ? (
-                <div>
-                  <h4 className="text-center">
-                    Your account is now linked to Avenir. You can
-                    unlink an account by clicking on it.
-                  </h4>
-                  {this.displayAccountList}
-                </div>
-              ) : (
-                'Oops, no accounts found for selected bank'
-              )}
+              {loadingAccts ? <Loader /> : 
+                accountList && accountList.length ? (
+                  <div>
+                    <h4 className="text-center">
+                      Your account is now linked to Avenir. You can
+                      unlink an account by clicking on it.
+                    </h4>
+                    {accountList}
+                  </div>
+                ) : (
+                  <p className="text-center">Oops, no accounts found for selected bank</p>
+                )
+              }
               <Button
                 color="success"
                 block
                 onClick={this.connectSelectedAccts}
               >
                 Continue
+              </Button>
+              <Button
+                color="danger"
+                block
+                onClick={this.exitAccountLink}
+              >
+                Cancel
               </Button>
             </ModalBody>
           </Modal>

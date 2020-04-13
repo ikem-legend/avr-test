@@ -148,6 +148,7 @@ class Transactions extends Component {
             loadingTopup: false,
             topup: 0,
           })
+          this.loadTopups()
           this.props.showFeedback(
             `$${parseInt(topup, 10)} Top-up made successfully`,
             'success',
