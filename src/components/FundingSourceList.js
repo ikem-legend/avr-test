@@ -42,7 +42,7 @@ class FundingSourceList extends Component {
     const {acct, acctDetail} = this.props
     return (
       <Row key={`${acct.institutionId}-${acctDetail.id}`} className="mb-2">
-        <Col md={6} className="font-weight-bold acct-name">
+        <Col md={3} className="font-weight-bold acct-name">
           {acctDetail.accountName}
         </Col>
         <Col md={3}>
