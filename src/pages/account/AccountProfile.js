@@ -4,7 +4,7 @@ import {
   CustomInput
 } from 'reactstrap'
 import classnames from 'classnames'
-import profilePic from '../../assets/images/users/user-profile@2x.png'
+import profilePic from '../../assets/images/users/default-avatar.png'
 
 export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, documentUpload, documentUploadStatus, documentUploadError, topup}) => {
   return (

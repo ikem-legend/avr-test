@@ -95,6 +95,7 @@ class Account extends Component {
           // accounts: plaidBanks,
           accountsConnectList: accountsConnectArr,
           accountsFSList: accountsFSArr,
+          acctFundingSource: res.data.plaidBankAccountFundingSource,
           bankAccountSetup: bankAccountSetup.done,
           multiplierSetup: multiplierSetup.done,
           topup: topup.done,
@@ -120,7 +121,6 @@ class Account extends Component {
   }
 
   accountsLinked = (id, val) => {
-    // console.log(id, val)
     const {accountsConnectList} = this.state
     const tempList = accountsConnectList.map(acc => {
       if (acc.id === id) {
@@ -128,14 +128,12 @@ class Account extends Component {
       }
       return acc
     })
-    // console.log(tempList)
     this.setState({
       accountsConnectList: tempList,
     })
   }
 
   fundingSourceLinked = (id, val) => {
-    // console.log(id, val)
     const {accountsFSList} = this.state
     const tempList = accountsFSList.map(acc => {
       if (acc.id === id) {
@@ -199,7 +197,7 @@ class Account extends Component {
   }
 
   render() {
-    const {name, email, phone, dob, address, referralUrl, accounts, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
+    const {name, email, phone, dob, address, referralUrl, accounts, acctFundingSource, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
     const {user} = this.props
 
     return (
@@ -318,6 +316,7 @@ class Account extends Component {
                           <div className="p-4">
                             <BanksCards 
                               bankAccounts={accounts}
+                              acctFundingSource={acctFundingSource}
                               accountsLinked={this.accountsLinked}
                               fundingSource={this.fundingSourceLinked}
                               loadingAcctLink={loadingAcctLink}
