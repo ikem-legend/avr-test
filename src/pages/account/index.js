@@ -27,6 +27,8 @@ class Account extends Component {
       address: '',
       referralUrl: '',
       accounts: [],
+      accountsConnectList: [],
+      accountsFSList: [],
       loadingAcctLink: false,
       bankAccountSetup: false,
       topup: false,
@@ -37,7 +39,7 @@ class Account extends Component {
       total: 0,
       twofactorAuth: false,
       notifications: false,
-      activeTab: '1',
+      activeTab: '3',
     }
   }
 
@@ -69,24 +71,29 @@ class Account extends Component {
           },
         } = res.data
         const acctArr = []
+        const acctFSArr = []
         const accountsLinkedList = plaidBanks.map(acc => {
           acc.accounts.map(details => {
             details.link = details.accountLink
+            details.fundingSource = details.accountFundingSource
             acctArr.push(details)
+            acctFSArr.push(details)
             return details
           })
           return acc
           // Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
         })
         // Deep copy needed to avoid overwriting account details
-        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(
-          acctDet => {
-            Object.keys(acctDet).forEach(
-              key => key !== 'id' && key !== 'link' && delete acctDet[key],
-            )
-            return acctDet
-          },
-        )
+        // Create an array for the accounts with only id and value and this is
+        // then used to track sttate of each account for linking and unlinking
+        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(acctDet => {
+          Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'link') && delete acctDet[key])
+          return acctDet
+        })
+        const accountsFSArr = JSON.parse(JSON.stringify(acctFSArr)).map(acctDet => {
+          Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'fundingSource') && delete acctDet[key])
+          return acctDet
+        })
         this.setState({
           name: `${myFirstName} ${myLastName}`,
           email: myEmailAddress,
@@ -97,6 +104,8 @@ class Account extends Component {
           accounts: accountsLinkedList,
           // accounts: plaidBanks,
           accountsConnectList: accountsConnectArr,
+          accountsFSList: accountsFSArr,
+          acctFundingSource: res.data.plaidBankAccountFundingSource,
           bankAccountSetup: bankAccountSetup.done,
           multiplierSetup: multiplierSetup.done,
           topup: topup.done,
@@ -122,7 +131,6 @@ class Account extends Component {
   }
 
   accountsLinked = (id, val) => {
-    // console.log(id, val)
     const {accountsConnectList} = this.state
     const tempList = accountsConnectList.map(acc => {
       if (acc.id === id) {
@@ -130,27 +138,60 @@ class Account extends Component {
       }
       return acc
     })
-    // console.log(tempList)
     this.setState({
       accountsConnectList: tempList,
     })
   }
 
+  fundingSourceLinked = (id, val) => {
+    const {accountsFSList} = this.state
+    const tempList = accountsFSList.map(acc => {
+      if (acc.id === id) {
+        return {...acc, fundingSource: val}
+      }
+      return acc
+    })
+    this.setState({
+      accountsFSList: tempList,
+    })
+  }
+
   connectSelectedAccts = () => {
-    const {accountsConnectList} = this.state
+    const {accountsConnectList, accountsFSList} = this.state
     const {user} = this.props
     const accountsObj = {accounts_link: accountsConnectList}
-    this.setState({loadingAcctLink: true})
-    callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+    // Check if single funding source
+    const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
+    if (filteredFS.length === 1) {
+      this.setState({loadingAcctLink: true});
+      callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+        .then(() => {
+          this.props.showFeedback('Account(s) successfully linked', 'success')
+          this.connectFundingSource(filteredFS[0])
+        })
+        .catch(err => {
+          console.log(err)
+          this.setState({loadingAcctLink: false});
+          this.props.showFeedback('Error linking account(s)', 'error')
+        })
+    } else {
+      this.props.showFeedback('Please specify only one funding source', 'error')
+    }
+  }
+
+  connectFundingSource = (val) => {
+    const {user} = this.props
+    const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
+    callApi('/user/plaid/bank/account/funding/source', fsObj, 'POST', user.token)
       .then(() => {
-        this.props.showFeedback('Account(s) successfully linked', 'success')
-        this.setState({loadingAcctLink: false})
+        this.props.showFeedback('Funding source successfully updated', 'success')
+        this.setState({loadingAcctLink: false});
         this.loadUserData()
       })
       .catch(err => {
         console.log(err)
-        this.setState({loadingAcctLink: false})
-        this.props.showFeedback('Error linking account(s)', 'error')
+        this.setState({loadingAcctLink: false});
+        this.props.showFeedback('Error updating funding source', 'error')
       })
   }
 
@@ -166,26 +207,7 @@ class Account extends Component {
   }
 
   render() {
-    const {
-      name,
-      email,
-      phone,
-      dob,
-      address,
-      referralUrl,
-      accounts,
-      bankAccountSetup,
-      multiplierSetup,
-      topup,
-      documentUpload,
-      documentUploadStatus,
-      documentUploadError,
-      total,
-      notifications,
-      twofactorAuth,
-      activeTab,
-      loadingAcctLink,
-    } = this.state
+    const {name, email, phone, dob, address, referralUrl, accounts, acctFundingSource, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
     const {user} = this.props
 
     return (
@@ -304,9 +326,12 @@ class Account extends Component {
                           <div className="p-4">
                             <BanksCards
                               bankAccounts={accounts}
+                              acctFundingSource={acctFundingSource}
                               accountsLinked={this.accountsLinked}
+                              fundingSource={this.fundingSourceLinked}
                               loadingAcctLink={loadingAcctLink}
                               connectSelectedAccts={this.connectSelectedAccts}
+                              loadUserData={this.loadUserData}
                             />
                           </div>
                         </TabPane>

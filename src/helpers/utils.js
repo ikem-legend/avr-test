@@ -5,9 +5,9 @@ export const toFormData = values => {
   Object.keys(values).forEach(key => {
     formData.append(key, values[key])
   })
-  for (const pair of formData.entries()) {
-    console.log(pair[0] + ', ' + pair[1])
-  }
+ //  for (const pair of formData.entries()) {
+ //    console.log(pair[0]+ ', ' + pair[1]);
+	// }
   return formData
 }
 
