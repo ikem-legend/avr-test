@@ -1,0 +1,25 @@
+{
+  "data": [
+    {
+      "id": 2,
+      "amount": "0",
+      "dateCreated": "04-13-2020",
+      "status": "pending",
+      "investment_distributions": [
+        {
+          "currency": "BTC",
+          "amount": 0
+        },
+        {
+          "currency": "ETH",
+          "amount": 0
+        }
+      ],
+      "transactions": []
+    }
+  ],
+  "meta": {
+    "api_signature": "heimdall inc",
+    "developer": "schneidershades"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": 2,
+      "amount": "30",
+      "investment_distributions": [
+        {
+          "currency": "BTC",
+          "amount": "16.5"
+        },
+        {
+          "currency": "ETH",
+          "amount": "13.5"
+        }
+      ],
+      "status": "processing",
+      "dateCreated": "04-13-2020"
+    }
+  ],
+  "meta": {
+    "api_signature": "heimdall inc",
+    "developer": "schneidershades"
+  }
+}

@@ -13,7 +13,7 @@ import Loader from '../../components/Loader'
 import StyledDropzone from '../../components/ImagePicker'
 import {showFeedback, updateUserData} from '../../redux/actions'
 
-// import DefaultImage from '../../assets/images/default-image.png'
+import DefaultImage from '../../assets/images/default-image.png'
 import TopUp from '../../assets/images/topups.svg'
 import TopUpLoader from '../../assets/images/spin-loader.gif'
 import btcImg from '../../assets/images/layouts/btc.svg'
@@ -28,7 +28,7 @@ class Dashboard extends Component {
 
     this.state = {
       userDocument: ['', ''],
-      userDocumentModal: true,
+      userDocumentModal: false,
       loadingUpload: false,
       uploadStatus: 'pending',
       topupModal: false,
@@ -365,7 +365,7 @@ class Dashboard extends Component {
                 <Row>
                   {userDocument.slice(0, 2).map((image, idx) => (
                     <Col size="6" key={idx}>
-                      {/* <img
+                      <img
                         alt="puImg"
                         src={
                           image && image.src
@@ -375,7 +375,7 @@ class Dashboard extends Component {
                             : DefaultImage
                         }
                         className="img-fluid"
-                      /> */}
+                      />
                     </Col>
                   ))}
                 </Row>
