@@ -506,7 +506,7 @@ class Signup extends Component {
                                       options={{
                                         maxDate: subYears(new Date(), 18),
                                         defaultDate: dob,
-                                        dateFormat: 'd-M-Y',
+                                        dateFormat: 'M-d-Y',
                                       }}
                                     />
                                   </div>

@@ -4,10 +4,10 @@
 	&.br-0 {
 		border-radius: 0 !important;
 	}
-}
-.btn-inv-blue:hover {
-	color: $white;
-	background-color: $avenir-deep-blue-hover;
+	&:hover {
+		color: $white;
+		background-color: $avenir-deep-blue-hover;
+	}
 }
 .active-filter {
 	color: $avenir-deep-blue;
@@ -143,13 +143,24 @@
 .nav-tabs {
 	.nav-link {
 		border-radius: 0;
+		&:hover {
+			background-color: $avenir-deep-blue-hover;
+		}
 	}
 	.nav-item {
 		margin-right: 5px;
+		&:hover {
+			cursor: pointer;
+			font-weight: bold;
+		}
 	}
 	.nav-link.active {
 		background-color: $avenir-deep-blue;
 		color: $white;
+		&:hover {
+			color: $white;
+			background-color: $avenir-deep-blue-hover;
+		}
 	}
 
 	li {
@@ -169,7 +180,7 @@
 
 .roundups-table {
 	tbody {
-		tr {
+		tr:nth-child(1) {
 			td:nth-child(4) {
 				background-color: $avenir-light-gray;
 			}
@@ -204,6 +215,10 @@
 .page-item.active .page-link {
 	background-color: $avenir-deep-blue;
 	border-color: $avenir-deep-blue;
+	&:hover {
+		color: $white;
+		background-color: $avenir-deep-blue-hover;
+	}
 }
 
 
@@ -246,6 +261,10 @@
 		.nav-tabs {
 			.nav-link.active {
 				background-color: $avenir-deep-blue;
+				&:hover {
+					color: $white;
+					background-color: $avenir-deep-blue-hover;
+				}
 			}
 		}
 	}
@@ -253,13 +272,40 @@
 		.btn-red {
 			background-color: $avenir-red;
 		}
+		.btn-blue {
+			background-color: $avenir-blue !important;
+			&:hover {
+				color: $white !important;
+			}
+		}
+		.invCoin {
+			height: 20px;
+		}
 	}
-	.invCoin {
-		height: 20px;
+	.acct-name {
+		text-transform: uppercase;
+	}
+
+	.unlinked {
+		background-color: $avenir-red;
+		font-weight: bold;
+		&:hover {
+			color: $white !important;
+			background-color: $avenir-red !important;
+		}
+	}
+
+	.linked {
+		background-color: $avenir-blue;
+		font-weight: bold;
+		&:hover {
+			color: $white !important;
+			background-color: $avenir-blue !important;
+		}
 	}
 }
 
-.roundup-switch {
+.roundup-switch, .security-switch {
 	display: inline-block;
 }
 

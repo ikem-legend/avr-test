@@ -12,8 +12,10 @@ import {
   Button,
 } from 'reactstrap'
 import Flatpickr from 'react-flatpickr'
+import subYears from 'date-fns/subYears'
 import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
+import SaveLoader from '../../assets/images/spin-loader.gif'
 
 class EditProfile extends Component {
 	constructor() {
@@ -24,13 +26,14 @@ class EditProfile extends Component {
 			phone: '',
 			dob: '',
 			address: '',
-			referralUrl: ''
+			referralUrl: '',
+			loadingProfileUpdate: false
 		}
 	}
 
 	updateFields = e => {
 		const {name, value} = e.target
-		// debugger
+		// Update validation logic
 		this.setState((prevState) => ({
 			...prevState,
 			[name]: value
@@ -44,21 +47,26 @@ class EditProfile extends Component {
 	}
 
 	getProfileDetails = () => {
-		const {name, dob, phone, email, address, referralUrl} = this.props
+		const {name, dob, phone, email, address, zipCode, referralUrl} = this.props
 		this.setState({
 			name,
 			email,
 			phone,
 			dob,
 			address,
+			zipCode,
 			referralUrl
 		});
 	}
 
   updateProfile = () => {
-    const {name, dob, phone, email, address, referralUrl, loadUserData} = this.props
+    const {name, dob, phone, email, address, zipCode, referralUrl} = this.state
+    const {loadUserData} = this.props
     const [first_name, last_name] = String(name).split(' ')
-    const userData = {first_name, last_name, email, phone, dob, address, identifier: referralUrl}
+    const userData = {first_name, last_name, email, phone, dob, address, zipCode, identifier: referralUrl}
+    this.setState({
+    	loadingProfileUpdate: true
+    });
     callApi('/user/profile/update', userData, 'POST', this.props.user.token)
       .then(() => {
         loadUserData()
@@ -67,10 +75,15 @@ class EditProfile extends Component {
       .catch(() => {
         this.props.showFeedback('Error updating profile, please try again', 'error')
       })
+      .finally(() => {
+      	this.setState({
+		    	loadingProfileUpdate: false
+		    });
+      })
   }
 
 	render() {
-		const {name, email, phone, dob, address, referralUrl} = this.state
+		const {name, email, phone, dob, address, zipCode, referralUrl, loadingProfileUpdate} = this.state
 		return (
 			<Row>
 				<Col>
@@ -100,15 +113,19 @@ class EditProfile extends Component {
                 }
                 className="form-control"
                 options={{
-                  maxDate: new Date('2004-01-01'),
+                  maxDate: subYears(new Date(), 18),
                   defaultDate: dob,
-                  dateFormat: 'd-M-Y',
+                  dateFormat: 'm-d-Y',
                 }}
               />
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="home address">Home Address</label>
 							<Input type="text" name="address" value={address} onChange={this.updateFields} />
+						</FormGroup>
+						<FormGroup>
+							<label htmlFor="zipCode">Zipcode</label>
+							<Input type="text" name="zipCode" value={zipCode} onChange={this.updateFields} />
 						</FormGroup>
 						<FormGroup>
 							<label htmlFor="referral link">Referral Custom URL <span className="text-muted font-size-12">(This can only be changed once)</span></label> 
@@ -120,8 +137,16 @@ class EditProfile extends Component {
               </InputGroup>
 						</FormGroup>
             <Row>
-              <Col md={{size:2, offset: 10}}>
-                <Button color="red" block onClick={this.updateProfile}>Save</Button>
+              <Col md={{size: 2, offset: 10}}>
+              	{loadingProfileUpdate ? (
+                  <img
+                    src={SaveLoader}
+                    alt="loader"
+                    style={{height: '40px'}}
+                  />
+                ) : (
+                	<Button color="red" block onClick={this.updateProfile}>Save</Button>
+                )}
               </Col>
             </Row>
 					</Form>

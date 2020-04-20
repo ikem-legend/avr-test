@@ -82,75 +82,46 @@ class BanksCards extends Component {
     this.props.showFeedback('Exited Plaid account linking', 'error')
   }
 
-  accountsLinked = (id, val) => {
-    const {accountsLinkedList} = this.state
-    const tempList = accountsLinkedList.map(acc => {
-      if (acc.id === id) {
-        return {...acc, link: val}
-      }
-      return acc
-    })
-    const noLinkedAccts = tempList.filter(acct => acct.link === true)
-    this.setState({
-      accountsLinkedList: tempList,
-      disableConnectBtn: !Boolean(noLinkedAccts.length),
-    })
-  }
-
   // Rework to parent component
-  fundingSourceLinked = (id, val) => {
-    const {accountsFSList} = this.state
-    const tempList = accountsFSList.map(acc => {
-      if (acc.id === id) {
-        return {...acc, fundingSource: val}
-      }
-      return acc
-    })
-    this.setState({
-      accountsFSList: tempList,
-    })
-  }
+  // connectSelectedAccts = () => {
+  //   const {accountsLinkedList} = this.state
+  //   const {user, loadUserData} = this.props
+  //   const accountsObj = {accounts_link: accountsLinkedList}
+  //   callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+  //     .then(() => {
+  //       this.props.showFeedback('Account(s) successfully linked', 'success')
+  //       loadUserData()
+  //       this.setState({
+  //         accountModal: false,
+  //       })
+  //     })
+  //     .catch(() => {
+  //       this.props.showFeedback('Error linking account(s)', 'error')
+  //     })
+  // }
 
-  // Rework to parent component
-  connectSelectedAccts = () => {
-    const {accountsLinkedList} = this.state
-    const {user, loadUserData} = this.props
-    const accountsObj = {accounts_link: accountsLinkedList}
-    callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
-      .then(() => {
-        this.props.showFeedback('Account(s) successfully linked', 'success')
-        loadUserData()
-        this.setState({
-          accountModal: false,
-        })
-      })
-      .catch(() => {
-        this.props.showFeedback('Error linking account(s)', 'error')
-      })
-  }
-
-  connectSelectedAccts = () => {
-    const {accountsLinkedList, accountsFSList} = this.state
-    const {user} = this.props
-    const accountsObj = {accounts_link: accountsLinkedList}
-    // Check if single funding source
-    const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
-    if (filteredFS.length === 1) {
-      this.setState({loadingAcctLink: true});
-      callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
-        .then(() => {
-          this.props.showFeedback('Account(s) successfully linked', 'success')
-          this.connectFundingSource(filteredFS[0])
-        })
-        .catch(err => {
-          console.log(err)
-          this.setState({loadingAcctLink: false});
-          this.props.showFeedback('Error linking account(s)', 'error')
-        })
-    } else {
-      this.props.showFeedback('Please specify only one funding source', 'error')
-    }
-  }
+  // connectSelectedAccts = () => {
+  //   const {accountsLinkedList, accountsFSList} = this.state
+  //   const {user} = this.props
+  //   const accountsObj = {accounts_link: accountsLinkedList}
+  //   // Check if single funding source
+  //   const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
+  //   if (filteredFS.length === 1) {
+  //     this.setState({loadingAcctLink: true});
+  //     callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+  //       .then(() => {
+  //         this.props.showFeedback('Account(s) successfully linked', 'success')
+  //         this.connectFundingSource(filteredFS[0])
+  //       })
+  //       .catch(err => {
+  //         console.log(err)
+  //         this.setState({loadingAcctLink: false});
+  //         this.props.showFeedback('Error linking account(s)', 'error')
+  //       })
+  //   } else {
+  //     this.props.showFeedback('Please specify only one funding source', 'error')
+  //   }
+  // }
 
   connectFundingSource = (val) => {
     const {user, loadUserData} = this.props
@@ -311,7 +282,7 @@ class BanksCards extends Component {
               <Button
                 color="success"
                 block
-                onClick={this.connectSelectedAccts}
+                onClick={connectSelectedAccts}
                 disabled={disableConnectBtn}
               >
                 Continue
