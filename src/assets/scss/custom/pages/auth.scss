@@ -59,8 +59,17 @@
 		background-color: $avenir-blue;
 		color: $white;
 	}
+	.login-btn {
+		border-radius: 0.2rem;
+	}
 	.invalid-feedback {
 		padding: 0 8px;
+	}
+	.avr-logo {
+		img {
+			height: 50%;
+			width: 50%;
+		}
 	}
 }
 
@@ -89,24 +98,30 @@
 	.verify-info {
 		font-size: 12px;
 	}
-	.userId {
-		background-color: $avenir-light-blue;
-		label {
-			position: inherit;
-		}
-		p {
-			padding: 12px;
-			font-size: 12px;
-		}
-		input {
-	    width: 95%;
-	    height: 4rem;
-	    font-size: 1rem;
-	    background-color: $white;
-		}
+	// .userId {
+	// 	background-color: $avenir-light-blue;
+	// 	label {
+	// 		position: inherit;
+	// 	}
+	// 	p {
+	// 		padding: 12px;
+	// 		font-size: 12px;
+	// 	}
+	// 	input {
+	//     width: 95%;
+	//     height: 4rem;
+	//     font-size: 1rem;
+	//     background-color: $white;
+	// 	}
+	// }
+	.location input {
+		color: $gray;
 	}
 	.custom-control-input:checked ~ .custom-control-label::before {
 		background-color: $avenir-blue !important;
+	}
+	.custom-control-label {
+		color: $gray;
 	}
 	.login {
 		margin: 0.5rem 0;
@@ -164,9 +179,9 @@
 
 .account-list {
 	box-shadow: 0px 5px 10px 5px $avenir-light-gray;
-}
-.account-list:hover {
-	background-color: $avenir-light-gray;
+	&:hover {
+		background-color: $avenir-light-gray;
+	}
 }
 
 .unlinked {
@@ -184,5 +199,13 @@
 	&:hover {
 		color: $white !important;
 		background-color: $avenir-blue !important;
+	}
+}
+	
+.modal {
+	.input-group {
+		input {
+			height: auto;
+		}
 	}
 }

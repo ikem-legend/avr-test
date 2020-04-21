@@ -63,7 +63,7 @@ class EditProfile extends Component {
     const {name, dob, phone, email, address, zipCode, referralUrl} = this.state
     const {loadUserData} = this.props
     const [first_name, last_name] = String(name).split(' ')
-    const userData = {first_name, last_name, email, phone, dob, address, zipCode, identifier: referralUrl}
+    const userData = {first_name, last_name, email, phone, dob, address, zip_code: zipCode, identifier: referralUrl}
     this.setState({
     	loadingProfileUpdate: true
     });

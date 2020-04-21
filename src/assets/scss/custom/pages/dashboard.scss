@@ -144,6 +144,7 @@
 	.nav-link {
 		border-radius: 0;
 		&:hover {
+			color: $white;
 			background-color: $avenir-deep-blue-hover;
 		}
 	}
