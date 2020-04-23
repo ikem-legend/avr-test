@@ -4,7 +4,7 @@ import {
   CustomInput
 } from 'reactstrap'
 import classnames from 'classnames'
-import profilePic from '../../assets/images/users/default-avatar.png'
+import profilePic from '../../assets/images/users/default-user-avatar.svg'
 
 export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, documentUpload, documentUploadStatus, documentUploadError, topup}) => {
   return (
@@ -51,7 +51,7 @@ export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, 
         <CustomInput
           type="checkbox"
           id="reg-stage-3"
-          label="Set a round-up multiplier"
+          label="Modify round-up multiplier"
           checked={multiplierSetup}
           readOnly
         />
@@ -64,11 +64,11 @@ export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, 
           type="checkbox"
           id="reg-stage-4"
           label="Upload User ID"
-          checked={documentUpload}
+          checked={documentUpload === true && documentUploadStatus === 'APPROVED'}
           readOnly
         />
         <span className={classnames({complete: documentUpload === true && documentUploadStatus === 'APPROVED'}, {incomplete: documentUpload === false}, 'ml-4 font-weight-bold')}>
-          {documentUpload === true && documentUploadStatus === 'APPROVED' ? 'Complete' : 'Incomplete'} - {documentUploadStatus ? documentUploadStatus : ''}
+          {documentUpload === true && documentUploadStatus === 'APPROVED' ? 'Complete' : 'Incomplete'} - {documentUploadStatus ? documentUploadStatus === 'PENDING' ? 'Awaiting Verification' : documentUploadStatus : ''}
         </span>
         <span className={classnames('ml-4 font-weight-bold')}>
           {documentUploadError ? documentUploadError : null}

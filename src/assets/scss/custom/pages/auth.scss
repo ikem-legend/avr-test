@@ -142,31 +142,16 @@
 }
 
 
-// Verify
-.bank-verify-info {
-	background-color: $avenir-light-gray;
-}
-
-.m-xy-auto {
-	margin: auto;
-}
-
-.verified {
-	.modal-content {
-		border-radius: 50%;
-    width: 75%;
-    margin: auto;
-    text-align: center;
-	}
-}
-
-
 // Connect
 .btn-transp {
   font-weight: 400;
   color: $avenir-blue;
   background-color: transparent;
   cursor: pointer;
+}
+
+.btn-blue {
+	background-color: $avenir-blue;
 }
 
 .btn-plaid {
@@ -208,4 +193,8 @@
 			height: auto;
 		}
 	}
+}
+
+.edit-ratio {
+	color: $avenir-blue;
 }

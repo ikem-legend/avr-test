@@ -15,12 +15,17 @@ import {
 } from 'reactstrap'
 
 import AccountList from '../../components/AccountList'
-import CardList from '../../components/CardList'
 import RatioDistribution from '../../components/RatioDistribution'
 import {callApi} from '../../helpers/api'
-import {loginUser, showFeedback, showRightSidebar, hideRightSidebar} from '../../redux/actions'
+import {
+  loginUser,
+  showFeedback,
+  showRightSidebar,
+  hideRightSidebar,
+} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
+import AcctLinkLoader from '../../assets/images/spin-loader.gif'
 
 class AccountConnect extends Component {
   _isMounted = false
@@ -36,10 +41,11 @@ class AccountConnect extends Component {
       cards: [],
       cardsLinkedList: [],
       loadingAccts: true,
+      loadingAcctLink: false,
       loadingCards: true,
       loadingDstrbn: false,
       btc: 50,
-      eth: 50
+      eth: 50,
     }
   }
 
@@ -48,21 +54,11 @@ class AccountConnect extends Component {
     document.body.classList.add('authentication-bg')
     this.props.showRightSidebar()
     this.props.hideRightSidebar()
-    // const {firstname, lastname} = this.state
-
-    // const user = JSON.parse(localStorage.getItem('avenir'))
-    // // console.log(user.myFirstName)
-    // this.setState({
-    //   name: user.myFirstName,
-    // })
-    // Use local storage to check or pass in a check via the route
   }
 
   componentWillUnmount() {
     this._isMounted = false
     document.body.classList.remove('authentication-bg')
-    // Ensure that you can navigate to other auth parts by removing localStorage user details
-    localStorage.removeItem('avenir')
   }
 
   toggle = () => {
@@ -73,6 +69,8 @@ class AccountConnect extends Component {
   }
 
   handleOnSuccess = (token, metadata) => {
+    console.log(token)
+    console.log(metadata)
     const {user} = this.props
     this.setState({
       accountModal: true,
@@ -83,6 +81,11 @@ class AccountConnect extends Component {
     const linkObj = {institution_name, institution_id, public_token}
     callApi('/user/plaid/bank', linkObj, 'POST', user.token)
       .then(res => {
+        const accountsModList = res.data.accounts.map(acc => {
+          acc.link = acc.accountLink
+          acc.fundingSource = acc.accountFundingSource
+          return acc
+        })
         // Deep copy is the best option
         const accountList = JSON.parse(JSON.stringify(res.data.accounts))
         const accountsLinkedList = accountList.map(acc => {
@@ -90,17 +93,27 @@ class AccountConnect extends Component {
           acc.link = true
           return acc
         })
-        // console.log(accountsLinkedList)
+        const fsList = JSON.parse(JSON.stringify(res.data.accounts))
+        const accountsFSArr = fsList.map(acc => {
+          Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
+          acc.fundingSource = false
+          return acc
+        })
+        // const accountsFSArr = JSON.parse(JSON.stringify(fsList)).map(acctDet => {
+        //   Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'fundingSource') && delete acctDet[key])
+        //   return acctDet
+        // })
         this.setState({
-          accounts: res.data.accounts,
+          accounts: accountsModList,
           accountsLinkedList,
+          accountsFSList: accountsFSArr,
           loadingAccts: false,
         })
       })
       .catch(err => {
         console.log(err)
         this.props.showFeedback('Error linking bank, please try again', 'error')
-        this.setState({loadingAccts: false});
+        this.setState({loadingAccts: false})
       })
   }
 
@@ -118,40 +131,63 @@ class AccountConnect extends Component {
       }
       return acc
     })
-    // console.log(tempList)
     const noLinkedAccts = tempList.filter(acct => acct.link === true)
-    // console.log(noLinkedAccts.length)
     this.setState({
       accountsLinkedList: tempList,
       disableConnectBtn: !Boolean(noLinkedAccts.length),
     })
   }
 
-  cardsLinked = (id, val) => {
-    // console.log(id, val)
-    const {cardsLinkedList} = this.state
-    const tempList = cardsLinkedList.map(card => {
-      if (card.id === id) {
-        return {...card, link: val}
+  fundingSourceLinked = (id, val) => {
+    const {accountsFSList} = this.state
+    const tempList = accountsFSList.map(acc => {
+      if (acc.id === id) {
+        return {...acc, fundingSource: val}
       }
-      return card
+      return acc
     })
-    // console.log(tempList)
-    // const noLinkedCards = tempList.filter(card => card.link === true)
     this.setState({
-      cardsLinkedList: tempList,
-      // disableConnectCardBtn: !Boolean(noLinkedCards.length),
+      accountsFSList: tempList,
     })
   }
 
   connectSelectedAccts = () => {
-    const {accountsLinkedList} = this.state
+    const {accountsLinkedList, accountsFSList} = this.state
     const {user} = this.props
     const accountsObj = {accounts_link: accountsLinkedList}
-    callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+    // Check if single funding source
+    const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
+    if (filteredFS.length === 1) {
+      this.setState({loadingAcctLink: false})
+      callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+        .then(() => {
+          this.props.showFeedback('Account(s) successfully linked', 'success')
+          this.connectFundingSource(filteredFS[0])
+        })
+        .catch(err => {
+          console.log(err)
+          this.props.showFeedback('Error linking account(s)', 'error')
+        })
+    } else {
+      this.props.showFeedback('Please specify only one funding source', 'error')
+    }
+  }
+
+  connectFundingSource = val => {
+    const {user} = this.props
+    const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
+    callApi(
+      '/user/plaid/bank/account/funding/source',
+      fsObj,
+      'POST',
+      user.token,
+    )
       .then(() => {
-        this.props.showFeedback('Account(s) successfully linked', 'success')
-        // this.displayCards()
+        this.props.showFeedback(
+          'Funding source successfully updated',
+          'success',
+        )
+        this.setState({loadingAcctLink: false})
         this.setState({
           accountModal: false,
           invModal: true,
@@ -159,54 +195,8 @@ class AccountConnect extends Component {
       })
       .catch(err => {
         console.log(err)
-        this.props.showFeedback('Error linking account(s)', 'error')
-      })
-  }
-
-  displayCards = () => {
-    const {user} = this.props
-    this.setState({
-      accountModal: false,
-      cardModal: true,
-    })
-    callApi('/user/plaid/bank/get/cards', null, 'GET', user.token)
-      .then(res => {
-        const cardList = JSON.parse(JSON.stringify(res.data))
-        const cardsLinkedList = cardList.map(card => {
-          Object.keys(card).forEach(key => key !== 'id' && delete card[key])
-          card.link = true
-          return card
-        })
-        this.setState({
-          cards: res.data,
-          cardsLinkedList,
-          loadingCards: false,
-        })
-      })
-      .catch(() => {
-        this.props.showFeedback(
-          'Error displaying card(s), contact your banking for details',
-          'error',
-        )
-        this.setState({
-          loadingCards: false,
-        })
-      })
-  }
-
-  connectSelectedCards = () => {
-    const {cardsLinkedList} = this.state
-    const {user} = this.props
-    const cardsObj = {accounts_link: cardsLinkedList}
-    callApi('/user/plaid/bank/account/link', cardsObj, 'POST', user.token)
-      .then(() => {
-        this.props.showFeedback('Card(s) successfully linked', 'success')
-        // this.props.loginUser()
-        this.props.history.push('/my-account')
-      })
-      .catch(() => {
-        // console.log(err)
-        this.props.showFeedback('Error linking card(s)', 'error')
+        this.setState({loadingAcctLink: false})
+        this.props.showFeedback('Error updating funding source', 'error')
       })
   }
 
@@ -219,13 +209,13 @@ class AccountConnect extends Component {
       if (name === 'btc') {
         this.setState({
           btc: parseInt(value, 10),
-          eth: parseInt(100 - value, 10)
-        });
+          eth: parseInt(100 - value, 10),
+        })
       } else {
         this.setState({
           btc: parseInt(100 - value, 10),
-          eth: parseInt(value, 10)
-        });
+          eth: parseInt(value, 10),
+        })
       }
     }
   }
@@ -233,23 +223,32 @@ class AccountConnect extends Component {
   saveRatio = () => {
     const {btc, eth} = this.state
     const {user} = this.props
-    this.setState({loadingDstrbn: true});
+    this.setState({loadingDstrbn: true})
     // Created temporarily
-    const currArray = [{id: 2, percentage: btc}, {id: 3, percentage: eth}]
+    const currArray = [
+      {id: 2, percentage: btc},
+      {id: 3, percentage: eth},
+    ]
     const currObj = {currencies: currArray}
     callApi('/user/distributions', currObj, 'POST', user.token)
       .then(() => {
-        this.props.showFeedback('Currency ratio successfully updated', 'success')
+        this.props.showFeedback(
+          'Currency ratio successfully updated',
+          'success',
+        )
         this.setState({
-          loadingDstrbn: false
-        });
+          loadingDstrbn: false,
+        })
         this.props.history.push('/dashboard')
       })
       .catch(() => {
-        this.props.showFeedback('Error updating currency ratio, please try again', 'error')
+        this.props.showFeedback(
+          'Error updating currency ratio, please try again',
+          'error',
+        )
         this.setState({
-          loadingDstrbn: false
-        });
+          loadingDstrbn: false,
+        })
       })
   }
 
@@ -269,32 +268,22 @@ class AccountConnect extends Component {
     const {user} = this.props
     const {
       accounts,
-      cards,
       accountModal,
-      cardModal,
       invModal,
       disableConnectBtn,
-      // disableConnectCardBtn,
       loadingAccts,
-      loadingCards,
       loadingDstrbn,
+      loadingAcctLink,
       btc,
-      eth
+      eth,
     } = this.state
 
     const accountList = accounts.map(acc => (
       <AccountList
-        details={acc}
         key={acc.id}
+        details={acc}
         accountsLinked={this.accountsLinked}
-      />
-    ))
-
-    const cardList = cards.map(cardDetail => (
-      <CardList
-        details={cardDetail}
-        key={cardDetail.id}
-        cardsLinked={this.cardsLinked}
+        fundingSource={this.fundingSourceLinked}
       />
     ))
 
@@ -341,12 +330,13 @@ class AccountConnect extends Component {
                       </div>
                       <div className="bank-verify-info mt-4 p-3">
                         <p className="mb-0">
-                          I, {user && user.myFirstName ? user.myFirstName : ''}, authorize Avenir Inc. to debit
-                          the account indicated for the recurring transactions
-                          according to the terms of use and my agreement with
-                          Avenir Inc. I will not dispute Avenir Inc. so long as
-                          the transactions correspond to the terms of use and my
-                          agreement with Avenir Inc.
+                          I, {user && user.myFirstName ? user.myFirstName : ''},
+                          authorize Avenir Inc. to debit the account indicated
+                          for the recurring transactions according to the terms
+                          of use and my agreement with Avenir Inc. I will not
+                          dispute Avenir Inc. so long as the transactions
+                          correspond to the terms of use and my agreement with
+                          Avenir Inc.
                         </p>
                         <p className="mb-0 mt-4">
                           This payment authorization is valid and will remain
@@ -374,11 +364,12 @@ class AccountConnect extends Component {
                           Connect my Funding Account
                         </PlaidLink>
                       </div>
-                      <Modal isOpen={accountModal} toggle={this.toggle}>
+                      <Modal isOpen={accountModal} toggle={this.toggle} size="lg" centered>
                         <ModalHeader>Select accounts to be linked</ModalHeader>
                         <ModalBody>
-                          {loadingAccts ? <Loader /> : null}
-                          {accountList && accountList.length ? (
+                          {loadingAccts ? (
+                            <Loader />
+                          ) : accountList && accountList.length ? (
                             <div>
                               <h4 className="text-center">
                                 Your account is now linked to Avenir. You can
@@ -389,47 +380,34 @@ class AccountConnect extends Component {
                           ) : (
                             'Oops, no accounts found for selected bank'
                           )}
-                          <Button
-                            color="success"
-                            block
-                            onClick={this.connectSelectedAccts}
-                            // disabled={accountsLinkedList.length > 0}
-                            disabled={disableConnectBtn}
-                          >
-                            Continue
-                          </Button>
-                        </ModalBody>
-                      </Modal>
-
-                      <Modal isOpen={cardModal} toggle={this.toggle}>
-                        <ModalHeader>Select cards to be linked</ModalHeader>
-                        <ModalBody>
-                          {loadingCards ? <Loader /> : null}
-                          {cardList && cardList.length ? (
-                            <div>
-                              <h4 className="text-center">
-                                Your card is now linked to Avenir. You can
-                                unlink an card by clicking on it.
-                              </h4>
-                              {cardList}
-                            </div>
+                          {loadingAcctLink ? (
+                            <img
+                              src={AcctLinkLoader}
+                              alt="loader"
+                              style={{height: '40px', marginTop: '20px'}}
+                            />
                           ) : (
-                            'Oops, no cards found for selected bank'
+                            <Button
+                              color="success"
+                              block
+                              onClick={this.connectSelectedAccts}
+                              disabled={disableConnectBtn}
+                            >
+                              Continue
+                            </Button>
                           )}
-                          <Button
-                            color="success"
-                            block
-                            onClick={this.connectSelectedCards}
-                            // disabled={disableConnectCardBtn}
-                          >
-                            Continue
-                          </Button>
                         </ModalBody>
                       </Modal>
 
-                      <Modal isOpen={invModal} size="lg">
+                      <Modal isOpen={invModal} size="lg" centered>
                         <ModalBody>
-                          <RatioDistribution btc={btc} eth={eth} updateRatio={this.updateRatio} saveRatio={this.saveRatio} loadingDstrbn={loadingDstrbn} />
+                          <RatioDistribution
+                            btc={btc}
+                            eth={eth}
+                            updateRatio={this.updateRatio}
+                            saveRatio={this.saveRatio}
+                            loadingDstrbn={loadingDstrbn}
+                          />
                         </ModalBody>
                       </Modal>
 
@@ -462,6 +440,9 @@ const mapStateToProps = state => {
   return {user, error}
 }
 
-export default connect(mapStateToProps, {loginUser, showFeedback, showRightSidebar, hideRightSidebar})(
-  withRouter(AccountConnect),
-)
+export default connect(mapStateToProps, {
+  loginUser,
+  showFeedback,
+  showRightSidebar,
+  hideRightSidebar,
+})(withRouter(AccountConnect))

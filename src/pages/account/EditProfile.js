@@ -1,17 +1,26 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {
+  Container,
   Row,
   Col,
-  Form,
-  FormGroup,
-  Input,
+  // Form,
+  // FormGroup,
+  // Input,
   InputGroup,
   InputGroupAddon,
   InputGroupText,
+  Label,
   Button,
 } from 'reactstrap'
+import {
+  AvForm,
+  AvGroup,
+  AvInput,
+  AvFeedback,
+} from 'availity-reactstrap-validation'
 import Flatpickr from 'react-flatpickr'
+import Select from 'react-select'
 import subYears from 'date-fns/subYears'
 import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
@@ -21,11 +30,13 @@ class EditProfile extends Component {
 	constructor() {
 		super()
 		this.state = {
-			name: '',
+			firstName: '',
+			lastName: '',
 			email: '',
 			phone: '',
 			dob: '',
 			address: '',
+			zipCode: '',
 			referralUrl: '',
 			loadingProfileUpdate: false
 		}
@@ -41,29 +52,53 @@ class EditProfile extends Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (this.props.name.length > prevProps.name.length) {
+		if (this.props.firstName.length > prevProps.firstName.length) {
 			this.getProfileDetails()
 		}
 	}
 
 	getProfileDetails = () => {
-		const {name, dob, phone, email, address, zipCode, referralUrl} = this.props
+		const {firstName, lastName, dob, phone, email, address, city, country, zipCode, referralUrl} = this.props
 		this.setState({
-			name,
+			firstName,
+      lastName,
 			email,
 			phone,
 			dob,
 			address,
+      city,
+      country,
 			zipCode,
 			referralUrl
 		});
 	}
 
+  activateField = e => {
+    document
+      .querySelector(`.float-container #${e.target.name}`)
+      .parentElement.classList.add('active')
+    document.querySelector(
+      `.float-container #${e.target.name}`,
+    ).parentElement.style.borderLeft = '2px solid #1ca4a9'
+  }
+
+  deactivateField = e => {
+    document.querySelector(
+      `.float-container #${e.target.name}`,
+    ).parentElement.style.borderLeft = '1px solid #ccc'
+    if (e.target.value === '') {
+      // console.log(e.target.name)
+      document
+        .querySelector(`.float-container #${e.target.name}`)
+        .parentElement.classList.remove('active')
+    }
+  }
+
   updateProfile = () => {
-    const {name, dob, phone, email, address, zipCode, referralUrl} = this.state
+    const {firstName, lastName, dob, phone, email, address, zipCode, referralUrl} = this.state
     const {loadUserData} = this.props
-    const [first_name, last_name] = String(name).split(' ')
-    const userData = {first_name, last_name, email, phone, dob, address, zip_code: zipCode, identifier: referralUrl}
+    // const [first_name, last_name] = String(name).split(' ')
+    const userData = {first_name: firstName, last_name: lastName, email, phone, dob, address, zip_code: zipCode, identifier: referralUrl}
     this.setState({
     	loadingProfileUpdate: true
     });
@@ -83,75 +118,313 @@ class EditProfile extends Component {
   }
 
 	render() {
-		const {name, email, phone, dob, address, zipCode, referralUrl, loadingProfileUpdate} = this.state
+		const {firstName, lastName, email, phone, dob, address, city, country, zipCode, referralUrl, loadingProfileUpdate} = this.state
+    const customStyles = {
+      placeholder: (defaultStyles) => ({
+        ...defaultStyles,
+        fontSize: '0.8rem',
+        fontWeight: 'bold',
+        color: '#1ca4a9'
+      })
+    }
 		return (
-			<Row>
-				<Col>
-					<Form>
-						<FormGroup>
-							<label htmlFor="name">Full Name</label>
-							<Input type="text" name="name" value={name} onChange={this.updateFields} />
-						</FormGroup>
-						<FormGroup>
-							<label htmlFor="email">Email address</label>
-							<Input type="text" name="email" value={email} onChange={this.updateFields} />
-						</FormGroup>
-						<FormGroup>
-							<label htmlFor="phone">Phone Number</label>
-							<Input type="text" name="phone" value={phone} onChange={this.updateFields} />
-						</FormGroup>
-						<FormGroup>
-							<label htmlFor="date of birth">Date of Birth</label>
-							<Flatpickr
-                name="dob"
-                value={dob}
-                onChange={date =>
-                  this.setState(prevState => ({
-                    ...prevState,
-                    dob: date
-                  }))
-                }
-                className="form-control"
-                options={{
-                  maxDate: subYears(new Date(), 18),
-                  defaultDate: dob,
-                  dateFormat: 'm-d-Y',
-                }}
-              />
-						</FormGroup>
-						<FormGroup>
-							<label htmlFor="home address">Home Address</label>
-							<Input type="text" name="address" value={address} onChange={this.updateFields} />
-						</FormGroup>
-						<FormGroup>
-							<label htmlFor="zipCode">Zipcode</label>
-							<Input type="text" name="zipCode" value={zipCode} onChange={this.updateFields} />
-						</FormGroup>
-						<FormGroup>
-							<label htmlFor="referral link">Referral Custom URL <span className="text-muted font-size-12">(This can only be changed once)</span></label> 
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>https://avenir-app.com/r/</InputGroupText>
-                </InputGroupAddon>
-                <Input type="text" name="referralUrl" value={referralUrl} onChange={this.updateFields} readOnly={Boolean(referralUrl)} />
-              </InputGroup>
-						</FormGroup>
-            <Row>
-              <Col md={{size: 2, offset: 10}}>
-              	{loadingProfileUpdate ? (
-                  <img
-                    src={SaveLoader}
-                    alt="loader"
-                    style={{height: '40px'}}
-                  />
-                ) : (
-                	<Button color="red" block onClick={this.updateProfile}>Save</Button>
-                )}
+      <Container fluid className="account-pages mb-5">
+        {/*<Row className="justify-content-center">*/}
+        <AvForm onValidSubmit={this.updateProfile}>
+    			<Row>
+    				<Col md={6} className="pr-0">
+  						<AvGroup className="float-container active">
+  							<Label for="firstName">First Name</Label>
+                <AvInput
+                  type="text"
+                  name="firstName"
+                  id="firstName"
+                  value={firstName}
+                  onFocus={this.activateField}
+                  onBlur={this.deactivateField}
+                  onChange={this.updateFields}
+                  validate={{
+                    pattern: {
+                      value: '^[A-Za-z ]+$',
+                      errorMessage:
+                        'Your name must be composed only with letters',
+                    },
+                    minLength: {
+                      value: 3,
+                      errorMessage:
+                        'Your name must be between 3 and 20 characters',
+                    },
+                    maxLength: {
+                      value: 20,
+                      errorMessage:
+                        'Your name must be between 3 and 20 characters',
+                    },
+                  }}
+                  required
+                />
+                <AvFeedback data-testid="fname-error">
+                  First Name is invalid
+                </AvFeedback>
+  							{/*<AvInput type="text" name="name" value={name} onChange={this.updateFields} />*/}
+  						</AvGroup>
+            </Col>
+            <Col md={6}>
+              <AvGroup className="float-container active">
+                <Label for="lastName">Last Name</Label>
+                <AvInput
+                  type="text"
+                  name="lastName"
+                  id="lastName"
+                  value={lastName}
+                  onFocus={this.activateField}
+                  onBlur={this.deactivateField}
+                  onChange={this.updateFields}
+                  validate={{
+                    pattern: {
+                      value: '^[A-Za-z]+$',
+                      errorMessage:
+                        'Your name must be composed only with letters',
+                    },
+                    minLength: {
+                      value: 3,
+                      errorMessage:
+                        'Your name must be between 3 and 20 characters',
+                    },
+                    maxLength: {
+                      value: 20,
+                      errorMessage:
+                        'Your name must be between 3 and 20 characters',
+                    },
+                  }}
+                  required
+                />
+                <AvFeedback data-testid="lname-error">
+                  Last Name is invalid
+                </AvFeedback>
+              </AvGroup>
               </Col>
-            </Row>
-					</Form>
-				</Col>
-			</Row>
+              <Col md={6} className="pr-0">
+                <AvGroup className="float-container active">
+                  <Label for="email">Email Address</Label>
+                  <AvInput
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={email}
+                    onFocus={this.activateField}
+                    onBlur={this.deactivateField}
+                    onChange={this.updateFields}
+                    validate={{
+                      minLength: {
+                        value: 5,
+                        errorMessage:
+                          'Your email address must be between 5 and 40 characters',
+                      },
+                      maxLength: {
+                        value: 40,
+                        errorMessage:
+                          'Your email address must be between 5 and 40 characters',
+                      },
+                    }}
+                    required
+                  />
+
+                  <AvFeedback data-testid="email-error">
+                    Email is invalid
+                  </AvFeedback>
+                </AvGroup>
+              </Col>
+              <Col md={6}>
+                <AvGroup className="float-container active">
+                  <Label for="phone">Phone Number</Label>
+                  <AvInput
+                    type="phone"
+                    name="phone"
+                    id="phone"
+                    value={phone}
+                    onFocus={this.activateField}
+                    onBlur={this.deactivateField}
+                    onChange={this.updateFields}
+                    validate={{
+                      pattern: {
+                        value: '^[0-9]+$',
+                        errorMessage:
+                          'Your phone number must be composed only with numbers',
+                      },
+                      minLength: {
+                        value: 10,
+                        errorMessage:
+                          'Your phone number must be between 10 and 15 characters',
+                      },
+                      maxLength: {
+                        value: 15,
+                        errorMessage:
+                          'Your phone number must be between 10 and 15 characters',
+                      },
+                    }}
+                    required
+                  />
+
+                  <AvFeedback data-testid="phone-error">
+                    Phone number is invalid
+                  </AvFeedback>
+                </AvGroup>
+              </Col>
+              <Col md={4} className="pr-0">
+    						<AvGroup className="float-container active">
+    							<Label for="dob">Date of Birth</Label>
+                  <div className="form-group mb-sm-0 mr-2">
+      							<Flatpickr
+                      id="dob"
+                      name="dob"
+                      value={dob}
+                      placeholder="MM-DD-YYYY"
+                      onChange={date =>
+                        this.setState({
+                          dob: date
+                        })
+                      }
+                      className="form-control"
+                      options={{
+                        maxDate: subYears(new Date(), 18),
+                        minDate: subYears(new Date(), 100),
+                        defaultDate: dob,
+                        dateFormat: 'm-d-Y',
+                      }}
+                    />
+                  </div>
+                  <AvFeedback>This field is invalid</AvFeedback>
+    						</AvGroup>
+                </Col>
+                <Col md={8}>
+                  <AvGroup className="float-container active mb-3">
+                    <Label for="address">Street address</Label>
+                    <AvInput
+                      type="address"
+                      name="address"
+                      id="address"
+                      value={address}
+                      onFocus={this.activateField}
+                      onBlur={this.deactivateField}
+                      onChange={this.updateFields}
+                      required
+                    />
+                    <AvFeedback data-testid="address-error">
+                      Address is invalid
+                    </AvFeedback>
+                  </AvGroup>
+                </Col>
+                <Col md={5}>
+                  <AvGroup className="float-container active">
+                    <Label for="city">Choose your city</Label>
+                    <Select
+                      id="city"
+                      options={this.state.cities}
+                      value={city}
+                      className="location"
+                      styles={customStyles}
+                      placeholder="Select your city"
+                      onChange={val =>
+                        this.setState(prevState => ({
+                          ...prevState,
+                          inputs: {
+                            ...prevState.inputs,
+                            city: val,
+                          },
+                        }))
+                      }
+                      required
+                    />
+                    <AvFeedback data-testid="city-error">
+                      Please select a city
+                    </AvFeedback>
+                  </AvGroup>
+                </Col>
+                <Col md={4} className="pl-0 pr-1">
+                  <AvGroup className="float-container active">
+                    <Label for="country">Select your country</Label>
+                    <Select
+                      id="country"
+                      options={this.state.countries}
+                      value={country}
+                      className="location"
+                      styles={customStyles}
+                      placeholder="Select your country"
+                      onChange={val =>
+                        this.setState(prevState => ({
+                          ...prevState,
+                          inputs: {
+                            ...prevState.inputs,
+                            country: val,
+                          },
+                        }))
+                      }
+                      required
+                    />
+                    <AvFeedback data-testid="country-error">
+                      This field is invalid
+                    </AvFeedback>
+                  </AvGroup>
+                </Col>
+                <Col md={3}>
+                  <AvGroup className="float-container active">
+                    <Label for="zipcode">Zipcode</Label>
+                    <AvInput
+                      type="zipcode"
+                      name="zipcode"
+                      id="zipcode"
+                      className="mt-1"
+                      value={zipCode}
+                      onFocus={this.activateField}
+                      onBlur={this.deactivateField}
+                      onChange={this.updateFields}
+                      validate={{
+                        pattern: {
+                          value: '^[0-9]{5}$',
+                          errorMessage:
+                            'Your zipcode must be composed only with numbers',
+                        },
+                        maxLength: {value: 5},
+                      }}
+                      required
+                    />
+                    <AvFeedback data-testid="zip-error">
+                      Zipcode is invalid
+                    </AvFeedback>
+                  </AvGroup>
+                </Col>
+                <Col md={12}>
+                  <AvGroup>
+                    <label htmlFor="referral link">Referral Custom URL <span className="text-muted font-size-12">(This can only be changed once)</span></label> 
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>https://avenir-app.com/r/</InputGroupText>
+                      </InputGroupAddon>
+                      <AvInput type="text" name="referralUrl" value={referralUrl} onChange={this.updateFields} readOnly={Boolean(referralUrl)} />
+                    </InputGroup>
+                  </AvGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Button color="blue" block className="mt-1 mb-5">Uploade User Registration</Button>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={{size: 4, offset: 8}}>
+                  {loadingProfileUpdate ? (
+                    <img
+                      src={SaveLoader}
+                      alt="loader"
+                      style={{height: '40px'}}
+                    />
+                  ) : (
+                    <Button color="red" block onClick={this.updateProfile}>Save</Button>
+                  )}
+                </Col>
+              </Row>
+        </AvForm>
+      </Container>
 		)
 	}
 }

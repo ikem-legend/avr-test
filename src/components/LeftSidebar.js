@@ -6,8 +6,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
 import {getLoggedInUser} from '../helpers/authUtils'
-import profilePic from '../assets/images/users/default-avatar.png'
-// import profilePic from '../assets/images/users/user-profile@2x.png'
+import profilePic from '../assets/images/users/default-user-avatar.svg'
 import AppMenu from './AppMenu'
 
 /**

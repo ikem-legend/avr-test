@@ -336,9 +336,8 @@ class Dashboard extends Component {
           {this.props.loading && <Loader />}
           
           {/* Document upload */}
-          {/*uploadStatus === 'pending' ? (*/}
-          {/*user.setup.documentUpload.status === 'pending' ? (*/}
-          {user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'OPEN' ? (
+          {/*user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'OPEN' ? (*/}
+          {user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'PENDING' ? (
             <Modal isOpen={userDocumentModal} toggle={this.toggleImgUpload} backdrop="static" centered size="lg">
               <ModalBody className="text-center">
                 <Row>

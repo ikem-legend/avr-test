@@ -14,12 +14,16 @@ class RatioDistribution extends Component {
     return (
       <Row form>
         <Col md={12}>
-          <span className="edit-ratio">Edit crypto investment ratio below</span>
+          <div className="text-center mb-5">
+            <h4 className="edit-ratio">Investment Distribution</h4>
+            <p className="mb-0">Manage your investment across various cryptocurrencies</p>
+            <p>Easily adjust ratio to suit your preference</p>
+          </div>
           <Row>
             <Col md={6}>
               <InputGroup size="lg">
                 <InputGroupAddon addonType="prepend" className="font-weight-bold text-center"> 
-                  <InputGroupText><img src={btcImg} alt="Bitcoin" className="invCoin mr-1" /> Bitcoin</InputGroupText>
+                  <InputGroupText><img src={btcImg} alt="Bitcoin" className="invCoin mr-1" /> <span className="font-weight-bold">Bitcoin</span></InputGroupText>
                 </InputGroupAddon>
                 <Input type="number" name="btc" value={btc} onChange={updateRatio} min="0" max="100" />
               </InputGroup>
@@ -27,14 +31,14 @@ class RatioDistribution extends Component {
             <Col md={6}>
               <InputGroup size="lg">
                 <InputGroupAddon addonType="prepend" className="font-weight-bold text-center"> 
-                  <InputGroupText><img src={ethImg} alt="Ethereum" className="invCoin mr-1" /> Ethereum</InputGroupText>
+                  <InputGroupText><img src={ethImg} alt="Ethereum" className="invCoin mr-1" /> <span className="font-weight-bold">Ethereum</span></InputGroupText>
                 </InputGroupAddon>
                 <Input type="number" name="eth" value={eth} onChange={updateRatio} min="0" max="100" />
               </InputGroup>
             </Col>
           </Row>
           <Row className="mt-2">
-            <Col md={{size:2, offset: 10}}>
+            <Col md={{size: 4, offset: 8}}>
               {loadingDstrbn ? (
                 <img
                   src={Loader}
@@ -42,7 +46,7 @@ class RatioDistribution extends Component {
                   style={{height: '40px'}}
                 />
               ): (
-                <Button color="red" block onClick={saveRatio}>Save</Button>
+                <Button color="blue" className="mt-2" block onClick={saveRatio}>Continue Account Setup</Button>
               )}
             </Col>
           </Row>

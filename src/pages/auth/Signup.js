@@ -4,7 +4,6 @@ import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
 // import {Cookies} from 'react-cookie'
 import subYears from 'date-fns/subYears'
-
 import {
   Container,
   Row,
@@ -14,7 +13,6 @@ import {
   Button,
   CustomInput,
 } from 'reactstrap'
-
 import {
   AvForm,
   AvGroup,
@@ -23,9 +21,7 @@ import {
 } from 'availity-reactstrap-validation'
 import Select from 'react-select'
 import Flatpickr from 'react-flatpickr'
-
 import {callApi} from '../../helpers/api'
-// import {toFormData} from '../../helpers/utils'
 import {registerUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -597,7 +593,7 @@ class Signup extends Component {
                                     type="zipcode"
                                     name="zipcode"
                                     id="zipcode"
-                                    className="mt-0"
+                                    className="mt-1"
                                     value={zipcode}
                                     onFocus={this.activateField}
                                     onBlur={this.deactivateField}

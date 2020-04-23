@@ -28,11 +28,15 @@ class Account extends Component {
     super(props)
 
     this.state = {
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       phone: '',
       dob: 0,
       address: '',
+      city: '',
+      country: '',
+      zipCode: 12345,
       referralUrl: '',
       multiplier: '1',
       btc: 50,
@@ -55,7 +59,7 @@ class Account extends Component {
       twofactorAuth: false,
       notifications: false,
       checkDetails: {},
-      activeTab: '2',
+      activeTab: '1',
     }
   }
 
@@ -67,7 +71,7 @@ class Account extends Component {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myZipCode, myIdentifier, MyInvestmentPause, myMultiplierSetting, myCurrencyDistributions, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, multiplierSetup, topup, documentUpload, total}} = res.data
+        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myContactCity, myContactCountry, myZipCode, myIdentifier, MyInvestmentPause, myMultiplierSetting, myCurrencyDistributions, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, multiplierSetup, topup, documentUpload, total}} = res.data
         const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
         const btcVal = myCurrencyDistributions[0].percentage
         const ethVal = myCurrencyDistributions[1].percentage
@@ -96,11 +100,14 @@ class Account extends Component {
           return acctDet
         })
         this.setState({
-          name: `${myFirstName} ${myLastName}`,
+          firstName: myFirstName,
+          lastName: myLastName,
           email: myEmailAddress,
           phone: myPhoneNumber ? myPhoneNumber : '',
           dob: myBirthDay,
           address: myContactAddress ? myContactAddress : '',
+          city: myContactCity,
+          country: myContactCountry,
           zipCode: myZipCode ? myZipCode : '',
           referralUrl: myIdentifier ? myIdentifier : '',
           multiplier: multiplierList[myMultiplierSetting],
@@ -383,7 +390,7 @@ class Account extends Component {
   }
 
   render() {
-    const {name, email, phone, dob, address, zipCode, referralUrl, multiplier, btc, eth, currDist, invPause, loadingRoundup, loadingCoinDstrbn, accounts, acctFundingSource, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
+    const {firstName, lastName, email, phone, dob, address, city, country, zipCode, referralUrl, multiplier, btc, eth, currDist, invPause, loadingRoundup, loadingCoinDstrbn, accounts, acctFundingSource, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
     const {user} = this.props
 
     return (
@@ -477,11 +484,14 @@ class Account extends Component {
                   <TabContent activeTab={activeTab}>
                     <TabPane tabId="1" className="p-4">
                       <EditProfile 
-                        name={name}
+                        firstName={firstName}
+                        lastName={lastName}
                         email={email}
                         phone={phone}
                         dob={dob}
                         address={address}
+                        city={city}
+                        country={country}
                         zipCode={zipCode}
                         referralUrl={referralUrl}
                         loadUserData={this.loadUserData}
