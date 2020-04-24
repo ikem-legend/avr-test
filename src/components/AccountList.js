@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Row, Col, Card, CardBody, Button} from 'reactstrap'
+import {Row, Col, Card, CardBody, Button, CustomInput} from 'reactstrap'
 import classnames from 'classnames'
 
 /**
@@ -12,9 +12,6 @@ class AccountList extends Component {
       linked: props.details.accountLink,
       linkText: props.details.accountLink ? 'Link' : 'Unlink',
       source: props.details.fundingSource,
-      sourceText: props.details.fundingSource
-        ? 'Funding Source'
-        : 'Regular Account',
     }
   }
 
@@ -29,18 +26,16 @@ class AccountList extends Component {
   }
 
   updateFundingSource = () => {
-    const {source, sourceText} = this.state
+    const {source} = this.state
     const {details, fundingSource} = this.props
     fundingSource(details.id, !source)
     this.setState({
       source: !source,
-      sourceText:
-        sourceText === 'Regular Account' ? 'Funding Source' : 'Regular Account',
     })
   }
 
   render() {
-    const {linked, linkText, source, sourceText} = this.state
+    const {linked, linkText, source} = this.state
     const {details} = this.props
     return (
       <Card>
@@ -61,8 +56,17 @@ class AccountList extends Component {
                 {linkText}
               </Button>
             </Col>
-            <Col md={3}>
-              <Button
+            <Col md={3} className="my-auto">
+              <CustomInput
+                id={details.id}
+                type="checkbox"
+                className="funding"
+                checked={source}
+                // defaultChecked={source}
+                onClick={this.updateFundingSource}
+                // onChange={this.updateFundingSource}
+              />
+              {/*<Button
                 block
                 color="transparent"
                 className={classnames(
@@ -72,7 +76,7 @@ class AccountList extends Component {
                 onClick={this.updateFundingSource}
               >
                 {sourceText}
-              </Button>
+              </Button>*/}
             </Col>
           </Row>
         </CardBody>

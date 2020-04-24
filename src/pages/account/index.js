@@ -1,15 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
-import {
-  Row,
-  Col,
-  TabPane,
-  TabContent,
-  Nav,
-  NavItem,
-  NavLink,
-} from 'reactstrap'
+import {Row, Col, TabPane, TabContent, Nav, NavItem, NavLink} from 'reactstrap'
 import classnames from 'classnames'
 import isEqual from 'lodash/isEqual'
 import {isUserAuthenticated} from '../../helpers/authUtils'
@@ -48,6 +40,7 @@ class Account extends Component {
       accounts: [],
       accountsConnectList: [],
       accountsFSList: [],
+      accountModal: true,
       loadingAcctLink: false,
       bankAccountSetup: false,
       topup: false,
@@ -59,7 +52,7 @@ class Account extends Component {
       twofactorAuth: false,
       notifications: false,
       checkDetails: {},
-      activeTab: '1',
+      activeTab: '3',
     }
   }
 
@@ -71,7 +64,31 @@ class Account extends Component {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myContactCity, myContactCountry, myZipCode, myIdentifier, MyInvestmentPause, myMultiplierSetting, myCurrencyDistributions, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, multiplierSetup, topup, documentUpload, total}} = res.data
+        const {
+          myFirstName,
+          myLastName,
+          myEmailAddress,
+          myPhoneNumber,
+          myBirthDay,
+          myContactAddress,
+          myContactCity,
+          myContactCountry,
+          myZipCode,
+          myIdentifier,
+          MyInvestmentPause,
+          myMultiplierSetting,
+          myCurrencyDistributions,
+          plaidBanks,
+          appNotifications,
+          twofactorAuthStatus,
+          setup: {
+            bankAccountSetup,
+            multiplierSetup,
+            topup,
+            documentUpload,
+            total,
+          },
+        } = res.data
         const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
         const btcVal = myCurrencyDistributions[0].percentage
         const ethVal = myCurrencyDistributions[1].percentage
@@ -91,14 +108,23 @@ class Account extends Component {
         // Deep copy needed to avoid overwriting account details
         // Create an array for the accounts with only id and value and this is
         // then used to track sttate of each account for linking and unlinking
-        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(acctDet => {
-          Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'link') && delete acctDet[key])
-          return acctDet
-        })
-        const accountsFSArr = JSON.parse(JSON.stringify(acctFSArr)).map(acctDet => {
-          Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'fundingSource') && delete acctDet[key])
-          return acctDet
-        })
+        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(
+          acctDet => {
+            Object.keys(acctDet).forEach(
+              key => key !== 'id' && key !== 'link' && delete acctDet[key],
+            )
+            return acctDet
+          },
+        )
+        const accountsFSArr = JSON.parse(JSON.stringify(acctFSArr)).map(
+          acctDet => {
+            Object.keys(acctDet).forEach(
+              key =>
+                key !== 'id' && key !== 'fundingSource' && delete acctDet[key],
+            )
+            return acctDet
+          },
+        )
         this.setState({
           firstName: myFirstName,
           lastName: myLastName,
@@ -133,8 +159,8 @@ class Account extends Component {
             invPause: MyInvestmentPause,
             multiplier: multiplierList[myMultiplierSetting],
             currDist: {btc: btcVal, eth: ethVal},
-          }
-        });
+          },
+        })
       })
       .catch(err => {
         this.props.showFeedback(err, 'error')
@@ -148,8 +174,8 @@ class Account extends Component {
         invPause,
         multiplier,
         currDist: {btc, eth},
-      }
-    });
+      },
+    })
   }
 
   toggle = tab => {
@@ -210,36 +236,45 @@ class Account extends Component {
           eth: parseInt(100 - value, 10),
           checkDetails: {
             ...prevState.checkDetails,
-            currDist: {              
+            currDist: {
               btc: parseInt(value, 10),
               eth: parseInt(100 - value, 10),
-            }
-          }
-        })
-      )}
+            },
+          },
+        }))
+      }
       if (name === 'eth') {
         this.setState(prevState => ({
           btc: parseInt(100 - value, 10),
           eth: parseInt(value, 10),
           checkDetails: {
             ...prevState.checkDetails,
-            currDist: {    
+            currDist: {
               btc: parseInt(100 - value, 10),
               eth: parseInt(value, 10),
-            }
-          }
-        })
-      )}
+            },
+          },
+        }))
+      }
     }
   }
 
   saveDetails = async () => {
     const {multiplier, currDist, checkDetails} = this.state
-    if (isEqual(multiplier, checkDetails.multiplier) && !isEqual(currDist, checkDetails.currDist)) {
+    if (
+      isEqual(multiplier, checkDetails.multiplier) &&
+      !isEqual(currDist, checkDetails.currDist)
+    ) {
       this.saveRatio()
-    } else if (isEqual(currDist, checkDetails.currDist) && !isEqual(multiplier, checkDetails.multiplier)) {
+    } else if (
+      isEqual(currDist, checkDetails.currDist) &&
+      !isEqual(multiplier, checkDetails.multiplier)
+    ) {
       this.saveMultiplier()
-    } else if (!isEqual(currDist, checkDetails.currDist) && !isEqual(multiplier, checkDetails.multiplier)) {
+    } else if (
+      !isEqual(currDist, checkDetails.currDist) &&
+      !isEqual(multiplier, checkDetails.multiplier)
+    ) {
       await this.saveMultiplier()
       this.saveRatio()
     }
@@ -270,10 +305,10 @@ class Account extends Component {
           'Error updating currency ratio, please try again',
         )
       })
-      .finally(() => 
+      .finally(() =>
         this.setState({
           loadingCoinDstrbn: false,
-        })
+        }),
       )
   }
 
@@ -305,10 +340,10 @@ class Account extends Component {
           'Error updating currency ratio, please try again',
         )
       })
-      .finally(() => 
+      .finally(() =>
         this.setState({
           loadingCoinDstrbn: false,
-        })
+        }),
       )
   }
   /* end account settings functions */
@@ -329,7 +364,10 @@ class Account extends Component {
 
   fundingSourceLinked = (id, val) => {
     const {accountsFSList} = this.state
+    // toggle selected object
+    // const clearedList = accountsFSList.map(acc => ({...acc, fundingSource: false})) // find better solution
     const tempList = accountsFSList.map(acc => {
+      // const tempList = clearedList.map(acc => {
       if (acc.id === id) {
         return {...acc, fundingSource: val}
       }
@@ -347,14 +385,14 @@ class Account extends Component {
     // Check if single funding source
     const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
     if (filteredFS.length === 1) {
-      this.setState({loadingAcctLink: true});
+      this.setState({loadingAcctLink: true})
       callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
         .then(() => {
           this.props.showFeedback('Account(s) successfully linked', 'success')
           this.connectFundingSource(filteredFS[0])
         })
         .catch(() => {
-          this.setState({loadingAcctLink: false});
+          this.setState({loadingAcctLink: false})
           this.props.showFeedback('Error linking account(s)', 'error')
         })
     } else {
@@ -362,17 +400,25 @@ class Account extends Component {
     }
   }
 
-  connectFundingSource = (val) => {
+  connectFundingSource = val => {
     const {user} = this.props
     const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
-    callApi('/user/plaid/bank/account/funding/source', fsObj, 'POST', user.token)
+    callApi(
+      '/user/plaid/bank/account/funding/source',
+      fsObj,
+      'POST',
+      user.token,
+    )
       .then(() => {
-        this.props.showFeedback('Funding source successfully updated', 'success')
-        this.setState({loadingAcctLink: false});
+        this.props.showFeedback(
+          'Funding source successfully updated',
+          'success',
+        )
+        this.setState({loadingAcctLink: false, accountModal: false})
         this.loadUserData()
       })
       .catch(() => {
-        this.setState({loadingAcctLink: false});
+        this.setState({loadingAcctLink: false})
         this.props.showFeedback('Error updating funding source', 'error')
       })
   }
@@ -390,12 +436,44 @@ class Account extends Component {
   }
 
   render() {
-    const {firstName, lastName, email, phone, dob, address, city, country, zipCode, referralUrl, multiplier, btc, eth, currDist, invPause, loadingRoundup, loadingCoinDstrbn, accounts, acctFundingSource, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      dob,
+      address,
+      city,
+      country,
+      zipCode,
+      referralUrl,
+      multiplier,
+      btc,
+      eth,
+      currDist,
+      invPause,
+      loadingRoundup,
+      loadingCoinDstrbn,
+      accounts,
+      acctFundingSource,
+      accountModal,
+      bankAccountSetup,
+      multiplierSetup,
+      topup,
+      documentUpload,
+      documentUploadStatus,
+      documentUploadError,
+      total,
+      notifications,
+      twofactorAuth,
+      activeTab,
+      loadingAcctLink,
+    } = this.state
     const {user} = this.props
 
     return (
       <div>
-      {this.renderRedirectToRoot()}
+        {this.renderRedirectToRoot()}
         {/* preloader */}
         {this.props.loading && <Loader />}
         <Row className="page-title">
@@ -483,7 +561,7 @@ class Account extends Component {
                 <Col md={12}>
                   <TabContent activeTab={activeTab}>
                     <TabPane tabId="1" className="p-4">
-                      <EditProfile 
+                      <EditProfile
                         firstName={firstName}
                         lastName={lastName}
                         email={email}
@@ -498,7 +576,7 @@ class Account extends Component {
                       />
                     </TabPane>
                     <TabPane tabId="2" className="p-4">
-                      <AccountSettings 
+                      <AccountSettings
                         multiplier={multiplier}
                         btc={btc}
                         eth={eth}
@@ -514,18 +592,24 @@ class Account extends Component {
                       />
                     </TabPane>
                     <TabPane tabId="3" className="p-4">
-                      <BanksCards 
+                      <BanksCards
                         bankAccounts={accounts}
                         acctFundingSource={acctFundingSource}
                         accountsLinked={this.accountsLinked}
                         fundingSource={this.fundingSourceLinked}
                         loadingAcctLink={loadingAcctLink}
+                        accountModal={accountModal}
                         connectSelectedAccts={this.connectSelectedAccts}
                         loadUserData={this.loadUserData}
                       />
                     </TabPane>
                     <TabPane tabId="4" className="p-4">
-                      <Security user={user} twoFA={twofactorAuth} notifications={notifications} updateUserData={this.loadUserData} />
+                      <Security
+                        user={user}
+                        twoFA={twofactorAuth}
+                        notifications={notifications}
+                        updateUserData={this.loadUserData}
+                      />
                     </TabPane>
                   </TabContent>
                 </Col>

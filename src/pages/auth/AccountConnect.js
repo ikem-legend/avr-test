@@ -364,17 +364,33 @@ class AccountConnect extends Component {
                           Connect my Funding Account
                         </PlaidLink>
                       </div>
-                      <Modal isOpen={accountModal} toggle={this.toggle} size="lg" centered>
-                        <ModalHeader>Select accounts to be linked</ModalHeader>
-                        <ModalBody>
+                      <Modal
+                        isOpen={accountModal}
+                        toggle={this.toggle}
+                        size="lg"
+                        centered
+                      >
+                        <ModalHeader className="account-link-header mx-auto">
+                          Link Connected Accounts
+                        </ModalHeader>
+                        <ModalBody className="pt-0">
                           {loadingAccts ? (
                             <Loader />
                           ) : accountList && accountList.length ? (
                             <div>
-                              <h4 className="text-center">
-                                Your account is now linked to Avenir. You can
-                                unlink an account by clicking on it.
-                              </h4>
+                              <p className="text-center mt-0 mb-0">
+                                Your account is now linked to Avenir. Tick a box
+                                to choose your{' '}
+                                <span className="font-weight-bold">
+                                  Funding Source
+                                </span>
+                                .
+                              </p>
+                              <p>
+                                You can unlink an account by clicking on the{' '}
+                                <span className="font-weight-bold">Linked</span>{' '}
+                                button.
+                              </p>
                               {accountList}
                             </div>
                           ) : (

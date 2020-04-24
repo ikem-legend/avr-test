@@ -170,11 +170,11 @@
 }
 
 .unlinked {
-	background-color: $avenir-red;
+	background-color: $avenir-light-blue-hover;
 	font-weight: bold;
 	&:hover {
 		color: $white !important;
-		background-color: $avenir-red !important;
+		background-color: $avenir-light-blue-hover !important;
 	}
 }
 
