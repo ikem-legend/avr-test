@@ -133,29 +133,21 @@ class BanksCards extends Component {
   //   }
   // }
 
-  connectFundingSource = val => {
+  connectFundingSource = (val) => {
     const {user, loadUserData} = this.props
     const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
-    callApi(
-      '/user/plaid/bank/account/funding/source',
-      fsObj,
-      'POST',
-      user.token,
-    )
+    callApi('/user/plaid/bank/account/funding/source', fsObj, 'POST', user.token)
       .then(() => {
-        this.props.showFeedback(
-          'Funding source successfully updated',
-          'success',
-        )
+        this.props.showFeedback('Funding source successfully updated', 'success')
         loadUserData()
         this.setState({
           loadingAcctLink: false,
           accountModal: false,
-        })
+        });
       })
       .catch(err => {
         console.log(err)
-        this.setState({loadingAcctLink: false})
+        this.setState({loadingAcctLink: false});
         this.props.showFeedback('Error updating funding source', 'error')
       })
   }
@@ -214,9 +206,8 @@ class BanksCards extends Component {
       ))
 
     // const userFundingSource = acctFundingSource && acctFundingSource.map(fs => (
-    const userFundingSource =
-      acctFundingSource && Object.keys(acctFundingSource).length ? (
-        <UserFundingSource fs={acctFundingSource} />
+    const userFundingSource = acctFundingSource && Object.keys(acctFundingSource).length ? (
+      <UserFundingSource fs={acctFundingSource} /> 
       ) : null
 
     return (
@@ -257,7 +248,9 @@ class BanksCards extends Component {
           </Col>
         </Row>
         <Row className="mb-2 h-100">
-          <Col md={12}>{userFundingSource}</Col>
+          <Col md={12}>
+            {userFundingSource}
+          </Col>
         </Row>
         <Row>
           <Col md={12}>
@@ -279,22 +272,17 @@ class BanksCards extends Component {
             </Row>
           </Col>
           <Modal isOpen={accountModal} toggle={this.toggle} size="lg" centered>
-            <ModalHeader className="account-link-header mx-auto">
-              Link Connected Accounts
-            </ModalHeader>
+            <ModalHeader className="account-link-header mx-auto">Link Connected Accounts</ModalHeader>
             <ModalBody className="pt-0">
               {loadingAccts ? (
                 <Loader />
               ) : accountList && accountList.length ? (
                 <div>
                   <p className="text-center mt-0 mb-0">
-                    Your account is now linked to Avenir. Tick a box to choose
-                    your{' '}
-                    <span className="font-weight-bold">Funding Source</span>.
+                    Your account is now linked to Avenir. Tick a box to choose your <span className="font-weight-bold">Funding Source</span>. 
                   </p>
                   <p>
-                    You can unlink an account by clicking on the{' '}
-                    <span className="font-weight-bold">Linked</span> button.
+                    You can unlink an account by clicking on the <span className="font-weight-bold">Linked</span> button.
                   </p>
                   {accountList}
                 </div>

@@ -152,7 +152,17 @@ class Signup extends Component {
     }
     if (this.state.terms) {
       const data = {...this.state.inputs}
-      data.dob = String(data.dob)
+      // Date format
+      const year = new Date(data.dob).getFullYear();
+      // const month = new Date(data.dob).getMonth().toString();
+      let month = (1 + new Date(data.dob).getMonth()).toString();
+      month = month.length > 1 ? month : `0${month}`;
+      // month = month.length > 1 ? month : `0${month}`;
+      const day = new Date(data.dob).getDate().toString();
+      // day = day.length > 1 ? day : `0${day}`;
+      
+      data.dob = `${month}-${day}-${year}`
+      // data.dob = String(data.dob)
       data.first_name = String(data.firstname)
       data.last_name = String(data.lastname)
       data.zip_code = String(data.zipcode)

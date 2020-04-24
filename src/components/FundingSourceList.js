@@ -22,7 +22,7 @@ class FundingSourceList extends Component {
     this.setState({
       linked: !linked,
       linkText: linkText === 'Unlink' ? 'Link' : 'Unlink',
-    })
+    });
   }
 
   updateFundingSource = () => {
@@ -31,17 +31,14 @@ class FundingSourceList extends Component {
     fundingSource(acctDetail.id, !source)
     this.setState({
       source: !source,
-    })
+    });
   }
 
   render() {
     const {linked, linkText, source} = this.state
     const {acct, acctDetail} = this.props
     return (
-      <Row
-        key={`${acct.institutionId}-${acctDetail.id}`}
-        className="mb-2 p-2 funding-source"
-      >
+      <Row key={`${acct.institutionId}-${acctDetail.id}`} className="mb-2 p-2 funding-source">
         <Col md={3} className="font-weight-bold acct-name my-auto px-1">
           {acctDetail.accountName}
         </Col>
@@ -49,17 +46,7 @@ class FundingSourceList extends Component {
           ****{acctDetail.accountMask}
         </Col>
         <Col md={3}>
-          <Button
-            block
-            color="transparent"
-            className={classnames(
-              {linked: linked === true, unlinked: linked === false},
-              'float-right',
-            )}
-            onClick={this.modify}
-          >
-            {linkText}
-          </Button>
+          <Button block color="transparent" className={classnames({'linked': linked === true, 'unlinked': linked === false}, 'float-right')} onClick={this.modify}>{linkText}</Button>
         </Col>
         <Col md={3} className="mb-3 my-auto text-center">
           <CustomInput
