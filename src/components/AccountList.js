@@ -56,8 +56,8 @@ class AccountList extends Component {
                 {linkText}
               </Button>
             </Col>
-            <Col md={3} className="my-auto">
-              <CustomInput
+            <Col md={3} className="my-auto text-center">
+              {/*<CustomInput
                 id={details.id}
                 type="checkbox"
                 className="funding"
@@ -65,18 +65,16 @@ class AccountList extends Component {
                 // defaultChecked={source}
                 onClick={this.updateFundingSource}
                 // onChange={this.updateFundingSource}
-              />
-              {/*<Button
-                block
+              />*/}
+              <Button
                 color="transparent"
                 className={classnames(
                   {linked: source === true, unlinked: source === false},
-                  'float-right',
+                  'funding-btn',
+                  'text-center',
                 )}
                 onClick={this.updateFundingSource}
-              >
-                {sourceText}
-              </Button>*/}
+              />
             </Col>
           </Row>
         </CardBody>

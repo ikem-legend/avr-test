@@ -37,7 +37,7 @@ class RatioDistribution extends Component {
               </InputGroup>
             </Col>
           </Row>
-          <Row className="mt-2">
+          <Row className="mt-2 text-center">
             <Col md={{size: 4, offset: 8}}>
               {loadingDstrbn ? (
                 <img

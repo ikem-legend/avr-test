@@ -49,14 +49,14 @@ class FundingSourceList extends Component {
           <Button block color="transparent" className={classnames({'linked': linked === true, 'unlinked': linked === false}, 'float-right')} onClick={this.modify}>{linkText}</Button>
         </Col>
         <Col md={3} className="mb-3 my-auto text-center">
-          <CustomInput
+          {/*<CustomInput
             id={acctDetail.id}
             type="checkbox"
             className="funding"
             defaultChecked={source}
             onChange={this.updateFundingSource}
-          />
-          {/*<Button block color="transparent" className={classnames({'linked': source === true, 'unlinked': source === false}, 'float-right')} onClick={this.updateFundingSource}>{sourceText}</Button>*/}
+          />*/}
+          <Button color="transparent" className={classnames({'linked': source === true, 'unlinked': source === false}, 'funding-btn', 'text-center')} onClick={this.updateFundingSource}></Button>
         </Col>
       </Row>
     )

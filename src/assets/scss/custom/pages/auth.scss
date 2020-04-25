@@ -135,6 +135,13 @@
 			color: $white !important;
 		}
 	}
+
+// .roundups-switch {
+	.custom-control-input:checked, .custom-control-label::before {
+		border-color: $gray !important;
+		border-radius: 0.3rem !important;
+	}
+
 	.signup-bg {
 		background: transparent url('../../../images/signup_static_bg.svg') 0% 0% no-repeat padding-box;
 		margin: -12px;

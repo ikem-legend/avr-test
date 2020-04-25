@@ -6,11 +6,11 @@ import classnames from 'classnames'
  * Renders the UserFundingSource
  */
 class UserFundingSource extends Component {
-  constructor(props) {
+  constructor({fs}) {
     super()
     this.state = {
-      source: props.fs.accountFundingSource,
-      sourceText: props.fs.accountFundingSource ? 'Funding Source' : 'Regular Account',
+      source: fs.accountFundingSource,
+      sourceText: fs.accountFundingSource ? 'Funding Source' : 'Regular Account',
     }
   }
 
@@ -19,7 +19,7 @@ class UserFundingSource extends Component {
     const {fs} = this.props
     return (
       <Row className="funding-source p-2 m-0">
-        <Col md={6} key={`${fs.id}`} className="font-weight-bold acct-name my-auto">
+        <Col md={6} key={`${fs.id}`} className="font-weight-bold acct-name my-auto pl-1">
           {fs.accountName}
         </Col>
         <Col md={3} className="my-auto">
