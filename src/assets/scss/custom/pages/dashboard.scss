@@ -56,6 +56,22 @@
 .active-coin {
 	border: 2px dashed $gray-700;
 }
+.image-upload {
+	.tab-container {
+		border: 3px solid $avenir-light-gray;
+		.nav-container {
+			.nav-tabs {
+				background-color: $avenir-dark-gray;
+				.nav-item {
+					a {
+						border-radius: 10px;
+						font-weight: bold;
+					}
+				}
+			}
+		}
+	}
+}
 
 
 // Roundup settings
@@ -101,14 +117,9 @@
 	.custom-control-input:checked, .custom-control-label::before {
 		border-color: $gray;
 		border-radius: 0.5rem !important;
-		// &.linked {
-		// 	background-color: $avenir-deep-blue !important;
-		// 	border: 1px solid $avenir-deep-blue !important;
-		// }
 	}
 	.custom-control-input:checked ~ .custom-control-label::after {
 		background-image: none;
-		// border: 1px solid $avenir-deep-blue !important;
 	}
 }
 
@@ -329,9 +340,11 @@
 	}
 }
 
-.account-link-header h5 {
-	color: $avenir-deep-blue;
-	font-weight: bold;
+.account-link-header {
+	h5, h3 {
+		color: $avenir-deep-blue;
+		font-weight: bold;
+	}
 }
 
 .funding.custom-checkbox {

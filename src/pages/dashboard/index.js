@@ -10,10 +10,11 @@ import {numberWithCommas, resizeImage, toFormData} from '../../helpers/utils'
 import {callApi} from '../../helpers/api'
 // import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-import StyledDropzone from '../../components/ImagePicker'
+// import StyledDropzone from '../../components/ImagePicker'
+import DocumentUpload from '../../components/DocumentUpload'
 import {showFeedback, updateUserData} from '../../redux/actions'
 
-import DefaultImage from '../../assets/images/default-image.png'
+// import DefaultImage from '../../assets/images/default-image-upload.png'
 import TopUp from '../../assets/images/topups.svg'
 import TopUpLoader from '../../assets/images/spin-loader.gif'
 import btcImg from '../../assets/images/layouts/btc.svg'
@@ -336,48 +337,16 @@ class Dashboard extends Component {
           {this.props.loading && <Loader />}
           
           {/* Document upload */}
-          {/*user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'OPEN' ? (*/}
-          {user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'PENDING' ? (
-            <Modal isOpen={userDocumentModal} toggle={this.toggleImgUpload} backdrop="static" centered size="lg">
-              <ModalBody className="text-center">
-                <Row>
-                  <Col md={12}>
-                    <h5>Upload User ID to complete profile</h5>
-                    <p>We need your means of identification to verify your identity for security purposes. This information is encrypted and not stored on Avenir servers</p>
-                  </Col>
-                </Row>
-                <Row>
-                  {userDocument.slice(0, 2).map((image, idx) => (
-                    <Col size="6" key={idx}>
-                      <img
-                        alt="puImg"
-                        src={image && image.src ? image.src : image ? image : DefaultImage}
-                        className="img-fluid"
-                      />
-                    </Col>
-                  ))}
-                </Row>
-                <Row>
-                  <Col md={12}>
-                    <StyledDropzone
-                      onUpload={this.handleUserDocument}
-                      multiple
-                      label="Click here to select the Front & Back or drag and drop to upload"
-                      width="100%"
-                    />
-                  </Col>
-                </Row>
-                {loadingUpload ? (
-                  <img
-                    src={TopUpLoader}
-                    alt="loader"
-                    style={{height: '40px', marginTop: '20px'}}
-                  />
-                ) : (
-                  <Button onClick={this.submitUserDocument} color="inv-blue" className="mt-2">Upload</Button>
-                )}
-              </ModalBody>
-            </Modal>
+          {/*{user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'PENDING' ? (*/}
+          {user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'OPEN' ? (
+            <DocumentUpload 
+              userDocumentModal={userDocumentModal}
+              userDocument={userDocument}
+              toggleImgUpload={this.toggleImgUpload}
+              handleUserDocument={this.handleUserDocument}
+              submitUserDocument={this.submitUserDocument}
+              loadingUpload={loadingUpload}
+            />
             ) : null
           }
 

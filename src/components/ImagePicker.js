@@ -12,7 +12,7 @@ function readFile(file, onUpload) {
   reader.readAsBinaryString(file)
 }
 
-function StyledDropzone({onUpload, multiple, width, label}) {
+function ImagePicker({onUpload, multiple, width, label}) {
   const onDrop = useCallback(
     acceptedFiles => {
       acceptedFiles.forEach(file => readFile(file, onUpload))
@@ -55,17 +55,17 @@ function StyledDropzone({onUpload, multiple, width, label}) {
   )
 }
 
-StyledDropzone.propTypes = {
+ImagePicker.propTypes = {
   onUpload: func.isRequired,
   multiple: bool,
   width: string,
   label: string,
 }
 
-StyledDropzone.defaultProps = {
+ImagePicker.defaultProps = {
   multiple: false,
   width: '50%',
   label: '',
 }
 
-export default StyledDropzone
+export default ImagePicker
