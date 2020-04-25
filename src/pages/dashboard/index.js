@@ -29,6 +29,7 @@ class Dashboard extends Component {
 
     this.state = {
       userDocument: ['', ''],
+      idType: 'individualProofOfAddress',
       userDocumentModal: true,
       loadingUpload: false,
       uploadStatus: 'pending',
@@ -86,12 +87,14 @@ class Dashboard extends Component {
             const ethVal =
               myWallets.filter(coin => coin.currency === eth)[0].myBalance *
               exchangeRates.USDETH
-            // console.log(myCurrencyDistributions)
             const userObj = {}
+            // Ensure that docUploadState is updated. This helps ensure that once the user cancels the document upload, it does not show up until their next login
+            const docUploadStateData = JSON.parse(localStorage.getItem('avenirApp')).docUploadState ? JSON.parse(localStorage.getItem('avenirApp')).docUploadState : false
             Object.assign(
               userObj,
               {...res.data},
-              {token: user.token}
+              {token: user.token},
+              {docUploadState: docUploadStateData},
             )
             this.props.updateUserData(userObj)
             this.setState({
@@ -225,40 +228,95 @@ class Dashboard extends Component {
 
   toggleImgUpload = () => {
     const {userDocumentModal} = this.state
-    // const {userDocumentModal, uploadStatus} = this.state
-    // if (uploadStatus === 'pending' && userDocumentModal === false) {
+    if (userDocumentModal) {
+      this.updateDocUploadState()
+    }
+    this.setState({
+      userDocumentModal: !userDocumentModal
+    });
+  }
+
+  updateDocUploadState = () => {
+    const userData = JSON.parse(localStorage.getItem('avenirApp'))
+    Object.assign(userData, {docUploadState: true})
+    // userData.docUploadState = true
+    const userDataStr = JSON.stringify(userData)
+    localStorage.setItem('avenirApp', userDataStr)
+  }
+
+  specifyId = (id) => {
+    if (id === 1) {
       this.setState({
-        userDocumentModal: !userDocumentModal
+        idType: 'individualProofOfAddress',
+        userDocument: ['', '']
       });
-    // }
+    } else {
+      this.setState({
+        idType: 'individualGovernmentId',
+        userDocument: ['']
+      });
+    }
   }
 
   handleUserDocument = (file, body) => {
-    return resizeImage(file, body).then(blob => {
-      return this.setState(prevState => ({
-        userDocument: [
-          {
-            src: URL.createObjectURL(blob),
-            blob,
-          },
-          ...prevState.userDocument,
-        ],
-      }))
-    })
+    const {idType, userDocument} = this.state
+    if (idType === 'individualGovernmentId' && userDocument.length >= 1) {
+      // Ensure there is only 1 image in the array
+      userDocument.pop()
+      return resizeImage(file, body).then(blob => {
+        return this.setState(prevState => ({
+          userDocument: [
+            {
+              src: URL.createObjectURL(blob),
+              blob,
+            },
+            ...prevState.userDocument,
+          ],
+        }))
+      })
+    }
+    if (idType === 'individualProofOfAddress') {
+      return resizeImage(file, body).then(blob => {
+        if (userDocument.length >= 1) {
+          userDocument.pop()
+          // Ensure there are only 2 images in the array
+          if (userDocument.length === 2) {
+            userDocument.pop()
+          }
+          return this.setState(prevState => ({
+            userDocument: [
+              {
+                src: URL.createObjectURL(blob),
+                blob,
+              },
+              ...prevState.userDocument,
+            ],
+          }))
+        } else {
+          return this.setState(prevState => ({
+            userDocument: [
+              {
+                src: URL.createObjectURL(blob),
+                blob,
+              },
+              ...prevState.userDocument,
+            ],
+          }))
+        }
+      })
+    }
   }
 
   submitUserDocument = () => {
-    const {userDocument} = this.state
+    const {userDocument, idType} = this.state
     const {user} = this.props
     const selectedImages = userDocument.filter(photo => photo && photo.blob)
     if (selectedImages.length > 0) {
       const userDocObj = selectedImages.map(img => img.blob)[0]
-      const userData = toFormData({document: userDocObj, type: 'individualProofOfAddress'})
-      // debugger
+      const userData = toFormData({document: userDocObj, type: idType})
       this.setState({loadingUpload: true});
       callApi('/user/sendwyre/document/upload', userData, 'POST', user.token)
         .then((res) => {
-          // console.log(res)
           toast.success(
             `ID upload successful, ${res.data.message}`,
             {hideProgressBar: true}
@@ -289,7 +347,6 @@ class Dashboard extends Component {
               {hideProgressBar: true}
             )
           )})
-          // toast.error('Error uploading document, please try again')
         })
     } else {
       toast.error('Please select an image to upload', {hideProgressBar: true})
@@ -313,7 +370,6 @@ class Dashboard extends Component {
       userDocument,
       userDocumentModal,
       loadingUpload,
-      // uploadStatus,
       topupModal,
       topup,
       withdrawModal,
@@ -337,15 +393,16 @@ class Dashboard extends Component {
           {this.props.loading && <Loader />}
           
           {/* Document upload */}
-          {/*{user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'PENDING' ? (*/}
-          {user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'OPEN' ? (
+          {user.setup.documentUpload.done === false && user.setup.documentUpload.status === 'OPEN' && user.docUploadState === false ? (
             <DocumentUpload 
               userDocumentModal={userDocumentModal}
               userDocument={userDocument}
+              specifyId={this.specifyId}
               toggleImgUpload={this.toggleImgUpload}
               handleUserDocument={this.handleUserDocument}
               submitUserDocument={this.submitUserDocument}
               loadingUpload={loadingUpload}
+              // parentPath="Dashboard"
             />
             ) : null
           }

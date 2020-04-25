@@ -41,8 +41,6 @@ const setSession = userData => {
   	Cookies.remove('avenirUser')
   	localStorage.removeItem('avenirApp')
 	}
-	// debugger
-  // console.log('Cookies: ', Cookies.get('avenirUser'))
 }
 
 /**
@@ -51,11 +49,6 @@ const setSession = userData => {
  */
 function* login({payload: {user, history}}) {
   try {
-    // if (user.token) {
-    //   setSession(user)
-    //   yield put(loginUserSuccess(user))
-    //   history.push('/account/account-connect')
-    // } else {
     const result = yield call(callApi, '/auth/signin', user, 'POST')
     const response = yield call(
       callApi,
@@ -73,12 +66,12 @@ function* login({payload: {user, history}}) {
       userObj,
       {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
       {token: result.token},
+      {docUploadState: false}
     )
     const userObjStr = JSON.stringify(userObj)
     setSession(userObjStr)
     yield put(loginUserSuccess(userObj))
     history.push('/dashboard')
-    // }
   } catch (error) {
     let message
     switch (error.status) {
@@ -140,6 +133,7 @@ function* register({payload: {user, history}}) {
       userObj,
       data,
       {token: result.data.message.token},
+      {docUploadState: false},
     )
     const userObjStr = JSON.stringify(userObj)
     setSession(userObjStr)
