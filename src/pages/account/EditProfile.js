@@ -9,12 +9,6 @@ import {
   InputGroupText,
   Label,
   Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Tab,
-  TabPane,
-  TabContent
 } from 'reactstrap'
 import {
   AvForm,
@@ -25,11 +19,12 @@ import {
 import Flatpickr from 'react-flatpickr'
 import Select from 'react-select'
 import subYears from 'date-fns/subYears'
+import {toast} from 'react-toastify'
 import {callApi} from '../../helpers/api'
+import {resizeImage, toFormData} from '../../helpers/utils'
 import {showFeedback} from '../../redux/actions'
+import DocumentUpload from '../../components/DocumentUpload'
 import SaveLoader from '../../assets/images/spin-loader.gif'
-import StyledDropzone from '../../components/ImagePicker'
-import DefaultImage from '../../assets/images/default-image.png'
 
 class EditProfile extends Component {
 	constructor() {
@@ -42,11 +37,14 @@ class EditProfile extends Component {
 			dob: '',
 			address: '',
 			zipCode: '',
+      city: '',
+      country: '',
 			referralUrl: '',
       loadingProfileUpdate: false,
-      regModal: false,
-			loadingRegUpload: false,
-      userDocument: [],
+      loadingUpload: false,
+      userDocument: ['', ''],
+      userDocumentModal: false,
+      idType: 'individualProofOfAddress',
 		}
 	}
 
@@ -65,8 +63,27 @@ class EditProfile extends Component {
 		}
 	}
 
-	getProfileDetails = () => {
+	getProfileDetails = async () => {
 		const {firstName, lastName, dob, phone, email, address, city, country, zipCode, referralUrl} = this.props
+    await callApi('/data/countries', null, 'GET')
+    .then(response => {
+      const countryList = response.data.map(coun => ({
+        value: coun.id,
+        label: coun.name,
+      }))
+      const cityArray = response.data.map(coun =>
+        coun.cities.map(cityDetail => ({value: cityDetail.id, label: cityDetail.name})),
+      )
+      const cityList = [].concat(...cityArray)
+      this.setState({
+        cities: cityList,
+        countries: countryList,
+      })
+    })
+    .catch(err => console.log(err))
+    const {cities, countries} = this.state
+    const selectedCity = cities.filter(cityDet => cityDet.label === city)[0]
+    const selectedCountry = countries.filter(counDet => counDet.label === country)[0]
 		this.setState({
 			firstName,
       lastName,
@@ -74,8 +91,9 @@ class EditProfile extends Component {
 			phone,
 			dob,
 			address,
-      city,
-      country,
+      // city: city ? city : selectedCity,
+      city: selectedCity,
+      country: selectedCountry,
 			zipCode,
 			referralUrl
 		});
@@ -102,18 +120,138 @@ class EditProfile extends Component {
     }
   }
 
-  toggleUploadReg = () => {
-    const {regModal} = this.state
+  toggleImgUpload = () => {
+    const {userDocumentModal} = this.state
+    // if (userDocumentModal) {
+    //   this.updateDocUploadState()
+    // }
     this.setState({
-      regModal: !regModal
+      userDocumentModal: !userDocumentModal
     });
   }
 
+  // Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
+  // However it does not popup on the edit profile page as it does on the Dashboard so it is of less use here
+  updateDocUploadState = () => {
+    const userData = JSON.parse(localStorage.getItem('avenirApp'))
+    Object.assign(userData, {docUploadState: true})
+    const userDataStr = JSON.stringify(userData)
+    localStorage.setItem('avenirApp', userDataStr)
+  }
+
+  specifyId = (id) => {
+    if (id === 1) {
+      this.setState({
+        idType: 'individualProofOfAddress',
+        userDocument: ['', '']
+      });
+    } else {
+      this.setState({
+        idType: 'individualGovernmentId',
+        userDocument: ['']
+      });
+    }
+  }
+
+  handleUserDocument = (file, body) => {
+    const {idType, userDocument} = this.state
+    if (idType === 'individualGovernmentId' && userDocument.length >= 1) {
+      // Ensure there is only 1 image in the array
+      userDocument.pop()
+      return resizeImage(file, body).then(blob => {
+        return this.setState(prevState => ({
+          userDocument: [
+            {
+              src: URL.createObjectURL(blob),
+              blob,
+            },
+            ...prevState.userDocument,
+          ],
+        }))
+      })
+    }
+    if (idType === 'individualProofOfAddress') {
+      return resizeImage(file, body).then(blob => {
+        if (userDocument.length >= 1) {
+          userDocument.pop()
+          // Ensure there are only 2 images in the array
+          if (userDocument.length === 2) {
+            userDocument.pop()
+          }
+          return this.setState(prevState => ({
+            userDocument: [
+              {
+                src: URL.createObjectURL(blob),
+                blob,
+              },
+              ...prevState.userDocument,
+            ],
+          }))
+        } else {
+          return this.setState(prevState => ({
+            userDocument: [
+              {
+                src: URL.createObjectURL(blob),
+                blob,
+              },
+              ...prevState.userDocument,
+            ],
+          }))
+        }
+      })
+    }
+  }
+
+  submitUserDocument = () => {
+    const {userDocument, idType} = this.state
+    const {user} = this.props
+    const selectedImages = userDocument.filter(photo => photo && photo.blob)
+    if (selectedImages.length > 0) {
+      const userDocObj = selectedImages.map(img => img.blob)[0]
+      const userData = toFormData({document: userDocObj, type: idType})
+      this.setState({loadingUpload: true});
+      callApi('/user/sendwyre/document/upload', userData, 'POST', user.token)
+        .then((res) => {
+          toast.success(
+            `ID upload successful, ${res.data.message}`,
+            {hideProgressBar: true}
+          )
+          this.setState({loadingUpload: false});
+          callApi('/auth/me', null, 'GET', user.token)
+            .then(response => {
+              const userObj = {}
+              Object.assign(
+                userObj,
+                {...response.data},
+                {token: user.token}
+              )
+              this.props.updateUserData(userObj)
+              this.toggleImgUpload()
+            })
+            .catch(() => {
+              this.props.showFeedback('Error updating user details, please reload', 'error')
+            })
+        })
+        .catch((err) => {
+          const {data: {error}} = err
+          this.setState({loadingUpload: false});
+          Object.keys(error).map(obj => {
+            return (
+            toast.error(
+              error[obj][0],
+              {hideProgressBar: true}
+            )
+          )})
+        })
+    } else {
+      toast.error('Please select an image to upload', {hideProgressBar: true})
+    }
+  }
+
   updateProfile = () => {
-    const {firstName, lastName, dob, phone, email, address, zipCode, referralUrl} = this.state
+    const {firstName, lastName, dob, phone, email, address, city, country, zipCode, referralUrl} = this.state
     const {loadUserData} = this.props
-    // const [first_name, last_name] = String(name).split(' ')
-    const userData = {first_name: firstName, last_name: lastName, email, phone, dob, address, zip_code: zipCode, identifier: referralUrl}
+    const userData = {first_name: firstName, last_name: lastName, email, phone, dob, address, zip_code: zipCode, city_id: city.value, country_id: country.value, identifier: referralUrl}
     this.setState({
     	loadingProfileUpdate: true
     });
@@ -131,9 +269,10 @@ class EditProfile extends Component {
 		    });
       })
   }
-
+  
+  // eslint-disable-next-line max-lines-per-function
 	render() {
-		const {firstName, lastName, email, phone, dob, address, city, country, zipCode, referralUrl, loadingProfileUpdate, regModal, loadingRegUpload, userDocument} = this.state
+		const {firstName, lastName, email, phone, dob, address, city, cities, country, zipCode, referralUrl, loadingProfileUpdate, userDocument, userDocumentModal, loadingUpload} = this.state
     const customStyles = {
       placeholder: (defaultStyles) => ({
         ...defaultStyles,
@@ -144,7 +283,6 @@ class EditProfile extends Component {
     }
 		return (
       <Container fluid className="account-pages mb-5">
-        {/*<Row className="justify-content-center">*/}
         <AvForm onValidSubmit={this.updateProfile}>
     			<Row>
     				<Col md={6} className="pr-0">
@@ -334,19 +472,16 @@ class EditProfile extends Component {
                     <Label for="city">Choose your city</Label>
                     <Select
                       id="city"
-                      options={this.state.cities}
+                      options={cities}
                       value={city}
+                      // value={cities ? cities.filter(cityDet => cityDet.label === city)[0] : ''}
                       className="location"
                       styles={customStyles}
                       placeholder="Select your city"
                       onChange={val =>
-                        this.setState(prevState => ({
-                          ...prevState,
-                          inputs: {
-                            ...prevState.inputs,
-                            city: val,
-                          },
-                        }))
+                        this.setState({
+                          city: val,
+                        })
                       }
                       required
                     />
@@ -366,13 +501,9 @@ class EditProfile extends Component {
                       styles={customStyles}
                       placeholder="Select your country"
                       onChange={val =>
-                        this.setState(prevState => ({
-                          ...prevState,
-                          inputs: {
-                            ...prevState.inputs,
-                            country: val,
-                          },
-                        }))
+                        this.setState({
+                          country: val,
+                        })
                       }
                       required
                     />
@@ -422,48 +553,17 @@ class EditProfile extends Component {
               </Row>
               <Row>
                 <Col>
-                  <Button color="blue" block className="mt-1 mb-5" onClick={this.toggleUploadReg}>Upload User Registration</Button>
-                  <Modal isOpen={regModal} toggle={this.toggleUploadReg} centered size="lg">
-                    <ModalHeader className="account-link-header mx-auto">Upload User ID to complete profile</ModalHeader>
-                    <ModalBody className="text-center">
-                      <Row>
-                        <Col md={12}>
-                          <p className="mb-0">We need your means of identification to verify your identity for security purposes.</p>
-                          <p>This information is encrypted and not stored on Avenir servers</p>
-                        </Col>
-                      </Row>
-                      <Row>
-                        {userDocument.slice(0, 2).map((image, idx) => (
-                          <Col size="6" key={idx}>
-                            <img
-                              alt="puImg"
-                              src={image && image.src ? image.src : image ? image : DefaultImage}
-                              className="img-fluid"
-                            />
-                          </Col>
-                        ))}
-                      </Row>
-                      <Row>
-                        <Col md={12}>
-                          <StyledDropzone
-                            onUpload={this.handleUserDocument}
-                            multiple
-                            label="Click here to select the Front & Back or drag and drop to upload"
-                            width="100%"
-                          />
-                        </Col>
-                      </Row>
-                      {loadingRegUpload ? (
-                        <img
-                          src={SaveLoader}
-                          alt="loader"
-                          style={{height: '40px', marginTop: '20px'}}
-                        />
-                      ) : (
-                        <Button onClick={this.submitUserDocument} color="inv-blue" className="mt-2">Upload</Button>
-                      )}
-                    </ModalBody>
-                  </Modal>
+                  <Button color="blue" block className="mt-1 mb-5" onClick={this.toggleImgUpload}>Upload User Registration</Button>
+                  {/* Document upload */}
+                  <DocumentUpload 
+                    userDocumentModal={userDocumentModal}
+                    userDocument={userDocument}
+                    specifyId={this.specifyId}
+                    toggleImgUpload={this.toggleImgUpload}
+                    handleUserDocument={this.handleUserDocument}
+                    submitUserDocument={this.submitUserDocument}
+                    loadingUpload={loadingUpload}
+                  />
                 </Col>
               </Row>
               <Row>

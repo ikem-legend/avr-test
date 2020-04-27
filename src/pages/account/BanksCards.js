@@ -175,8 +175,11 @@ class BanksCards extends Component {
         <Card key={acct.institutionId}>
           <CardBody className="px-2">
             <Row>
-              <Col md={12} className="font-weight-bold acct-name">
+              <Col md={9} className="font-weight-bold acct-name">
                 {acct.institutionName}
+              </Col>
+              <Col md={3}>
+                Choose your funding source
               </Col>
               <Col md={12}>
                 {acct.accounts.map(acctDetail => (
@@ -219,8 +222,8 @@ class BanksCards extends Component {
           <Col md={4}>
             <PlaidLink
               clientName="Avenir app"
-              env="sandbox"
-              // env="production"
+              // env="sandbox"
+              env="production"
               product={['auth', 'transactions']}
               publicKey="3c3d222fa56168931abed2dc785bc2"
               onExit={this.handleOnExit}

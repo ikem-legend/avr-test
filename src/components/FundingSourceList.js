@@ -56,7 +56,7 @@ class FundingSourceList extends Component {
             defaultChecked={source}
             onChange={this.updateFundingSource}
           />*/}
-          <Button color="transparent" className={classnames({'linked': source === true, 'unlinked': source === false}, 'funding-btn', 'text-center')} onClick={this.updateFundingSource}></Button>
+          <Button color="transparent" className={classnames({'linked': source === true, 'unlinked': source === false}, 'funding-btn', 'text-center')} onClick={this.updateFundingSource} />
         </Col>
       </Row>
     )

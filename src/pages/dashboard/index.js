@@ -10,11 +10,9 @@ import {numberWithCommas, resizeImage, toFormData} from '../../helpers/utils'
 import {callApi} from '../../helpers/api'
 // import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-// import StyledDropzone from '../../components/ImagePicker'
 import DocumentUpload from '../../components/DocumentUpload'
 import {showFeedback, updateUserData} from '../../redux/actions'
 
-// import DefaultImage from '../../assets/images/default-image-upload.png'
 import TopUp from '../../assets/images/topups.svg'
 import TopUpLoader from '../../assets/images/spin-loader.gif'
 import btcImg from '../../assets/images/layouts/btc.svg'
@@ -80,7 +78,7 @@ class Dashboard extends Component {
         } = this.state
         callApi('/auth/me', null, 'GET', user.token)
           .then(res => {
-            const {myWallets, myCurrencyDistributions, setup: {documentUpload: {status}}} = res.data
+            const {myWallets, myCurrencyDistributions, setup: {documentUpload: {done, status}}} = res.data
             const btcVal =
               myWallets.filter(coin => coin.currency === btc)[0].myBalance *
               exchangeRates.USDBTC
@@ -96,14 +94,19 @@ class Dashboard extends Component {
               {token: user.token},
               {docUploadState: docUploadStateData},
             )
-            this.props.updateUserData(userObj)
+            // Replicate similar logic here to ensure this fires just once
+            if (user.setup.documentUpload.done === false && done === true) {
+              this.props.updateUserData(userObj)
+            }
+            if (docUploadStateData === true) {
+              this.props.updateUserData(userObj)
+            }
             this.setState({
               btcVal,
               ethVal,
               btcRate: exchangeRates.USDBTC,
               ethRate: exchangeRates.USDETH,
               myCurrencyDistributions,
-              // walletTotal: parseInt(0, 10) + parseInt(0, 10),
               walletTotal: parseInt(btcVal, 10) + parseInt(ethVal, 10),
               uploadStatus: status
             }, () => {
@@ -235,11 +238,11 @@ class Dashboard extends Component {
       userDocumentModal: !userDocumentModal
     });
   }
-
+  
+  // Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
   updateDocUploadState = () => {
     const userData = JSON.parse(localStorage.getItem('avenirApp'))
     Object.assign(userData, {docUploadState: true})
-    // userData.docUploadState = true
     const userDataStr = JSON.stringify(userData)
     localStorage.setItem('avenirApp', userDataStr)
   }
@@ -402,7 +405,6 @@ class Dashboard extends Component {
               handleUserDocument={this.handleUserDocument}
               submitUserDocument={this.submitUserDocument}
               loadingUpload={loadingUpload}
-              // parentPath="Dashboard"
             />
             ) : null
           }

@@ -14,7 +14,7 @@ import classnames from 'classnames'
 import isEqual from 'lodash/isEqual'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import {callApi} from '../../helpers/api'
-import {showFeedback} from '../../redux/actions'
+import {showFeedback, updateUserData} from '../../redux/actions'
 import Loader from '../../components/Loader'
 
 import {AccountProfile} from './AccountProfile'
@@ -60,7 +60,7 @@ class Account extends Component {
       twofactorAuth: false,
       notifications: false,
       checkDetails: {},
-      activeTab: '3',
+      activeTab: '1',
     }
   }
 
@@ -105,7 +105,8 @@ class Account extends Component {
           lastName: myLastName,
           email: myEmailAddress,
           phone: myPhoneNumber ? myPhoneNumber : '',
-          dob: myBirthDay,
+          dob: new Date(myBirthDay),
+          // dob: myBirthDay * 1000,
           address: myContactAddress ? myContactAddress : '',
           city: myContactCity,
           country: myContactCountry,
@@ -499,6 +500,7 @@ class Account extends Component {
                         zipCode={zipCode}
                         referralUrl={referralUrl}
                         loadUserData={this.loadUserData}
+                        updateUserData={this.props.updateUserData}
                       />
                     </TabPane>
                     <TabPane tabId="2" className="p-4">
@@ -547,4 +549,4 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps, {showFeedback})(Account)
+export default connect(mapStateToProps, {showFeedback, updateUserData})(Account)

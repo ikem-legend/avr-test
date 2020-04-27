@@ -186,7 +186,7 @@ class AccountSettings extends Component {
       <Fragment>
         <Row>
           <Col md={12}>
-            <h6 className="font-weight-bold">Round-Up Investment</h6>
+            <h5 className="font-weight-bold">Round-Up Investment</h5>
             <div className="roundup-milestone">
               {loadingRoundup ? (
                 <Loader />
@@ -309,9 +309,9 @@ class AccountSettings extends Component {
         </Row>
         <Row>
           <Col md={12}>
-            <h6 className="font-weight-bold">
+            <h5 className="font-weight-bold">
               Investment Distribution Settings
-            </h6>
+            </h5>
             <p className="mb-1">
               Manage your investment across various cryptocurrencies.
             </p>
