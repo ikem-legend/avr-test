@@ -251,7 +251,13 @@ class EditProfile extends Component {
   updateProfile = () => {
     const {firstName, lastName, dob, phone, email, address, city, country, zipCode, referralUrl} = this.state
     const {loadUserData} = this.props
-    const userData = {first_name: firstName, last_name: lastName, email, phone, dob, address, zip_code: zipCode, city_id: city.value, country_id: country.value, identifier: referralUrl}
+    // Date format
+    const year = new Date(dob).getFullYear().toString();
+    const month = (1 + new Date(dob).getMonth()).toString();
+    const day = new Date(dob).getDate().toString();
+    
+    const dobStr = `${month}-${day}-${year}`
+    const userData = {first_name: firstName, last_name: lastName, email, phone, dob: dobStr, address, zip_code: zipCode, city_id: city.value, country_id: country.value, identifier: referralUrl}
     this.setState({
     	loadingProfileUpdate: true
     });
@@ -432,9 +438,9 @@ class EditProfile extends Component {
                       name="dob"
                       value={dob}
                       placeholder="MM-DD-YYYY"
-                      onChange={date =>
+                      onChange={date => 
                         this.setState({
-                          dob: date
+                          dob: date[0]
                         })
                       }
                       className="form-control"
