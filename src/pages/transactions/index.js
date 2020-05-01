@@ -21,7 +21,7 @@ import Loader from '../../assets/images/spin-loader.gif'
 import TopUp from '../../assets/images/topups.svg'
 
 import {callApi} from '../../helpers/api'
-import {showFeedback} from '../../redux/actions'
+import {showFeedback, updateUserData} from '../../redux/actions'
 import RoundUps from './RoundUps'
 import RoundUpsTable from './RoundUpsTable'
 import TopUpsTable from './TopUpsTable'
@@ -47,7 +47,7 @@ class Transactions extends Component {
     this.loadWithdrawals()
   }
 
-  loadUserData = () => {
+  loadUserData = (update = false) => {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
@@ -63,6 +63,15 @@ class Transactions extends Component {
           user,
           currDstrbn: myCurrencyDistributions,
         })
+        if (update) {
+          const userObj = {}
+          Object.assign(
+            userObj,
+            {...res.data},
+            {token: user.token},
+          )
+          this.props.updateUserData(userObj)
+        }
       })
       .catch(() => {
         this.props.showFeedback(
@@ -149,6 +158,10 @@ class Transactions extends Component {
             topup: 0,
           })
           this.loadTopups()
+          // Update sidebar value on first topup
+          if (user.setup.topup.done === false) {
+            this.loadUserData(true)
+          }
           this.props.showFeedback(
             `$${parseInt(topup, 10)} Top-up made successfully`,
             'success',
@@ -251,6 +264,7 @@ class Transactions extends Component {
             invPause={invPause}
             showFeedback={this.props.showFeedback}
             milestone={txnList}
+            dataUpdate={this.loadUserData}
           />
 
           {/* table */}
@@ -317,4 +331,4 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps, {showFeedback})(Transactions)
+export default connect(mapStateToProps, {showFeedback, updateUserData})(Transactions)

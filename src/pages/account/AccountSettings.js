@@ -193,13 +193,13 @@ class AccountSettings extends Component {
               ) : (
                 <Form>
                   <FormGroup row className="mt-4">
-                    <Col>
+                    <Col md={12}>
                       <span>PAUSE</span>
                       <CustomInput
                         type="switch"
                         id="roundupsSwitch"
                         name="roundupsSwitch"
-                        className="roundup-switch"
+                        className="roundups-switch"
                         label="RESUME"
                         checked={!invPause}
                         onChange={switchRoundup}
@@ -229,7 +229,7 @@ class AccountSettings extends Component {
           <Col md={12}>
             <Form>
               <Row>
-                <Col md={1}>
+                <Col md={1} className="mr-2">
                   <FormGroup>
                     <div className="">
                       <Button
@@ -246,7 +246,7 @@ class AccountSettings extends Component {
                     </div>
                   </FormGroup>
                 </Col>
-                <Col md={1}>
+                <Col md={1} className="mr-2">
                   <FormGroup>
                     <div className="">
                       <Button
@@ -263,7 +263,7 @@ class AccountSettings extends Component {
                     </div>
                   </FormGroup>
                 </Col>
-                <Col md={1}>
+                <Col md={1} className="mr-2">
                   <FormGroup>
                     <div className="">
                       <Button
@@ -300,7 +300,7 @@ class AccountSettings extends Component {
               </Row>
             </Form>
             <p className="mb-1">
-              Multiply your round-up amount to acceleratre your
+              Multiply your round-up amount to accelerate your
             </p>
             <p className="mb-2">
               investments. Eg: $0.10 in round-ups will be $0.20 with 2x

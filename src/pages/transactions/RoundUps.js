@@ -96,7 +96,7 @@ class RoundUps extends Component {
 
   saveMultiplier = () => {
     const {multiplier} = this.state
-    const {user} = this.props
+    const {user, dataUpdate} = this.props
     const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
     const selectedMultiplierId = Object.keys(multiplierList).find(
       key => multiplierList[key] === String(parseInt(multiplier, 10)),
@@ -107,7 +107,12 @@ class RoundUps extends Component {
     const multiplierObj = {multiplier: selectedMultiplierId}
     callApi('/user/multipliers', multiplierObj, 'POST', user.token)
       .then(() => {
-        this.loadUserData()
+        // Update sidebar value on first multiplier update
+        if (user.setup.multiplierSetup.done === false) {
+          dataUpdate(true)
+        } else {
+          dataUpdate()
+        }
         this.setState({
           multiplier,
           loadingMlpr: false,
@@ -148,6 +153,7 @@ class RoundUps extends Component {
                       <CustomInput
                         type="switch"
                         id="roundupsSwitch"
+                        className="roundups-switch"
                         name="roundupsSwitch"
                         label="RESUME"
                         checked={!invPause}

@@ -68,7 +68,7 @@ class Account extends Component {
     this.loadUserData()
   }
   // document
-  loadUserData = () => {
+  loadUserData = (update = false) => {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
@@ -137,12 +137,22 @@ class Account extends Component {
             currDist: {btc: btcVal, eth: ethVal},
           }
         });
+        if (update) {
+          const userObj = {}
+          Object.assign(
+            userObj,
+            {...res.data},
+            {token: user.token},
+          )
+          this.props.updateUserData(userObj)
+        }
       })
       .catch(err => {
         this.props.showFeedback(err, 'error')
       })
   }
 
+  // This updates the data used to compare which functionality was updated and possibly fire one notification instead of 2
   updateCheckData = () => {
     const {invPause, multiplier, btc, eth} = this.state
     this.setState({
@@ -264,6 +274,11 @@ class Account extends Component {
       .then(() => {
         this.props.showFeedback('Multiplier successfully updated', 'success')
         // this.saveRatio()
+        if (user.setup.multiplierSetup.done === false) {
+          this.loadUserData(true)
+        } else {
+          this.loadUserData()
+        }
         this.updateCheckData()
       })
       .catch(err => {

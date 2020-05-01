@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Row, Col, Card, CardBody, Button, CustomInput} from 'reactstrap'
+import {Row, Col, Card, CardBody, Button} from 'reactstrap'
 import classnames from 'classnames'
 
 /**
