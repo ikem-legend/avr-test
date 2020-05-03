@@ -23,8 +23,8 @@ describe('Edit Profile in Account Page', () => {
 
   it('should edit profile successfully', () => {
     const customer = buildUser()
-
-    cy.wait(500)
+    cy.findByText(/edit profile/i)
+      .click()
       .get('input[name="name"]')
       .clear()
       .type(`${customer.firstName} ${customer.lastName}`)
@@ -128,7 +128,7 @@ describe('Account Settings in Account Page', () => {
 })
 
 describe('Banks & Cards Settings in Account Page', () => {
-  beforeEach(() => {
+  before(() => {
     cy.fixture('signin').as('signinJSON')
     cy.fixture('user').as('usersJSON')
     cy.server()

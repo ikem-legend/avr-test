@@ -29,9 +29,11 @@ describe('Connect Account Page', () => {
   before(() => {
     cy.fixture('signin').as('signinJSON')
     cy.fixture('user').as('usersJSON')
+    cy.fixture('rates').as('ratesJSON')
     cy.server()
     cy.route('POST', '/api/v1/auth/signin', '@signinJSON')
     cy.route('GET', '/api/v1/auth/me', '@usersJSON')
+    cy.route('GET', 'https://api.sendwyre.com/v3/rates', '@ratesJSON')
     cy.route('POST', '/api/v1/user/distributions', {
       data: {message: 'Your currency distribution has been updated'},
     })
@@ -46,10 +48,11 @@ describe('Connect Account Page', () => {
       .visit('/account/account-connect')
   })
 
-  it('should render plaid modal ', () => {
+  it('should successfully link account to plaid ', () => {
     replaceIFrameFetchWithXhr()
     cy.fixture('account').as('accountJSON')
     cy.fixture('plaid').as('plaidJSON')
+    cy.fixture('client_visible_event').as('clientEventJSON')
     cy.server()
     cy.route('POST', '/api/v1/user/plaid/bank', '@accountJSON').as('banks')
     cy.route('POST', '/api/v1/user/plaid/bank/account/link', {
@@ -60,6 +63,11 @@ describe('Connect Account Page', () => {
       'https://sandbox.plaid.com/link/item/create',
       '@plaidJSON',
     ).as('create')
+    cy.route(
+      'POST',
+      'https://sandbox.plaid.com/link/client_visible_event/create',
+      '@clientEventJSON',
+    ).as('clientEvent')
 
     cy.findByText(/connect my funding account/i).click()
 
@@ -71,7 +79,9 @@ describe('Connect Account Page', () => {
       .first()
       .click({force: true})
     getIframeBody()
+      .wait(2000)
       .findByLabelText(/user id/i)
+      .click({force: true})
       .type('user_good')
     getIframeBody()
       .findByLabelText(/password/i)
@@ -86,6 +96,9 @@ describe('Connect Account Page', () => {
     getIframeBody()
       .findByText(/continue/i, {timeout: 10000})
       .click({force: true})
+
+    getIframeBody().wait('@clientEvent')
+
     getIframeBody()
       .wait('@banks')
       .get('.linked', {timeout: 20000})
@@ -101,12 +114,13 @@ describe('Connect Account Page', () => {
       .type('30')
       .get('input[name="eth"]')
       .should('have.value', '70')
+      .wait(2000)
       .findByText(/save/i, {timeout: 10000})
       .click()
       .get('.Toastify__toast-body', {timeout: 10000})
       .should('contain.text', 'Currency ratio successfully updated')
       .should('be.visible')
       .url()
-      .should('include', '/my-account')
+      .should('include', '/dashboard')
   })
 })

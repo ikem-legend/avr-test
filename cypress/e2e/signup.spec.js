@@ -173,15 +173,6 @@ describe('Register Page', () => {
       .should('contain', `Passwords do not match`)
   })
 
-  it('requires image to be selected', () => {
-    user
-      .findByText(/sign up/i)
-      .click()
-      .findAllByTestId('ssn-error')
-      .should('be.visible')
-      .should('contain', 'Please select image')
-  })
-
   it('should have 07-Apr-1995 as date selected', () => {
     user
       .findByLabelText(/date of birth/i)
@@ -232,14 +223,6 @@ describe('Register Page', () => {
       .select('April')
       .get('[aria-label="April 7, 1995"]')
       .click({force: true})
-      .fixture('logo.png')
-      .then(fileContent => {
-        cy.get('#userId').upload({
-          fileContent,
-          fileName: 'logo.png',
-          mimeType: 'image/png',
-        })
-      })
       .findByLabelText(/street address/i)
       .click({force: true})
       .type(customer.streetAddress)
@@ -283,14 +266,6 @@ describe('Register Page', () => {
       .select('April')
       .get('[aria-label="April 7, 1995"]')
       .click({force: true})
-      .fixture('logo.png')
-      .then(fileContent => {
-        cy.get('#userId').upload({
-          fileContent,
-          fileName: 'logo.png',
-          mimeType: 'image/png',
-        })
-      })
       .findByLabelText(/street address/i)
       .type(customer.streetAddress, {force: true})
       .findByLabelText(/choose your city/i)
@@ -358,14 +333,6 @@ describe('Register Page', () => {
       .select('April')
       .get('[aria-label="April 7, 1995"]')
       .click()
-      .fixture('logo.png')
-      .then(fileContent => {
-        cy.get('#userId').upload({
-          fileContent,
-          fileName: 'logo.png',
-          mimeType: 'image/png',
-        })
-      })
       .findByLabelText(/street address/i)
       .type(customer.streetAddress, {force: true})
       .findByLabelText(/choose your city/i)
@@ -418,14 +385,6 @@ describe('Register Page', () => {
       .select('April')
       .get('[aria-label="April 7, 1995"]')
       .click()
-      .fixture('logo.png')
-      .then(fileContent => {
-        cy.get('#userId').upload({
-          fileContent,
-          fileName: 'logo.png',
-          mimeType: 'image/png',
-        })
-      })
       .findByLabelText(/street address/i)
       .type(customer.streetAddress, {force: true})
       .findByLabelText(/choose your city/i)
@@ -449,3 +408,11 @@ describe('Register Page', () => {
       .should('include', '/account/account-connect')
   })
 })
+// .fixture('logo.png')
+// .then(fileContent => {
+//   cy.get('#userId').upload({
+//     fileContent,
+//     fileName: 'logo.png',
+//     mimeType: 'image/png',
+//   })
+// })
