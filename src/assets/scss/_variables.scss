@@ -7,24 +7,27 @@
 
 // Color system
 
-$white:    #fff;
-$gray-100: #f8f9fa;
-$gray-200: #f6f6f7;
-$gray-300: #e2e7f1;
-$gray-400: #ced4da;
-$gray-500: #adb5bd;
-$gray-600: #6c757d;
-$gray-700: #4B4B5A;
-$gray-800: #343a40;
-$gray-900: #212529;
-$black:    #000;
-$avenir-blue: #1ca4a9;
-$avenir-red: #ff003e;
-$avenir-light-blue: #e8f7f8;
-$avenir-deep-blue: #00a4ad;
-$avenir-deep-blue-hover: #53d0d6;
-$avenir-light-gray: #f3f4f7;
-$avenir-bright-green: #2cbd19;
+$white:                     #ffffff;
+$gray-100:                  #f8f9fa;
+$gray-200:                  #f6f6f7;
+$gray-300:                  #e2e7f1;
+$gray-400:                  #ced4da;
+$gray-500:                  #adb5bd;
+$gray-600:                  #6c757d;
+$gray-700:                  #4B4B5A;
+$gray-800:                  #343a40;
+$gray-900:                  #212529;
+$black:                     #000000;
+$gray:                      #303C47;
+$avenir-blue:               #1ca4a9;
+$avenir-red:                #ff003e;
+$avenir-light-blue:         #e8f7f8;
+$avenir-light-blue-hover:   #6fcfd9;
+$avenir-deep-blue:          #00a4ad;
+$avenir-deep-blue-hover:    #53d0d6;
+$avenir-light-gray:         #f3f4f7;
+$avenir-dark-gray:         #e8ebf3;
+$avenir-bright-green:       #2cbd19;
 
 $grays: ();
 // stylelint-disable-next-line scss/dollar-variable-default

@@ -11,7 +11,6 @@ import {
   ModalBody,
 } from 'reactstrap'
 import PlaidLink from 'react-plaid-link'
-// import classnames from 'classnames'
 import AccountList from '../../components/AccountList'
 import FundingSourceList from '../../components/FundingSourceList'
 import UserFundingSource from '../../components/UserFundingSource'
@@ -31,6 +30,17 @@ class BanksCards extends Component {
       accountModal: false,
       disableConnectBtn: false,
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.accountModal !== this.props.accountModal) {
+      this.updateModalState()
+    }
+  }
+
+  updateModalState = () => {
+    const {accountModal} = this.props
+    this.setState({accountModal})
   }
 
   handleOnSuccess = (token, metadata) => {
@@ -82,91 +92,70 @@ class BanksCards extends Component {
     this.props.showFeedback('Exited Plaid account linking', 'error')
   }
 
-  accountsLinked = (id, val) => {
-    const {accountsLinkedList} = this.state
-    const tempList = accountsLinkedList.map(acc => {
-      if (acc.id === id) {
-        return {...acc, link: val}
-      }
-      return acc
-    })
-    const noLinkedAccts = tempList.filter(acct => acct.link === true)
-    this.setState({
-      accountsLinkedList: tempList,
-      disableConnectBtn: !Boolean(noLinkedAccts.length),
-    })
-  }
-
   // Rework to parent component
-  fundingSourceLinked = (id, val) => {
-    const {accountsFSList} = this.state
-    const tempList = accountsFSList.map(acc => {
-      if (acc.id === id) {
-        return {...acc, fundingSource: val}
-      }
-      return acc
-    })
-    this.setState({
-      accountsFSList: tempList,
-    })
-  }
+  // connectSelectedAccts = () => {
+  //   const {accountsLinkedList} = this.state
+  //   const {user, loadUserData} = this.props
+  //   const accountsObj = {accounts_link: accountsLinkedList}
+  //   callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+  //     .then(() => {
+  //       this.props.showFeedback('Account(s) successfully linked', 'success')
+  //       loadUserData()
+  //       this.setState({
+  //         accountModal: false,
+  //       })
+  //     })
+  //     .catch(() => {
+  //       this.props.showFeedback('Error linking account(s)', 'error')
+  //     })
+  // }
 
-  // Rework to parent component
-  connectSelectedAccts = () => {
-    const {accountsLinkedList} = this.state
-    const {user, loadUserData} = this.props
-    const accountsObj = {accounts_link: accountsLinkedList}
-    callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
-      .then(() => {
-        this.props.showFeedback('Account(s) successfully linked', 'success')
-        loadUserData()
-        this.setState({
-          accountModal: false,
-        })
-      })
-      .catch(() => {
-        this.props.showFeedback('Error linking account(s)', 'error')
-      })
-  }
+  // connectSelectedAccts = () => {
+  //   const {accountsLinkedList, accountsFSList} = this.state
+  //   const {user} = this.props
+  //   const accountsObj = {accounts_link: accountsLinkedList}
+  //   // Check if single funding source
+  //   const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
+  //   if (filteredFS.length === 1) {
+  //     this.setState({loadingAcctLink: true});
+  //     callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
+  //       .then(() => {
+  //         this.props.showFeedback('Account(s) successfully linked', 'success')
+  //         this.connectFundingSource(filteredFS[0])
+  //       })
+  //       .catch(err => {
+  //         console.log(err)
+  //         this.setState({loadingAcctLink: false});
+  //         this.props.showFeedback('Error linking account(s)', 'error')
+  //       })
+  //   } else {
+  //     this.props.showFeedback('Please specify only one funding source', 'error')
+  //   }
+  // }
 
-  connectSelectedAccts = () => {
-    const {accountsLinkedList, accountsFSList} = this.state
-    const {user} = this.props
-    const accountsObj = {accounts_link: accountsLinkedList}
-    // Check if single funding source
-    const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
-    if (filteredFS.length === 1) {
-      this.setState({loadingAcctLink: true});
-      callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
-        .then(() => {
-          this.props.showFeedback('Account(s) successfully linked', 'success')
-          this.connectFundingSource(filteredFS[0])
-        })
-        .catch(err => {
-          console.log(err)
-          this.setState({loadingAcctLink: false});
-          this.props.showFeedback('Error linking account(s)', 'error')
-        })
-    } else {
-      this.props.showFeedback('Please specify only one funding source', 'error')
-    }
-  }
-
-  connectFundingSource = (val) => {
+  connectFundingSource = val => {
     const {user, loadUserData} = this.props
     const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
-    callApi('/user/plaid/bank/account/funding/source', fsObj, 'POST', user.token)
+    callApi(
+      '/user/plaid/bank/account/funding/source',
+      fsObj,
+      'POST',
+      user.token,
+    )
       .then(() => {
-        this.props.showFeedback('Funding source successfully updated', 'success')
+        this.props.showFeedback(
+          'Funding source successfully updated',
+          'success',
+        )
         loadUserData()
         this.setState({
           loadingAcctLink: false,
           accountModal: false,
-        });
+        })
       })
       .catch(err => {
         console.log(err)
-        this.setState({loadingAcctLink: false});
+        this.setState({loadingAcctLink: false})
         this.props.showFeedback('Error updating funding source', 'error')
       })
   }
@@ -192,11 +181,12 @@ class BanksCards extends Component {
       bankAccounts &&
       bankAccounts.map(acct => (
         <Card key={acct.institutionId}>
-          <CardBody>
+          <CardBody className="px-2">
             <Row>
-              <Col md={12} className="font-weight-bold acct-name">
+              <Col md={9} className="font-weight-bold acct-name">
                 {acct.institutionName}
               </Col>
+              <Col md={3}>Choose your funding source</Col>
               <Col md={12}>
                 {acct.accounts.map(acctDetail => (
                   <FundingSourceList
@@ -219,14 +209,15 @@ class BanksCards extends Component {
         <AccountList
           details={acc}
           key={acc.id}
-          accountsLinked={this.accountsLinked}
-          fundingSource={this.fundingSourceLinked}
+          accountsLinked={accountsLinked}
+          fundingSource={fundingSource}
         />
       ))
 
     // const userFundingSource = acctFundingSource && acctFundingSource.map(fs => (
-    const userFundingSource = acctFundingSource && Object.keys(acctFundingSource).length ? (
-      <UserFundingSource fs={acctFundingSource} /> 
+    const userFundingSource =
+      acctFundingSource && Object.keys(acctFundingSource).length ? (
+        <UserFundingSource fs={acctFundingSource} />
       ) : null
 
     return (
@@ -266,10 +257,8 @@ class BanksCards extends Component {
             </p>
           </Col>
         </Row>
-        <Row>
-          <Col md={12}>
-            {userFundingSource}
-          </Col>
+        <Row className="mb-2 h-100">
+          <Col md={12}>{userFundingSource}</Col>
         </Row>
         <Row>
           <Col md={12}>
@@ -290,17 +279,24 @@ class BanksCards extends Component {
               </Col>
             </Row>
           </Col>
-          <Modal isOpen={accountModal} toggle={this.toggle} size="lg">
-            <ModalHeader>Select accounts to be linked</ModalHeader>
-            <ModalBody>
+          <Modal isOpen={accountModal} toggle={this.toggle} size="lg" centered>
+            <ModalHeader className="account-link-header mx-auto">
+              Link Connected Accounts
+            </ModalHeader>
+            <ModalBody className="pt-0">
               {loadingAccts ? (
                 <Loader />
               ) : accountList && accountList.length ? (
                 <div>
-                  <h4 className="text-center">
-                    Your account is now linked to Avenir. You can unlink an
-                    account by clicking on it.
-                  </h4>
+                  <p className="text-center mt-0 mb-0">
+                    Your account is now linked to Avenir. Tick a box to choose
+                    your{' '}
+                    <span className="font-weight-bold">Funding Source</span>.
+                  </p>
+                  <p>
+                    You can unlink an account by clicking on the{' '}
+                    <span className="font-weight-bold">Linked</span> button.
+                  </p>
                   {accountList}
                 </div>
               ) : (
@@ -311,7 +307,7 @@ class BanksCards extends Component {
               <Button
                 color="success"
                 block
-                onClick={this.connectSelectedAccts}
+                onClick={connectSelectedAccts}
                 disabled={disableConnectBtn}
               >
                 Continue

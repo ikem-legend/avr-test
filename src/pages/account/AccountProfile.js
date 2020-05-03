@@ -1,7 +1,7 @@
 import React from 'react'
 import {Progress, CustomInput} from 'reactstrap'
 import classnames from 'classnames'
-import profilePic from '../../assets/images/users/default-avatar.png'
+import profilePic from '../../assets/images/users/default-user-avatar.svg'
 
 export const AccountProfile = ({
   user,
@@ -63,7 +63,7 @@ export const AccountProfile = ({
         <CustomInput
           type="checkbox"
           id="reg-stage-3"
-          label="Set a round-up multiplier"
+          label="Modify round-up multiplier"
           checked={multiplierSetup}
           readOnly
         />
@@ -82,7 +82,9 @@ export const AccountProfile = ({
           type="checkbox"
           id="reg-stage-4"
           label="Upload User ID"
-          checked={documentUpload}
+          checked={
+            documentUpload === true && documentUploadStatus === 'APPROVED'
+          }
           readOnly
         />
         <span
@@ -98,7 +100,12 @@ export const AccountProfile = ({
           {documentUpload === true && documentUploadStatus === 'APPROVED'
             ? 'Complete'
             : 'Incomplete'}{' '}
-          - {documentUploadStatus ? documentUploadStatus : ''}
+          -{' '}
+          {documentUploadStatus
+            ? documentUploadStatus === 'PENDING'
+              ? 'Awaiting Verification'
+              : documentUploadStatus
+            : ''}
         </span>
         <span className={classnames('ml-4 font-weight-bold')}>
           {documentUploadError ? documentUploadError : null}

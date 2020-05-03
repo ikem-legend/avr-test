@@ -1,15 +1,7 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link, withRouter} from 'react-router-dom'
-import {
-  Container,
-  Row,
-  Col,
-  Label,
-  FormGroup,
-  Button,
-  Alert,
-} from 'reactstrap'
+import {Container, Row, Col, Label, FormGroup, Button, Alert} from 'reactstrap'
 import {
   AvForm,
   AvGroup,
@@ -139,11 +131,11 @@ class Login extends Component {
                         {/* preloader */}
                         {this.props.loading && <Loader />}
 
-                        <div className="mt-5 mb-5 pl-5">
+                        <div className="mt-5 mb-5 pl-5 avr-logo">
                           <img src={Logo} alt="App logo" />
                         </div>
 
-                        <h6 className="h5 mb-4 mt-4 pl-5">Welcome back!</h6>
+                        <h3 className="mb-4 mt-4 pl-5">Welcome back!</h3>
 
                         {this.props.error && (
                           <div className="pl-5">
@@ -158,7 +150,7 @@ class Login extends Component {
                           className="authentication-form pl-5"
                         >
                           <AvGroup className="float-container n1 mb-0">
-                            <Label for="email">Email</Label>
+                            <Label for="email">Email Address</Label>
                             <AvInput
                               type="email"
                               name="email"
@@ -199,14 +191,18 @@ class Login extends Component {
                             <Container>
                               <Row>
                                 <Col md={{offset: 4, size: 4}} xs={6}>
-                                  <Button color="blue" block className="mb-1">
+                                  <Button
+                                    color="blue"
+                                    block
+                                    className="mb-1 login-btn"
+                                  >
                                     Login
                                   </Button>
                                 </Col>
-                                <Col md={4} xs={6}>
+                                <Col md={4} xs={6} className="pr-0">
                                   <Link
                                     to="/account/signup"
-                                    className="mb-1 btn btn-blue-inverted btn-block"
+                                    className="mb-1 btn btn-blue-inverted btn-block login-btn"
                                   >
                                     Sign Up
                                   </Link>
@@ -231,7 +227,11 @@ class Login extends Component {
                           </Link>
                         </p>
                       </Col>
-                      <Col className="order-1 order-sm-12 offset-xs-3 text-sm-right" xs={12} sm={4}>
+                      <Col
+                        className="order-1 order-sm-12 offset-xs-3 text-sm-right"
+                        xs={12}
+                        sm={4}
+                      >
                         <p className="text-muted float-sm-right">
                           <span
                             onClick={this.togglePrivacy}
@@ -253,20 +253,12 @@ class Login extends Component {
                 </Col>
 
                 <Col md={7} className="d-none d-md-inline-block login-bg">
-                  <div className="auth-page-sidebar">
-                    <div className="overlay"></div>
-                  </div>
+                  <div className="auth-page-sidebar"></div>
                 </Col>
               </Row>
             </Container>
-            <PrivacyModal
-              isOpen={privacyModal}
-              toggle={this.togglePrivacy}
-            />
-            <TermsModal
-              isOpen={termsModal}
-              toggle={this.toggleTerms}
-            />
+            <PrivacyModal isOpen={privacyModal} toggle={this.togglePrivacy} />
+            <TermsModal isOpen={termsModal} toggle={this.toggleTerms} />
           </div>
         )}
       </Fragment>

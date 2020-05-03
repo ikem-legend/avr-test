@@ -2,6 +2,7 @@ node_modules
 build
 coverage
 dist
+.idea
 .opt-in
 .opt-out
 .DS_Store

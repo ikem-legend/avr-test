@@ -59,8 +59,17 @@
 		background-color: $avenir-blue;
 		color: $white;
 	}
+	.login-btn {
+		border-radius: 0.2rem;
+	}
 	.invalid-feedback {
 		padding: 0 8px;
+	}
+	.avr-logo {
+		img {
+			height: 50%;
+			width: 50%;
+		}
 	}
 }
 
@@ -89,24 +98,30 @@
 	.verify-info {
 		font-size: 12px;
 	}
-	.userId {
-		background-color: $avenir-light-blue;
-		label {
-			position: inherit;
-		}
-		p {
-			padding: 12px;
-			font-size: 12px;
-		}
-		input {
-	    width: 95%;
-	    height: 4rem;
-	    font-size: 1rem;
-	    background-color: $white;
-		}
+	// .userId {
+	// 	background-color: $avenir-light-blue;
+	// 	label {
+	// 		position: inherit;
+	// 	}
+	// 	p {
+	// 		padding: 12px;
+	// 		font-size: 12px;
+	// 	}
+	// 	input {
+	//     width: 95%;
+	//     height: 4rem;
+	//     font-size: 1rem;
+	//     background-color: $white;
+	// 	}
+	// }
+	.location input {
+		color: $gray;
 	}
 	.custom-control-input:checked ~ .custom-control-label::before {
 		background-color: $avenir-blue !important;
+	}
+	.custom-control-label {
+		color: $gray;
 	}
 	.login {
 		margin: 0.5rem 0;
@@ -120,28 +135,16 @@
 			color: $white !important;
 		}
 	}
+
+// .roundups-switch {
+	.custom-control-input:checked, .custom-control-label::before {
+		border-color: $gray !important;
+		border-radius: 0.3rem !important;
+	}
+
 	.signup-bg {
 		background: transparent url('../../../images/signup_static_bg.svg') 0% 0% no-repeat padding-box;
 		margin: -12px;
-	}
-}
-
-
-// Verify
-.bank-verify-info {
-	background-color: $avenir-light-gray;
-}
-
-.m-xy-auto {
-	margin: auto;
-}
-
-.verified {
-	.modal-content {
-		border-radius: 50%;
-    width: 75%;
-    margin: auto;
-    text-align: center;
 	}
 }
 
@@ -154,6 +157,10 @@
   cursor: pointer;
 }
 
+.btn-blue {
+	background-color: $avenir-blue;
+}
+
 .btn-plaid {
 	border: 0 !important;
 }
@@ -164,17 +171,17 @@
 
 .account-list {
 	box-shadow: 0px 5px 10px 5px $avenir-light-gray;
-}
-.account-list:hover {
-	background-color: $avenir-light-gray;
+	&:hover {
+		background-color: $avenir-light-gray;
+	}
 }
 
 .unlinked {
-	background-color: $avenir-red;
+	background-color: $avenir-light-blue-hover;
 	font-weight: bold;
 	&:hover {
 		color: $white !important;
-		background-color: $avenir-red !important;
+		background-color: $avenir-light-blue-hover !important;
 	}
 }
 
@@ -185,4 +192,16 @@
 		color: $white !important;
 		background-color: $avenir-blue !important;
 	}
+}
+	
+.modal {
+	.input-group {
+		input {
+			height: auto;
+		}
+	}
+}
+
+.edit-ratio {
+	color: $avenir-blue;
 }

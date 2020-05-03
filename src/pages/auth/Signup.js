@@ -4,7 +4,6 @@ import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
 // import {Cookies} from 'react-cookie'
 import subYears from 'date-fns/subYears'
-
 import {
   Container,
   Row,
@@ -14,7 +13,6 @@ import {
   Button,
   CustomInput,
 } from 'reactstrap'
-
 import {
   AvForm,
   AvGroup,
@@ -23,9 +21,7 @@ import {
 } from 'availity-reactstrap-validation'
 import Select from 'react-select'
 import Flatpickr from 'react-flatpickr'
-
 import {callApi} from '../../helpers/api'
-// import {toFormData} from '../../helpers/utils'
 import {registerUser, showFeedback} from '../../redux/actions'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
@@ -40,11 +36,10 @@ class Signup extends Component {
         firstname: '',
         lastname: '',
         phone: '',
-        dob: subYears(new Date(), 18).getTime(),
+        dob: '',
         email: '',
         password: '',
         confirmPassword: '',
-        // userId: null,
         address: '',
         zipcode: '',
         city: '',
@@ -67,7 +62,6 @@ class Signup extends Component {
     }
     await callApi('/data/countries', null, 'GET')
       .then(response => {
-        // console.log(response)
         const countryList = response.data.map(coun => ({
           value: coun.id,
           label: coun.name,
@@ -160,7 +154,16 @@ class Signup extends Component {
     }
     if (this.state.terms) {
       const data = {...this.state.inputs}
-      data.dob = String(data.dob)
+      // Date format
+      const year = new Date(data.dob).getFullYear().toString()
+      // const month = new Date(data.dob).getMonth().toString();
+      const month = (1 + new Date(data.dob).getMonth()).toString()
+      // month = month.length > 1 ? month : `0${month}`;
+      const day = new Date(data.dob).getDate().toString()
+      // day = day.length > 1 ? day : `0${day}`;
+
+      data.dob = `${month}-${day}-${year}`
+      // data.dob = String(data.dob)
       data.first_name = String(data.firstname)
       data.last_name = String(data.lastname)
       data.zip_code = String(data.zipcode)
@@ -215,6 +218,14 @@ class Signup extends Component {
         country,
       },
     } = this.state
+    const customStyles = {
+      placeholder: defaultStyles => ({
+        ...defaultStyles,
+        fontSize: '0.8rem',
+        fontWeight: 'bold',
+        color: '#1ca4a9',
+      }),
+    }
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
@@ -225,30 +236,32 @@ class Signup extends Component {
               <Row className="justify-content-center">
                 <Col xl={12}>
                   <Row>
-                    <Col md={6} className="d-none d-md-inline-block">
-                      <div className="auth-page-sidebar px-5 py-0">
+                    <Col md={5} className="d-none d-md-inline-block">
+                      <div className="auth-page-sidebar pl-5 py-0">
                         <div className="auth-user-testimonial px-5 py-0">
-                          <p className="lead font-weight-bold">
-                            Create an Account
-                          </p>
-                          <p className="font-size-24 font-weight-bold mb-1">
-                            Confirm your Identity
-                          </p>
-                          <div className="auth-user-testimonial">
-                            <p className="verify-info font-weight-bold text-muted mb-0">
-                              U.S financial regulations require your identity to
-                              be verified.
+                          <div className="pl-5">
+                            <p className="lead font-weight-bold">
+                              Create an Account
                             </p>
-                            <p className="verify-info font-weight-bold text-muted mb-0">
-                              After you link your bank account, you can start
-                              rounding up for crypto investment
+                            <p className="font-size-24 font-weight-bold mb-1">
+                              Confirm your Identity
                             </p>
+                            <div className="auth-user-testimonial">
+                              <p className="verify-info font-weight-bold mb-0">
+                                U.S financial regulations require your identity
+                                to be verified.
+                              </p>
+                              <p className="verify-info font-weight-bold mb-0">
+                                After you link your bank account, you can start
+                                rounding up for crypto investment
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
                       <div className="overlay signup-bg h-100"></div>
                     </Col>
-                    <Col md={6} className="position-relative">
+                    <Col md={7} className="position-relative">
                       <div className="px-5">
                         {/* preloader */}
                         {this.props.loading && <Loader />}
@@ -274,14 +287,13 @@ class Signup extends Component {
                             className="authentication-form"
                           >
                             <Row>
-                              <Col md={6}>
+                              <Col md={6} className="pr-0">
                                 <AvGroup className="float-container">
                                   <Label for="firstname">First Name</Label>
                                   <AvInput
                                     type="text"
                                     name="firstname"
                                     id="firstname"
-                                    // placeholder="Avenir A"
                                     value={firstname}
                                     onFocus={this.activateField}
                                     onBlur={this.deactivateField}
@@ -318,7 +330,6 @@ class Signup extends Component {
                                     type="text"
                                     name="lastname"
                                     id="lastname"
-                                    // placeholder="Avenir A"
                                     value={lastname}
                                     onFocus={this.activateField}
                                     onBlur={this.deactivateField}
@@ -348,14 +359,13 @@ class Signup extends Component {
                                   </AvFeedback>
                                 </AvGroup>
                               </Col>
-                              <Col md={6}>
+                              <Col md={6} className="pr-0">
                                 <AvGroup className="float-container">
-                                  <Label for="email">Email</Label>
+                                  <Label for="email">Email Address</Label>
                                   <AvInput
                                     type="email"
                                     name="email"
                                     id="email"
-                                    // placeholder="Avenir A"
                                     value={email}
                                     onFocus={this.activateField}
                                     onBlur={this.deactivateField}
@@ -382,7 +392,7 @@ class Signup extends Component {
                               </Col>
                               <Col md={6}>
                                 <AvGroup className="float-container">
-                                  <Label for="phone">Phone</Label>
+                                  <Label for="phone">Phone Number</Label>
                                   <AvInput
                                     type="phone"
                                     name="phone"
@@ -416,7 +426,7 @@ class Signup extends Component {
                                   </AvFeedback>
                                 </AvGroup>
                               </Col>
-                              <Col md={6}>
+                              <Col md={6} className="pr-0">
                                 <AvGroup className="float-container">
                                   <Label for="password">Password</Label>
                                   <AvInput
@@ -491,7 +501,7 @@ class Signup extends Component {
                                   </AvFeedback>
                                 </AvGroup>
                               </Col>
-                              <Col md={4}>
+                              <Col md={4} className="pr-0">
                                 <AvGroup className="float-container active">
                                   <Label for="dob">Date of Birth</Label>
                                   <div className="form-group mb-sm-0 mr-2">
@@ -499,6 +509,7 @@ class Signup extends Component {
                                       id="dob"
                                       name="dob"
                                       value={dob}
+                                      placeholder="MM-DD-YYYY"
                                       onChange={date =>
                                         this.setState(prevState => ({
                                           ...prevState,
@@ -511,8 +522,9 @@ class Signup extends Component {
                                       className="form-control"
                                       options={{
                                         maxDate: subYears(new Date(), 18),
-                                        defaultDate: dob,
-                                        dateFormat: 'd-M-Y',
+                                        minDate: subYears(new Date(), 100),
+                                        // defaultDate: dob,
+                                        dateFormat: 'm-d-Y',
                                       }}
                                     />
                                   </div>
@@ -544,6 +556,9 @@ class Signup extends Component {
                                     id="city"
                                     options={this.state.cities}
                                     value={city}
+                                    className="location"
+                                    styles={customStyles}
+                                    placeholder="Select your city"
                                     onChange={val =>
                                       this.setState(prevState => ({
                                         ...prevState,
@@ -560,7 +575,7 @@ class Signup extends Component {
                                   </AvFeedback>
                                 </AvGroup>
                               </Col>
-                              <Col md={4}>
+                              <Col md={4} className="pl-0 pr-1">
                                 <AvGroup className="float-container">
                                   <Label for="country">
                                     Select your country
@@ -569,6 +584,9 @@ class Signup extends Component {
                                     id="country"
                                     options={this.state.countries}
                                     value={country}
+                                    className="location"
+                                    styles={customStyles}
+                                    placeholder="Select your country"
                                     onChange={val =>
                                       this.setState(prevState => ({
                                         ...prevState,
@@ -592,6 +610,7 @@ class Signup extends Component {
                                     type="zipcode"
                                     name="zipcode"
                                     id="zipcode"
+                                    className="mt-1"
                                     value={zipcode}
                                     onFocus={this.activateField}
                                     onBlur={this.deactivateField}
@@ -617,7 +636,6 @@ class Signup extends Component {
                                   <CustomInput
                                     type="checkbox"
                                     id="terms"
-                                    // value={terms}
                                     checked={terms}
                                     onChange={this.updateTerms}
                                     className="pl-1 mb-2"
@@ -630,12 +648,12 @@ class Signup extends Component {
                               <Col md={6}>
                                 <FormGroup className="form-group mb-0 text-center">
                                   <Button color="blue" className="btn-block">
-                                    Sign Up
+                                    Create an account
                                   </Button>
                                 </FormGroup>
                               </Col>
                               <Col md={6}>
-                                <p className="text-muted login">
+                                <p className="login">
                                   Got an account?{' '}
                                   <Link
                                     to="/account/login"

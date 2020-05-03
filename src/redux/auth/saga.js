@@ -40,8 +40,6 @@ const setSession = userData => {
     Cookies.remove('avenirUser')
     localStorage.removeItem('avenirApp')
   }
-  // debugger
-  // console.log('Cookies: ', Cookies.get('avenirUser'))
 }
 
 /**
@@ -49,13 +47,7 @@ const setSession = userData => {
  * @param {*} payload - username and password
  */
 function* login({payload: {user, history}}) {
-  // console.log(user, history)
   try {
-    // if (user.token) {
-    //   setSession(user)
-    //   yield put(loginUserSuccess(user))
-    //   history.push('/account/account-connect')
-    // } else {
     const result = yield call(callApi, '/auth/signin', user, 'POST')
     const response = yield call(callApi, '/auth/me', user, 'GET', result.token)
     const {
@@ -76,7 +68,6 @@ function* login({payload: {user, history}}) {
     const userObj = {}
     Object.assign(
       userObj,
-      // {...data},
       {
         myFirstName,
         myLastName,
@@ -90,12 +81,12 @@ function* login({payload: {user, history}}) {
         setup,
       },
       {token: result.token},
+      {docUploadState: false},
     )
     const userObjStr = JSON.stringify(userObj)
     setSession(userObjStr)
     yield put(loginUserSuccess(userObj))
     history.push('/dashboard')
-    // }
   } catch (error) {
     let message
     switch (error.status) {
@@ -132,7 +123,6 @@ function* logout({payload: {history}}) {
  * Register the user
  */
 function* register({payload: {user, history}}) {
-  // console.log(user, history)
   try {
     const queryString = history.location.search
     const urlParams = new URLSearchParams(queryString)
@@ -142,7 +132,6 @@ function* register({payload: {user, history}}) {
     } else {
       result = yield call(callApi, `/auth/signup${urlParams}`, user, 'POST')
     }
-    // console.log(result.data.message.token)
     const response = yield call(
       callApi,
       '/auth/me',
@@ -150,7 +139,6 @@ function* register({payload: {user, history}}) {
       'GET',
       result.data.message.token,
     )
-    // console.log(response)
     const {
       data,
       // data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
@@ -158,9 +146,9 @@ function* register({payload: {user, history}}) {
     const userObj = {}
     Object.assign(
       userObj,
-      {...data},
-      // {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
+      data,
       {token: result.data.message.token},
+      {docUploadState: false},
     )
     const userObjStr = JSON.stringify(userObj)
     setSession(userObjStr)
@@ -169,10 +157,16 @@ function* register({payload: {user, history}}) {
     history.push('/account/account-connect')
   } catch (error) {
     console.log(error)
-    Object.keys(error).map(obj =>
-      toast.error(error[obj][0], {hideProgressBar: true}),
-    )
-    // console.log(error.email[0])
+    if (Object.keys(error).length) {
+      Object.keys(error).map(obj =>
+        toast.error(error[obj][0], {hideProgressBar: true}),
+      )
+    } else {
+      toast.error(
+        'Registration error. Please check your details and try again',
+        {hideProgressBar: true},
+      )
+    }
     let message
     switch (error.status) {
       case 500:
@@ -185,10 +179,6 @@ function* register({payload: {user, history}}) {
         message = error
     }
     yield put(registerUserFailed(message))
-    // toast.error(
-    // 	'Registration error. Please check your details and try again',
-    // 	{hideProgressBar: true}
-    // )
   }
 }
 

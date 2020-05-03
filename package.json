@@ -22,6 +22,7 @@
     "draftjs-to-html": "^0.8.4",
     "js-cookie": "^2.2.1",
     "jwt-decode": "^2.2.0",
+    "lodash.isequal": "^4.5.0",
     "metismenujs": "^1.1.0",
     "node-sass": "^4.12.0",
     "pica": "^5.1.0",
@@ -90,7 +91,11 @@
       "no-console": "off",
       "jsx-a11y/accessible-emoji": "off",
       "consistent-return": "off",
-      "camelcase": "off"
+      "camelcase": "off",
+      "max-lines-per-function": [
+        "error",
+        200
+      ]
     }
   },
   "eslintIgnore": [

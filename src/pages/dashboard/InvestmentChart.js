@@ -59,8 +59,8 @@ const InvestmentChart = ({myCurrencyDistributions, btcVal, ethVal}) => {
     ],
     tooltip: {
       y: {
-        formatter: function(value) {
-          return `$${value}`
+        formatter: () => {
+          return ``
         },
       },
     },

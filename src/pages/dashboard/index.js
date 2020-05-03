@@ -10,10 +10,9 @@ import {numberWithCommas, resizeImage, toFormData} from '../../helpers/utils'
 import {callApi} from '../../helpers/api'
 // import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
-import StyledDropzone from '../../components/ImagePicker'
+import DocumentUpload from '../../components/DocumentUpload'
 import {showFeedback, updateUserData} from '../../redux/actions'
 
-import DefaultImage from '../../assets/images/default-image.png'
 import TopUp from '../../assets/images/topups.svg'
 import TopUpLoader from '../../assets/images/spin-loader.gif'
 import btcImg from '../../assets/images/layouts/btc.svg'
@@ -28,7 +27,8 @@ class Dashboard extends Component {
 
     this.state = {
       userDocument: ['', ''],
-      userDocumentModal: false,
+      idType: 'individualProofOfAddress',
+      userDocumentModal: true,
       loadingUpload: false,
       uploadStatus: 'pending',
       topupModal: false,
@@ -82,7 +82,7 @@ class Dashboard extends Component {
               myWallets,
               myCurrencyDistributions,
               setup: {
-                documentUpload: {status},
+                documentUpload: {done, status},
               },
             } = res.data
             const btcVal =
@@ -91,10 +91,26 @@ class Dashboard extends Component {
             const ethVal =
               myWallets.filter(coin => coin.currency === eth)[0].myBalance *
               exchangeRates.USDETH
-            // console.log(myCurrencyDistributions)
             const userObj = {}
-            Object.assign(userObj, {...res.data}, {token: user.token})
-            this.props.updateUserData(userObj)
+            // Ensure that docUploadState is updated. This helps ensure that once the user cancels the document upload, it does not show up until their next login
+            const docUploadStateData = JSON.parse(
+              localStorage.getItem('avenirApp'),
+            ).docUploadState
+              ? JSON.parse(localStorage.getItem('avenirApp')).docUploadState
+              : false
+            Object.assign(
+              userObj,
+              {...res.data},
+              {token: user.token},
+              {docUploadState: docUploadStateData},
+            )
+            // Replicate similar logic here to ensure this fires just once
+            if (user.setup.documentUpload.done === false && done === true) {
+              this.props.updateUserData(userObj)
+            }
+            if (docUploadStateData === true) {
+              this.props.updateUserData(userObj)
+            }
             this.setState(
               {
                 btcVal,
@@ -102,7 +118,6 @@ class Dashboard extends Component {
                 btcRate: exchangeRates.USDBTC,
                 ethRate: exchangeRates.USDETH,
                 myCurrencyDistributions,
-                // walletTotal: parseInt(0, 10) + parseInt(0, 10),
                 walletTotal: parseInt(btcVal, 10) + parseInt(ethVal, 10),
                 uploadStatus: status,
               },
@@ -229,43 +244,95 @@ class Dashboard extends Component {
 
   toggleImgUpload = () => {
     const {userDocumentModal} = this.state
-    // const {userDocumentModal, uploadStatus} = this.state
-    // if (uploadStatus === 'pending' && userDocumentModal === false) {
+    if (userDocumentModal) {
+      this.updateDocUploadState()
+    }
     this.setState({
       userDocumentModal: !userDocumentModal,
     })
-    // }
+  }
+
+  // Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
+  updateDocUploadState = () => {
+    const userData = JSON.parse(localStorage.getItem('avenirApp'))
+    Object.assign(userData, {docUploadState: true})
+    const userDataStr = JSON.stringify(userData)
+    localStorage.setItem('avenirApp', userDataStr)
+  }
+
+  specifyId = id => {
+    if (id === 1) {
+      this.setState({
+        idType: 'individualProofOfAddress',
+        userDocument: ['', ''],
+      })
+    } else {
+      this.setState({
+        idType: 'individualGovernmentId',
+        userDocument: [''],
+      })
+    }
   }
 
   handleUserDocument = (file, body) => {
-    return resizeImage(file, body).then(blob => {
-      return this.setState(prevState => ({
-        userDocument: [
-          {
-            src: URL.createObjectURL(blob),
-            blob,
-          },
-          ...prevState.userDocument,
-        ],
-      }))
-    })
+    const {idType, userDocument} = this.state
+    if (idType === 'individualGovernmentId' && userDocument.length >= 1) {
+      // Ensure there is only 1 image in the array
+      userDocument.pop()
+      return resizeImage(file, body).then(blob => {
+        return this.setState(prevState => ({
+          userDocument: [
+            {
+              src: URL.createObjectURL(blob),
+              blob,
+            },
+            ...prevState.userDocument,
+          ],
+        }))
+      })
+    }
+    if (idType === 'individualProofOfAddress') {
+      return resizeImage(file, body).then(blob => {
+        if (userDocument.length >= 1) {
+          userDocument.pop()
+          // Ensure there are only 2 images in the array
+          if (userDocument.length === 2) {
+            userDocument.pop()
+          }
+          return this.setState(prevState => ({
+            userDocument: [
+              {
+                src: URL.createObjectURL(blob),
+                blob,
+              },
+              ...prevState.userDocument,
+            ],
+          }))
+        } else {
+          return this.setState(prevState => ({
+            userDocument: [
+              {
+                src: URL.createObjectURL(blob),
+                blob,
+              },
+              ...prevState.userDocument,
+            ],
+          }))
+        }
+      })
+    }
   }
 
   submitUserDocument = () => {
-    const {userDocument} = this.state
+    const {userDocument, idType} = this.state
     const {user} = this.props
     const selectedImages = userDocument.filter(photo => photo && photo.blob)
     if (selectedImages.length > 0) {
       const userDocObj = selectedImages.map(img => img.blob)[0]
-      const userData = toFormData({
-        document: userDocObj,
-        type: 'individualProofOfAddress',
-      })
-      // debugger
+      const userData = toFormData({document: userDocObj, type: idType})
       this.setState({loadingUpload: true})
       callApi('/user/sendwyre/document/upload', userData, 'POST', user.token)
         .then(res => {
-          // console.log(res)
           toast.success(`ID upload successful, ${res.data.message}`, {
             hideProgressBar: true,
           })
@@ -292,7 +359,6 @@ class Dashboard extends Component {
           Object.keys(error).map(obj => {
             return toast.error(error[obj][0], {hideProgressBar: true})
           })
-          // toast.error('Error uploading document, please try again')
         })
     } else {
       toast.error('Please select an image to upload', {hideProgressBar: true})
@@ -316,7 +382,6 @@ class Dashboard extends Component {
       userDocument,
       userDocumentModal,
       loadingUpload,
-      // uploadStatus,
       topupModal,
       topup,
       withdrawModal,
@@ -340,72 +405,18 @@ class Dashboard extends Component {
           {this.props.loading && <Loader />}
 
           {/* Document upload */}
-          {/*uploadStatus === 'pending' ? (*/}
-          {/*user.setup.documentUpload.status === 'pending' ? (*/}
           {user.setup.documentUpload.done === false &&
-          user.setup.documentUpload.status === 'OPEN' ? (
-            <Modal
-              isOpen={userDocumentModal}
-              toggle={this.toggleImgUpload}
-              backdrop="static"
-              centered
-              size="lg"
-            >
-              <ModalBody className="text-center">
-                <Row>
-                  <Col md={12}>
-                    <h5>Upload User ID to complete profile</h5>
-                    <p>
-                      We need your means of identification to verify your
-                      identity for security purposes. This information is
-                      encrypted and not stored on Avenir servers
-                    </p>
-                  </Col>
-                </Row>
-                <Row>
-                  {userDocument.slice(0, 2).map((image, idx) => (
-                    <Col size="6" key={idx}>
-                      <img
-                        alt="puImg"
-                        src={
-                          image && image.src
-                            ? image.src
-                            : image
-                            ? image
-                            : DefaultImage
-                        }
-                        className="img-fluid"
-                      />
-                    </Col>
-                  ))}
-                </Row>
-                <Row>
-                  <Col md={12}>
-                    <StyledDropzone
-                      onUpload={this.handleUserDocument}
-                      multiple
-                      label="Click here to select the Front & Back or drag and drop to upload"
-                      width="100%"
-                    />
-                  </Col>
-                </Row>
-                {loadingUpload ? (
-                  <img
-                    src={TopUpLoader}
-                    alt="loader"
-                    style={{height: '40px', marginTop: '20px'}}
-                  />
-                ) : (
-                  <Button
-                    onClick={this.submitUserDocument}
-                    color="inv-blue"
-                    className="mt-2"
-                  >
-                    Upload
-                  </Button>
-                )}
-              </ModalBody>
-            </Modal>
+          user.setup.documentUpload.status === 'OPEN' &&
+          user.docUploadState === false ? (
+            <DocumentUpload
+              userDocumentModal={userDocumentModal}
+              userDocument={userDocument}
+              specifyId={this.specifyId}
+              toggleImgUpload={this.toggleImgUpload}
+              handleUserDocument={this.handleUserDocument}
+              submitUserDocument={this.submitUserDocument}
+              loadingUpload={loadingUpload}
+            />
           ) : null}
 
           <Row className="page-title align-items-center">
