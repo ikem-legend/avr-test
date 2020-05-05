@@ -47,9 +47,9 @@ class Signup extends Component {
       },
       terms: false,
       signupError: '',
-      documentUploadError: false
+      documentUploadError: false,
     }
-    this.idFileInput = createRef();
+    this.idFileInput = createRef()
   }
 
   async componentDidMount() {
@@ -113,9 +113,9 @@ class Signup extends Component {
         ...prevState,
         inputs: {
           ...prevState.inputs,
-          userId: files[0]
-        }
-      }));
+          userId: files[0],
+        },
+      }))
     } else {
       this.setState(prevState => ({
         ...prevState,
@@ -137,9 +137,11 @@ class Signup extends Component {
   /**
    * Handles the submit
    * @returns {function} showFeedback Displays feedback
-  **/
+   **/
   handleValidSubmit = async () => {
-    const {inputs: {password, confirmPassword, city, country}} = this.state
+    const {
+      inputs: {password, confirmPassword, city, country},
+    } = this.state
     const {history} = this.props
     if (!city.value) {
       return this.props.showFeedback('Please select your city', 'error')
@@ -153,13 +155,13 @@ class Signup extends Component {
     if (this.state.terms) {
       const data = {...this.state.inputs}
       // Date format
-      const year = new Date(data.dob).getFullYear().toString();
+      const year = new Date(data.dob).getFullYear().toString()
       // const month = new Date(data.dob).getMonth().toString();
-      const month = (1 + new Date(data.dob).getMonth()).toString();
+      const month = (1 + new Date(data.dob).getMonth()).toString()
       // month = month.length > 1 ? month : `0${month}`;
-      const day = new Date(data.dob).getDate().toString();
+      const day = new Date(data.dob).getDate().toString()
       // day = day.length > 1 ? day : `0${day}`;
-      
+
       data.dob = `${month}-${day}-${year}`
       // data.dob = String(data.dob)
       data.first_name = String(data.firstname)
@@ -168,14 +170,14 @@ class Signup extends Component {
       data.city_id = String(data.city.value)
       data.country_id = String(data.country.value)
       Object.keys(data).forEach(
-        key => (
-          key === 'firstname' ||
-          key === 'lastname' ||
-          key === 'confirmPassword' ||
-          key === 'userId' ||
-          key === 'zipcode' ||
-          key === 'city' ||
-          key === 'country') &&
+        key =>
+          (key === 'firstname' ||
+            key === 'lastname' ||
+            key === 'confirmPassword' ||
+            key === 'userId' ||
+            key === 'zipcode' ||
+            key === 'city' ||
+            key === 'country') &&
           delete data[key],
       )
       await this.props.registerUser(data, history)
@@ -214,15 +216,15 @@ class Signup extends Component {
         zipcode,
         city,
         country,
-      }
+      },
     } = this.state
     const customStyles = {
-      placeholder: (defaultStyles) => ({
+      placeholder: defaultStyles => ({
         ...defaultStyles,
         fontSize: '0.8rem',
         fontWeight: 'bold',
-        color: '#1ca4a9'
-      })
+        color: '#1ca4a9',
+      }),
     }
     return (
       <Fragment>
@@ -246,8 +248,8 @@ class Signup extends Component {
                             </p>
                             <div className="auth-user-testimonial">
                               <p className="verify-info font-weight-bold mb-0">
-                                U.S financial regulations require your identity to
-                                be verified.
+                                U.S financial regulations require your identity
+                                to be verified.
                               </p>
                               <p className="verify-info font-weight-bold mb-0">
                                 After you link your bank account, you can start
@@ -269,7 +271,9 @@ class Signup extends Component {
                           <div className="auth-user-testimonial d-block d-sm-none">
                             <p className="lead font-weight-bold">
                               <span>Create an Account</span>
-                              <span className="float-right back">Back to <Link to="/account/login">Login</Link></span>
+                              <span className="float-right back">
+                                Back to <Link to="/account/login">Login</Link>
+                              </span>
                             </p>
                             <p className="font-size-24 font-weight-bold mb-1">
                               Confirm your Identity
@@ -390,7 +394,8 @@ class Signup extends Component {
                                 <AvGroup className="float-container">
                                   <Label for="phone">Phone Number</Label>
                                   <AvInput
-                                    type="phone"
+                                    type="tel"
+                                    // type="phone"
                                     name="phone"
                                     id="phone"
                                     value={phone}
@@ -399,7 +404,10 @@ class Signup extends Component {
                                     onChange={this.updateInputValue}
                                     validate={{
                                       pattern: {
-                                        value: '^[0-9]+$',
+                                        // value: '^(+1)?(()?[2-9]{1}d{2}())?(-|s)?d{3}?(-|s)d{4}$',
+                                        // value: '^(+1)?(\()?[2-9]{1}\d{2}(\))?(-|\s)?\d{3}?(-|\s)\d{4}$',
+                                        // value: '^(()?d{3}())?(-|s)?d{3}(-|s)d{4}$',
+                                        value: '^[+]?[0-9]+$',
                                         errorMessage:
                                           'Your phone number must be composed only with numbers',
                                       },
@@ -409,7 +417,7 @@ class Signup extends Component {
                                           'Your phone number must be between 10 and 15 characters',
                                       },
                                       maxLength: {
-                                        value: 15,
+                                        value: 17,
                                         errorMessage:
                                           'Your phone number must be between 10 and 15 characters',
                                       },
@@ -454,14 +462,16 @@ class Signup extends Component {
                                     required
                                   />
                                   <AvFeedback data-testid="password-error">
-                                    Password must contain at least 1 lowercase, 1
-                                    uppercase, 1 number and 8 characters
+                                    Password must contain at least 1 lowercase,
+                                    1 uppercase, 1 number and 8 characters
                                   </AvFeedback>
                                 </AvGroup>
                               </Col>
                               <Col md={6}>
                                 <AvGroup className="float-container">
-                                  <Label for="confirmPassword">Confirm Password</Label>
+                                  <Label for="confirmPassword">
+                                    Confirm Password
+                                  </Label>
                                   <AvInput
                                     type="password"
                                     name="confirmPassword"
@@ -571,7 +581,9 @@ class Signup extends Component {
                               </Col>
                               <Col md={4} className="pl-0 pr-1">
                                 <AvGroup className="float-container">
-                                  <Label for="country">Select your country</Label>
+                                  <Label for="country">
+                                    Select your country
+                                  </Label>
                                   <Select
                                     id="country"
                                     options={this.state.countries}

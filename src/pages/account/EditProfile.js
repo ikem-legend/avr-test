@@ -27,77 +27,93 @@ import DocumentUpload from '../../components/DocumentUpload'
 import SaveLoader from '../../assets/images/spin-loader.gif'
 
 class EditProfile extends Component {
-	constructor() {
-		super()
-		this.state = {
-			firstName: '',
-			lastName: '',
-			email: '',
-			phone: '',
-			dob: '',
-			address: '',
-			zipCode: '',
+  constructor() {
+    super()
+    this.state = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      dob: '',
+      address: '',
+      zipCode: '',
       city: '',
       country: '',
-			referralUrl: '',
+      referralUrl: '',
       loadingProfileUpdate: false,
       loadingUpload: false,
       userDocument: ['', ''],
       userDocumentModal: false,
       idType: 'individualProofOfAddress',
-		}
-	}
+    }
+  }
 
-	updateFields = e => {
-		const {name, value} = e.target
-		// Update validation logic
-		this.setState((prevState) => ({
-			...prevState,
-			[name]: value
-		}));
-	}
+  updateFields = e => {
+    const {name, value} = e.target
+    // Update validation logic
+    this.setState(prevState => ({
+      ...prevState,
+      [name]: value,
+    }))
+  }
 
-	componentDidUpdate(prevProps) {
-		if (this.props.firstName.length > prevProps.firstName.length) {
-			this.getProfileDetails()
-		}
-	}
+  componentDidUpdate(prevProps) {
+    if (this.props.firstName.length > prevProps.firstName.length) {
+      this.getProfileDetails()
+    }
+  }
 
-	getProfileDetails = async () => {
-		const {firstName, lastName, dob, phone, email, address, city, country, zipCode, referralUrl} = this.props
+  getProfileDetails = async () => {
+    const {
+      firstName,
+      lastName,
+      dob,
+      phone,
+      email,
+      address,
+      city,
+      country,
+      zipCode,
+      referralUrl,
+    } = this.props
     await callApi('/data/countries', null, 'GET')
-    .then(response => {
-      const countryList = response.data.map(coun => ({
-        value: coun.id,
-        label: coun.name,
-      }))
-      const cityArray = response.data.map(coun =>
-        coun.cities.map(cityDetail => ({value: cityDetail.id, label: cityDetail.name})),
-      )
-      const cityList = [].concat(...cityArray)
-      this.setState({
-        cities: cityList,
-        countries: countryList,
+      .then(response => {
+        const countryList = response.data.map(coun => ({
+          value: coun.id,
+          label: coun.name,
+        }))
+        const cityArray = response.data.map(coun =>
+          coun.cities.map(cityDetail => ({
+            value: cityDetail.id,
+            label: cityDetail.name,
+          })),
+        )
+        const cityList = [].concat(...cityArray)
+        this.setState({
+          cities: cityList,
+          countries: countryList,
+        })
       })
-    })
-    .catch(err => console.log(err))
+      .catch(err => console.log(err))
     const {cities, countries} = this.state
     const selectedCity = cities.filter(cityDet => cityDet.label === city)[0]
-    const selectedCountry = countries.filter(counDet => counDet.label === country)[0]
-		this.setState({
-			firstName,
+    const selectedCountry = countries.filter(
+      counDet => counDet.label === country,
+    )[0]
+    this.setState({
+      firstName,
       lastName,
-			email,
-			phone,
-			dob,
-			address,
+      email,
+      phone,
+      dob,
+      address,
       // city: city ? city : selectedCity,
       city: selectedCity,
       country: selectedCountry,
-			zipCode,
-			referralUrl
-		});
-	}
+      zipCode,
+      referralUrl,
+    })
+  }
 
   activateField = e => {
     document
@@ -126,8 +142,8 @@ class EditProfile extends Component {
     //   this.updateDocUploadState()
     // }
     this.setState({
-      userDocumentModal: !userDocumentModal
-    });
+      userDocumentModal: !userDocumentModal,
+    })
   }
 
   // Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
@@ -139,17 +155,17 @@ class EditProfile extends Component {
     localStorage.setItem('avenirApp', userDataStr)
   }
 
-  specifyId = (id) => {
+  specifyId = id => {
     if (id === 1) {
       this.setState({
         idType: 'individualProofOfAddress',
-        userDocument: ['', '']
-      });
+        userDocument: ['', ''],
+      })
     } else {
       this.setState({
         idType: 'individualGovernmentId',
-        userDocument: ['']
-      });
+        userDocument: [''],
+      })
     }
   }
 
@@ -209,39 +225,35 @@ class EditProfile extends Component {
     if (selectedImages.length > 0) {
       const userDocObj = selectedImages.map(img => img.blob)[0]
       const userData = toFormData({document: userDocObj, type: idType})
-      this.setState({loadingUpload: true});
+      this.setState({loadingUpload: true})
       callApi('/user/sendwyre/document/upload', userData, 'POST', user.token)
-        .then((res) => {
-          toast.success(
-            `ID upload successful, ${res.data.message}`,
-            {hideProgressBar: true}
-          )
-          this.setState({loadingUpload: false});
+        .then(res => {
+          toast.success(`ID upload successful, ${res.data.message}`, {
+            hideProgressBar: true,
+          })
+          this.setState({loadingUpload: false})
           callApi('/auth/me', null, 'GET', user.token)
             .then(response => {
               const userObj = {}
-              Object.assign(
-                userObj,
-                {...response.data},
-                {token: user.token}
-              )
+              Object.assign(userObj, {...response.data}, {token: user.token})
               this.props.updateUserData(userObj)
               this.toggleImgUpload()
             })
             .catch(() => {
-              this.props.showFeedback('Error updating user details, please reload', 'error')
+              this.props.showFeedback(
+                'Error updating user details, please reload',
+                'error',
+              )
             })
         })
-        .catch((err) => {
-          const {data: {error}} = err
-          this.setState({loadingUpload: false});
+        .catch(err => {
+          const {
+            data: {error},
+          } = err
+          this.setState({loadingUpload: false})
           Object.keys(error).map(obj => {
-            return (
-            toast.error(
-              error[obj][0],
-              {hideProgressBar: true}
-            )
-          )})
+            return toast.error(error[obj][0], {hideProgressBar: true})
+          })
         })
     } else {
       toast.error('Please select an image to upload', {hideProgressBar: true})
@@ -249,51 +261,92 @@ class EditProfile extends Component {
   }
 
   updateProfile = () => {
-    const {firstName, lastName, dob, phone, email, address, city, country, zipCode, referralUrl} = this.state
+    const {
+      firstName,
+      lastName,
+      dob,
+      phone,
+      email,
+      address,
+      city,
+      country,
+      zipCode,
+      referralUrl,
+    } = this.state
     const {loadUserData} = this.props
     // Date format
-    const year = new Date(dob).getFullYear().toString();
-    const month = (1 + new Date(dob).getMonth()).toString();
-    const day = new Date(dob).getDate().toString();
-    
+    const year = new Date(dob).getFullYear().toString()
+    const month = (1 + new Date(dob).getMonth()).toString()
+    const day = new Date(dob).getDate().toString()
+
     const dobStr = `${month}-${day}-${year}`
-    const userData = {first_name: firstName, last_name: lastName, email, phone, dob: dobStr, address, zip_code: zipCode, city_id: city.value, country_id: country.value, identifier: referralUrl}
+    const userData = {
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      phone,
+      dob: dobStr,
+      address,
+      zip_code: zipCode,
+      city_id: city.value,
+      country_id: country.value,
+      identifier: referralUrl,
+    }
     this.setState({
-    	loadingProfileUpdate: true
-    });
+      loadingProfileUpdate: true,
+    })
     callApi('/user/profile/update', userData, 'POST', this.props.user.token)
       .then(() => {
         loadUserData()
         this.props.showFeedback('Profile updated successfully', 'success')
       })
       .catch(() => {
-        this.props.showFeedback('Error updating profile, please try again', 'error')
+        this.props.showFeedback(
+          'Error updating profile, please try again',
+          'error',
+        )
       })
       .finally(() => {
-      	this.setState({
-		    	loadingProfileUpdate: false
-		    });
+        this.setState({
+          loadingProfileUpdate: false,
+        })
       })
   }
-  
+
   // eslint-disable-next-line max-lines-per-function
-	render() {
-		const {firstName, lastName, email, phone, dob, address, city, cities, country, zipCode, referralUrl, loadingProfileUpdate, userDocument, userDocumentModal, loadingUpload} = this.state
+  render() {
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      dob,
+      address,
+      city,
+      cities,
+      country,
+      zipCode,
+      referralUrl,
+      loadingProfileUpdate,
+      userDocument,
+      userDocumentModal,
+      loadingUpload,
+    } = this.state
     const customStyles = {
-      placeholder: (defaultStyles) => ({
+      placeholder: defaultStyles => ({
         ...defaultStyles,
         fontSize: '0.8rem',
         fontWeight: 'bold',
-        color: '#1ca4a9'
-      })
+        color: '#1ca4a9',
+      }),
     }
-		return (
+    return (
       <Container fluid className="account-pages mb-5">
         <AvForm onValidSubmit={this.updateProfile}>
-    			<Row>
-    				<Col md={6} className="pr-0">
-  						<AvGroup className="float-container active">
-  							<Label for="firstName">First Name</Label>
+          <Row>
+            <Col md={6} className="pr-0">
+              <AvGroup className="float-container active">
+                <Label for="firstName">First Name</Label>
                 <AvInput
                   type="text"
                   name="firstName"
@@ -324,8 +377,8 @@ class EditProfile extends Component {
                 <AvFeedback data-testid="fname-error">
                   First Name is invalid
                 </AvFeedback>
-  							{/*<AvInput type="text" name="name" value={name} onChange={this.updateFields} />*/}
-  						</AvGroup>
+                {/*<AvInput type="text" name="name" value={name} onChange={this.updateFields} />*/}
+              </AvGroup>
             </Col>
             <Col md={6}>
               <AvGroup className="float-container active">
@@ -361,234 +414,250 @@ class EditProfile extends Component {
                   Last Name is invalid
                 </AvFeedback>
               </AvGroup>
-              </Col>
-              <Col md={6} className="pr-0">
-                <AvGroup className="float-container active">
-                  <Label for="email">Email Address</Label>
-                  <AvInput
-                    type="email"
-                    name="email"
-                    id="email"
-                    value={email}
-                    onFocus={this.activateField}
-                    onBlur={this.deactivateField}
-                    onChange={this.updateFields}
-                    validate={{
-                      minLength: {
-                        value: 5,
-                        errorMessage:
-                          'Your email address must be between 5 and 40 characters',
-                      },
-                      maxLength: {
-                        value: 40,
-                        errorMessage:
-                          'Your email address must be between 5 and 40 characters',
-                      },
-                    }}
-                    required
-                  />
+            </Col>
+            <Col md={6} className="pr-0">
+              <AvGroup className="float-container active">
+                <Label for="email">Email Address</Label>
+                <AvInput
+                  type="email"
+                  name="email"
+                  id="email"
+                  value={email}
+                  onFocus={this.activateField}
+                  onBlur={this.deactivateField}
+                  onChange={this.updateFields}
+                  validate={{
+                    minLength: {
+                      value: 5,
+                      errorMessage:
+                        'Your email address must be between 5 and 40 characters',
+                    },
+                    maxLength: {
+                      value: 40,
+                      errorMessage:
+                        'Your email address must be between 5 and 40 characters',
+                    },
+                  }}
+                  required
+                />
 
-                  <AvFeedback data-testid="email-error">
-                    Email is invalid
-                  </AvFeedback>
-                </AvGroup>
-              </Col>
-              <Col md={6}>
-                <AvGroup className="float-container active">
-                  <Label for="phone">Phone Number</Label>
-                  <AvInput
-                    type="phone"
-                    name="phone"
-                    id="phone"
-                    value={phone}
-                    onFocus={this.activateField}
-                    onBlur={this.deactivateField}
-                    onChange={this.updateFields}
-                    validate={{
-                      pattern: {
-                        value: '^[0-9]+$',
-                        errorMessage:
-                          'Your phone number must be composed only with numbers',
-                      },
-                      minLength: {
-                        value: 10,
-                        errorMessage:
-                          'Your phone number must be between 10 and 15 characters',
-                      },
-                      maxLength: {
-                        value: 15,
-                        errorMessage:
-                          'Your phone number must be between 10 and 15 characters',
-                      },
-                    }}
-                    required
-                  />
+                <AvFeedback data-testid="email-error">
+                  Email is invalid
+                </AvFeedback>
+              </AvGroup>
+            </Col>
+            <Col md={6}>
+              <AvGroup className="float-container active">
+                <Label for="phone">Phone Number</Label>
+                <AvInput
+                  type="phone"
+                  name="phone"
+                  id="phone"
+                  value={phone}
+                  onFocus={this.activateField}
+                  onBlur={this.deactivateField}
+                  onChange={this.updateFields}
+                  validate={{
+                    pattern: {
+                      value: '^[+]?[0-9]+$',
+                      errorMessage:
+                        'Your phone number must be composed only with numbers',
+                    },
+                    minLength: {
+                      value: 10,
+                      errorMessage:
+                        'Your phone number must be between 10 and 15 characters',
+                    },
+                    maxLength: {
+                      value: 15,
+                      errorMessage:
+                        'Your phone number must be between 10 and 15 characters',
+                    },
+                  }}
+                  required
+                />
 
-                  <AvFeedback data-testid="phone-error">
-                    Phone number is invalid
-                  </AvFeedback>
-                </AvGroup>
-              </Col>
-              <Col md={4} className="pr-0">
-    						<AvGroup className="float-container active">
-    							<Label for="dob">Date of Birth</Label>
-                  <div className="form-group mb-sm-0 mr-2">
-      							<Flatpickr
-                      id="dob"
-                      name="dob"
-                      value={dob}
-                      placeholder="MM-DD-YYYY"
-                      onChange={date => 
-                        this.setState({
-                          dob: date[0]
-                        })
-                      }
-                      className="form-control"
-                      options={{
-                        maxDate: subYears(new Date(), 18),
-                        minDate: subYears(new Date(), 100),
-                        defaultDate: dob,
-                        dateFormat: 'm-d-Y',
-                      }}
-                    />
-                  </div>
-                  <AvFeedback>This field is invalid</AvFeedback>
-    						</AvGroup>
-                </Col>
-                <Col md={8}>
-                  <AvGroup className="float-container active mb-3">
-                    <Label for="address">Street address</Label>
-                    <AvInput
-                      type="address"
-                      name="address"
-                      id="address"
-                      value={address}
-                      onFocus={this.activateField}
-                      onBlur={this.deactivateField}
-                      onChange={this.updateFields}
-                      required
-                    />
-                    <AvFeedback data-testid="address-error">
-                      Address is invalid
-                    </AvFeedback>
-                  </AvGroup>
-                </Col>
-                <Col md={5}>
-                  <AvGroup className="float-container active">
-                    <Label for="city">Choose your city</Label>
-                    <Select
-                      id="city"
-                      options={cities}
-                      value={city}
-                      // value={cities ? cities.filter(cityDet => cityDet.label === city)[0] : ''}
-                      className="location"
-                      styles={customStyles}
-                      placeholder="Select your city"
-                      onChange={val =>
-                        this.setState({
-                          city: val,
-                        })
-                      }
-                      required
-                    />
-                    <AvFeedback data-testid="city-error">
-                      Please select a city
-                    </AvFeedback>
-                  </AvGroup>
-                </Col>
-                <Col md={4} className="pl-0 pr-1">
-                  <AvGroup className="float-container active">
-                    <Label for="country">Select your country</Label>
-                    <Select
-                      id="country"
-                      options={this.state.countries}
-                      value={country}
-                      className="location"
-                      styles={customStyles}
-                      placeholder="Select your country"
-                      onChange={val =>
-                        this.setState({
-                          country: val,
-                        })
-                      }
-                      required
-                    />
-                    <AvFeedback data-testid="country-error">
-                      This field is invalid
-                    </AvFeedback>
-                  </AvGroup>
-                </Col>
-                <Col md={3}>
-                  <AvGroup className="float-container active">
-                    <Label for="zipcode">Zipcode</Label>
-                    <AvInput
-                      type="zipcode"
-                      name="zipcode"
-                      id="zipcode"
-                      className="mt-1"
-                      value={zipCode}
-                      onFocus={this.activateField}
-                      onBlur={this.deactivateField}
-                      onChange={this.updateFields}
-                      validate={{
-                        pattern: {
-                          value: '^[0-9]{5}$',
-                          errorMessage:
-                            'Your zipcode must be composed only with numbers',
-                        },
-                        maxLength: {value: 5},
-                      }}
-                      required
-                    />
-                    <AvFeedback data-testid="zip-error">
-                      Zipcode is invalid
-                    </AvFeedback>
-                  </AvGroup>
-                </Col>
-                <Col md={12}>
-                  <AvGroup>
-                    <label htmlFor="referral link">Referral Custom URL <span className="text-muted font-size-12">(This can only be changed once)</span></label> 
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>https://avenir-app.com/r/</InputGroupText>
-                      </InputGroupAddon>
-                      <AvInput type="text" name="referralUrl" value={referralUrl} onChange={this.updateFields} readOnly={Boolean(referralUrl)} />
-                    </InputGroup>
-                  </AvGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Button color="blue" block className="mt-1 mb-5" onClick={this.toggleImgUpload}>Upload User Registration</Button>
-                  {/* Document upload */}
-                  <DocumentUpload 
-                    userDocumentModal={userDocumentModal}
-                    userDocument={userDocument}
-                    specifyId={this.specifyId}
-                    toggleImgUpload={this.toggleImgUpload}
-                    handleUserDocument={this.handleUserDocument}
-                    submitUserDocument={this.submitUserDocument}
-                    loadingUpload={loadingUpload}
+                <AvFeedback data-testid="phone-error">
+                  Phone number is invalid
+                </AvFeedback>
+              </AvGroup>
+            </Col>
+            <Col md={4} className="pr-0">
+              <AvGroup className="float-container active">
+                <Label for="dob">Date of Birth</Label>
+                <div className="form-group mb-sm-0 mr-2">
+                  <Flatpickr
+                    id="dob"
+                    name="dob"
+                    value={dob}
+                    placeholder="MM-DD-YYYY"
+                    onChange={date =>
+                      this.setState({
+                        dob: date[0],
+                      })
+                    }
+                    className="form-control"
+                    options={{
+                      maxDate: subYears(new Date(), 18),
+                      minDate: subYears(new Date(), 100),
+                      defaultDate: dob,
+                      dateFormat: 'm-d-Y',
+                    }}
                   />
-                </Col>
-              </Row>
-              <Row>
-                <Col md={{size: 4, offset: 8}}>
-                  {loadingProfileUpdate ? (
-                    <img
-                      src={SaveLoader}
-                      alt="loader"
-                      style={{height: '40px'}}
-                    />
-                  ) : (
-                    <Button color="red" block onClick={this.updateProfile}>Save</Button>
-                  )}
-                </Col>
-              </Row>
+                </div>
+                <AvFeedback>This field is invalid</AvFeedback>
+              </AvGroup>
+            </Col>
+            <Col md={8}>
+              <AvGroup className="float-container active mb-3">
+                <Label for="address">Street address</Label>
+                <AvInput
+                  type="address"
+                  name="address"
+                  id="address"
+                  value={address}
+                  onFocus={this.activateField}
+                  onBlur={this.deactivateField}
+                  onChange={this.updateFields}
+                  required
+                />
+                <AvFeedback data-testid="address-error">
+                  Address is invalid
+                </AvFeedback>
+              </AvGroup>
+            </Col>
+            <Col md={5}>
+              <AvGroup className="float-container active">
+                <Label for="city">Choose your city</Label>
+                <Select
+                  id="city"
+                  options={cities}
+                  value={city}
+                  // value={cities ? cities.filter(cityDet => cityDet.label === city)[0] : ''}
+                  className="location"
+                  styles={customStyles}
+                  placeholder="Select your city"
+                  onChange={val =>
+                    this.setState({
+                      city: val,
+                    })
+                  }
+                  required
+                />
+                <AvFeedback data-testid="city-error">
+                  Please select a city
+                </AvFeedback>
+              </AvGroup>
+            </Col>
+            <Col md={4} className="pl-0 pr-1">
+              <AvGroup className="float-container active">
+                <Label for="country">Select your country</Label>
+                <Select
+                  id="country"
+                  options={this.state.countries}
+                  value={country}
+                  className="location"
+                  styles={customStyles}
+                  placeholder="Select your country"
+                  onChange={val =>
+                    this.setState({
+                      country: val,
+                    })
+                  }
+                  required
+                />
+                <AvFeedback data-testid="country-error">
+                  This field is invalid
+                </AvFeedback>
+              </AvGroup>
+            </Col>
+            <Col md={3}>
+              <AvGroup className="float-container active">
+                <Label for="zipcode">Zipcode</Label>
+                <AvInput
+                  type="zipcode"
+                  name="zipcode"
+                  id="zipcode"
+                  className="mt-1"
+                  value={zipCode}
+                  onFocus={this.activateField}
+                  onBlur={this.deactivateField}
+                  onChange={this.updateFields}
+                  validate={{
+                    pattern: {
+                      value: '^[0-9]{5}$',
+                      errorMessage:
+                        'Your zipcode must be composed only with numbers',
+                    },
+                    maxLength: {value: 5},
+                  }}
+                  required
+                />
+                <AvFeedback data-testid="zip-error">
+                  Zipcode is invalid
+                </AvFeedback>
+              </AvGroup>
+            </Col>
+            <Col md={12}>
+              <AvGroup>
+                <label htmlFor="referral link">
+                  Referral Custom URL{' '}
+                  <span className="text-muted font-size-12">
+                    (This can only be changed once)
+                  </span>
+                </label>
+                <InputGroup>
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>https://avenir-app.com/r/</InputGroupText>
+                  </InputGroupAddon>
+                  <AvInput
+                    type="text"
+                    name="referralUrl"
+                    value={referralUrl}
+                    onChange={this.updateFields}
+                    readOnly={Boolean(referralUrl)}
+                  />
+                </InputGroup>
+              </AvGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Button
+                color="blue"
+                block
+                className="mt-1 mb-5"
+                onClick={this.toggleImgUpload}
+              >
+                Upload User Registration
+              </Button>
+              {/* Document upload */}
+              <DocumentUpload
+                userDocumentModal={userDocumentModal}
+                userDocument={userDocument}
+                specifyId={this.specifyId}
+                toggleImgUpload={this.toggleImgUpload}
+                handleUserDocument={this.handleUserDocument}
+                submitUserDocument={this.submitUserDocument}
+                loadingUpload={loadingUpload}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={{size: 4, offset: 8}}>
+              {loadingProfileUpdate ? (
+                <img src={SaveLoader} alt="loader" style={{height: '40px'}} />
+              ) : (
+                <Button color="red" block onClick={this.updateProfile}>
+                  Save
+                </Button>
+              )}
+            </Col>
+          </Row>
         </AvForm>
       </Container>
-		)
-	}
+    )
+  }
 }
 
 const mapStateToProps = state => ({
