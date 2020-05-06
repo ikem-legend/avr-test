@@ -200,6 +200,7 @@ class Signup extends Component {
     }
   }
 
+  // eslint-disable-next-line max-lines-per-function
   render() {
     const isAuthTokenValid = isUserAuthenticated()
     const {
@@ -394,8 +395,7 @@ class Signup extends Component {
                                 <AvGroup className="float-container">
                                   <Label for="phone">Phone Number</Label>
                                   <AvInput
-                                    type="tel"
-                                    // type="phone"
+                                    type="phone"
                                     name="phone"
                                     id="phone"
                                     value={phone}
@@ -403,11 +403,9 @@ class Signup extends Component {
                                     onBlur={this.deactivateField}
                                     onChange={this.updateInputValue}
                                     validate={{
+                                      // tel: {pattern: /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/},
                                       pattern: {
-                                        // value: '^(+1)?(()?[2-9]{1}d{2}())?(-|s)?d{3}?(-|s)d{4}$',
-                                        // value: '^(+1)?(\()?[2-9]{1}\d{2}(\))?(-|\s)?\d{3}?(-|\s)\d{4}$',
-                                        // value: '^(()?d{3}())?(-|s)?d{3}(-|s)d{4}$',
-                                        value: '^[+]?[0-9]+$',
+                                        value: /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
                                         errorMessage:
                                           'Your phone number must be composed only with numbers',
                                       },

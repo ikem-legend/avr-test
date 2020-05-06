@@ -459,7 +459,7 @@ class EditProfile extends Component {
                   onChange={this.updateFields}
                   validate={{
                     pattern: {
-                      value: '^[+]?[0-9]+$',
+                      value: /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
                       errorMessage:
                         'Your phone number must be composed only with numbers',
                     },
