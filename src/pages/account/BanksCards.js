@@ -222,8 +222,8 @@ class BanksCards extends Component {
           <Col md={4}>
             <PlaidLink
               clientName="Avenir app"
-              // env="sandbox"
-              env="production"
+              env="sandbox"
+              // env="production"
               product={['auth', 'transactions']}
               publicKey="3c3d222fa56168931abed2dc785bc2"
               onExit={this.handleOnExit}
