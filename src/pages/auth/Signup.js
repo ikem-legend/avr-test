@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import React, {Component, Fragment, createRef} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
@@ -97,7 +96,6 @@ class Signup extends Component {
       `.float-container #${e.target.name}`,
     ).parentElement.style.borderLeft = '1px solid #ccc'
     if (e.target.value === '') {
-      // console.log(e.target.name)
       document
         .querySelector(`.float-container #${e.target.name}`)
         .parentElement.classList.remove('active')

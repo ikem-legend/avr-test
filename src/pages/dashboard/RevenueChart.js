@@ -9,7 +9,7 @@ const RevenueChart = () => {
         let idx = 0;
         while (date.getMonth() === month && idx < 15) {
             const d = new Date(date);
-            days.push(d.getDate() + " " + d.toLocaleString('en-us', { month: 'short' }));
+            days.push(`${d.getDate()} ${d.toLocaleString('en-us', { month: 'short' })}`);
             date.setDate(date.getDate() + 1);
             idx += 1;
         }
@@ -85,7 +85,7 @@ const RevenueChart = () => {
 
     const apexLineChartWithLablesData = [{
         name: 'Balance History',
-        data: [10, 20, 5, 15, 10, 20, 15, 25, 20, 30, 25, 40, 30, 50, 35]
+        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     }];
 
     return (

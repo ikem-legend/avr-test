@@ -388,6 +388,8 @@ class Dashboard extends Component {
       loadingWithdraw
     } = this.state
     const {user} = this.props
+    const externalTopupCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={this.toggleTopup}>&times;</button>;
+    const externalWdlCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={this.toggleWithdraw}>&times;</button>;
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
@@ -485,7 +487,7 @@ class Dashboard extends Component {
           </Row>
 
           {/* Top-up modal */}
-          <Modal isOpen={topupModal} toggle={this.toggleTopup} centered>
+          <Modal isOpen={topupModal} toggle={this.toggleTopup} external={externalTopupCloseBtn} centered>
             <ModalBody>
               <div className="text-center">
                 <h4 className="wallet-topup mt-4">Wallet Top Up</h4>
@@ -494,7 +496,7 @@ class Dashboard extends Component {
                 <img src={TopUp} alt="Top Up" className="img-fluid" />
                 <h4>{`$${numberWithCommas(walletTotal.toFixed(2))}`}</h4>
                 <p>Total Wallet Balance</p>
-                <Form row>
+                <Form className="row" onSubmit={this.setTopup}>
                   <Col md={{offset: 2, size: 8}}>
                     <Input
                       name="topup"
@@ -542,7 +544,7 @@ class Dashboard extends Component {
           </Modal>
 
           {/* Withdrawal modal */}
-          <Modal isOpen={withdrawModal} toggle={this.toggleWithdraw} centered>
+          <Modal isOpen={withdrawModal} toggle={this.toggleWithdraw} external={externalWdlCloseBtn} centered>
             <ModalBody>
               <div className="text-center">
                 <h4 className="wallet-topup mt-4 mb-0">Make a withdrawal</h4>
@@ -580,7 +582,7 @@ class Dashboard extends Component {
                 <h4 className="mt-4">
                   ${activeCoin === 'btc' ? btcVal : ethVal}
                 </h4>
-                <Form row>
+                <Form className="row">
                   <Col md={{offset: 2, size: 8}}>
                     <Input
                       name="topup"

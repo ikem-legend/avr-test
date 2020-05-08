@@ -60,7 +60,7 @@ class Account extends Component {
       twofactorAuth: false,
       notifications: false,
       checkDetails: {},
-      activeTab: '1',
+      activeTab: '4',
     }
   }
 

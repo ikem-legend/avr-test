@@ -90,7 +90,10 @@
       "no-console": "off",
       "jsx-a11y/accessible-emoji": "off",
       "consistent-return": "off",
-      "camelcase": "off",
+      "babel/camelcase": [
+        "error",
+        {"properties": "never"}
+      ],
       "max-lines-per-function": [
         "error",
         200

@@ -89,7 +89,7 @@ class BanksCards extends Component {
 
   handleOnExit = () => {
     // handle the case when your user exits Link
-    this.props.showFeedback('Exited Plaid account linking', 'error')
+    this.props.showFeedback('Cancelled bank account linking', 'error')
   }
 
   // Rework to parent component
