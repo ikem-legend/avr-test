@@ -20,7 +20,7 @@ import ImagePicker from './ImagePicker'
 const ImageUpload = ({profileImgModal, profileImg, toggleProfileImgUpload, handleProfileImg, submitProfileImg, loadingImgUpload}) => {
   const [activeTab, setActiveTab] = useState('1')
 	return (
-		<Modal isOpen={profileImgModal} toggle={toggleProfileImgUpload} backdrop="static" centered size="lg" className="image-upload">
+		<Modal isOpen={profileImgModal} toggle={toggleProfileImgUpload} backdrop="static" centered className="image-upload">
       <ModalHeader className="account-link-header mx-auto pb-0">Upload Profile Image</ModalHeader>
 		  <ModalBody className="text-center">
 		    <Row>
@@ -82,11 +82,11 @@ const ImageUpload = ({profileImgModal, profileImg, toggleProfileImgUpload, handl
 		      />
 		    ) : (
           <Row>
-            <Col md={{offset:3, size: 3}} xs={6}>
+            <Col md={{offset:2, size: 4}} xs={6}>
               <Button onClick={toggleProfileImgUpload} block color="inv-blue" className="mt-2 float-right">Cancel</Button>
             </Col>
-            <Col md={3} xs={6}>
-    		      <Button onClick={submitProfileImg} block color="inv-blue" className="mt-2 float-left">Upload Profile Image</Button>
+            <Col md={4} xs={6}>
+    		      <Button onClick={submitProfileImg} block color="inv-blue" className="mt-2 float-left">Upload Image</Button>
             </Col>
           </Row>
 		    )}
