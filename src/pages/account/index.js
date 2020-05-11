@@ -57,10 +57,11 @@ class Account extends Component {
       documentUploadError: null,
       documentUpload: false,
       total: 0,
+      image: null,
       twofactorAuth: false,
       notifications: false,
       checkDetails: {},
-      activeTab: '4',
+      activeTab: '1',
     }
   }
 
@@ -68,11 +69,11 @@ class Account extends Component {
     this.loadUserData()
   }
   // document
-  loadUserData = (update = false) => {
+  loadUserData = (mlprUpdate = false, imgUpdate = false) => {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myContactCity, myContactCountry, myZipCode, myIdentifier, MyInvestmentPause, myMultiplierSetting, myCurrencyDistributions, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, multiplierSetup, topup, documentUpload, total}} = res.data
+        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myContactCity, myContactCountry, myZipCode, myIdentifier, MyInvestmentPause, myMultiplierSetting, myCurrencyDistributions, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, multiplierSetup, topup, documentUpload, total}, myImage} = res.data
         const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
         const btcVal = myCurrencyDistributions[0].percentage
         const ethVal = myCurrencyDistributions[1].percentage
@@ -129,6 +130,7 @@ class Account extends Component {
           documentUploadStatus: documentUpload.status,
           documentUploadError: documentUpload.error,
           total,
+          image: myImage,
           notifications: appNotifications,
           twofactorAuth: twofactorAuthStatus,
           checkDetails: {
@@ -137,7 +139,7 @@ class Account extends Component {
             currDist: {btc: btcVal, eth: ethVal},
           }
         });
-        if (update) {
+        if (mlprUpdate || imgUpdate) {
           const userObj = {}
           Object.assign(
             userObj,
@@ -275,6 +277,7 @@ class Account extends Component {
         this.props.showFeedback('Multiplier successfully updated', 'success')
         // this.saveRatio()
         if (user.setup.multiplierSetup.done === false) {
+          // Update percentage in left sidebar if multiplier is being set for the first time
           this.loadUserData(true)
         } else {
           this.loadUserData()
@@ -410,7 +413,7 @@ class Account extends Component {
   }
 
   render() {
-    const {firstName, lastName, email, phone, dob, address, city, country, zipCode, referralUrl, multiplier, btc, eth, currDist, invPause, loadingRoundup, loadingCoinDstrbn, accounts, acctFundingSource, accountModal, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink} = this.state
+    const {firstName, lastName, email, phone, dob, address, city, country, zipCode, referralUrl, multiplier, btc, eth, currDist, invPause, loadingRoundup, loadingCoinDstrbn, accounts, acctFundingSource, accountModal, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink, image} = this.state
     const {user} = this.props
 
     return (
@@ -429,6 +432,7 @@ class Account extends Component {
               documentUploadStatus={documentUploadStatus}
               documentUploadError={documentUploadError}
               topup={topup}
+              image={image}
             />
           </Col>
           <Col md={9}>

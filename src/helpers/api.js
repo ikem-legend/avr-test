@@ -1,17 +1,17 @@
 import axios from 'axios'
-/**
- * Fetch data from given url
- * @param {*} url
- * @param {*} options
- * @return response
- */
 
 const config = {
   fetchUrl: 'https://avenir-test.herokuapp.com/api/v1',
   // fetchUrl: 'https://avenir-backend.herokuapp.com/api/v1',
-  // fetchUrl: 'https://myavenir.herokuapp.com/api/v1',
 }
 
+/**
+ * Fetch data from given url
+ * @param {string} url URL
+ * @param {*} data Data
+ * @param {*} method HTTP method
+ * @returns {object} response
+ */
 const callPlainApi = (url, data, method) =>
   new Promise((resolve, reject) => {
     const axiosOptions = {

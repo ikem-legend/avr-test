@@ -59,12 +59,12 @@ function* login({payload: {user, history}}) {
     )
     const {
       // data,
-      data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
+      data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup, myImage},
     } = response
     const userObj = {}
     Object.assign(
       userObj,
-      {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup},
+      {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup, myImage},
       {token: result.token},
       {docUploadState: false}
     )

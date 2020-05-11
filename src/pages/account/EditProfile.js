@@ -24,6 +24,7 @@ import {callApi} from '../../helpers/api'
 import {resizeImage, toFormData} from '../../helpers/utils'
 import {showFeedback} from '../../redux/actions'
 import DocumentUpload from '../../components/DocumentUpload'
+import ImageUpload from '../../components/ImageUpload'
 import SaveLoader from '../../assets/images/spin-loader.gif'
 
 class EditProfile extends Component {
@@ -45,6 +46,9 @@ class EditProfile extends Component {
       userDocument: ['', ''],
       userDocumentModal: false,
       idType: 'individualProofOfAddress',
+      profileImgModal: false,
+      profileImg: '',
+      loadingImgUpload: false,
     }
   }
 
@@ -138,9 +142,6 @@ class EditProfile extends Component {
 
   toggleImgUpload = () => {
     const {userDocumentModal} = this.state
-    // if (userDocumentModal) {
-    //   this.updateDocUploadState()
-    // }
     this.setState({
       userDocumentModal: !userDocumentModal,
     })
@@ -313,6 +314,60 @@ class EditProfile extends Component {
       })
   }
 
+  toggleProfileImgUpload = () => {
+    const {profileImgModal} = this.state
+    this.setState({
+      profileImgModal: !profileImgModal,
+    })
+  }
+
+  handleProfileImg = (file, body) => {
+    return resizeImage(file, body).then(blob => {
+      return this.setState({
+        profileImg: {
+          src: URL.createObjectURL(blob),
+          blob,
+        },
+      })
+    })
+  }
+
+  submitProfileImg = () => {
+    const {user, loadUserData} = this.props
+    const {profileImg} = this.state
+    const userData = toFormData({image: profileImg.blob})
+    this.setState({
+      loadingImgUpload: true,
+    })
+    callApi('/user/profile/image/upload', userData, 'POST', user.token)
+      .then(() => {
+        loadUserData(false, true)
+        this.toggleProfileImgUpload()
+        this.props.showFeedback('Profile image updated successfully', 'success')
+      })
+      .catch(err => {
+        if (Object.keys(err).length) {
+          const {error} = err.data
+          Object.keys(error).map(obj => (
+            this.props.showFeedback(
+              error[obj][0],
+              'error'
+            )
+          ))
+        } else {
+          this.props.showFeedback(
+            'Error updating profile image, please try again',
+            'error',
+          )
+        }
+      })
+      .finally(() => {
+        this.setState({
+          loadingImgUpload: false,
+        })
+      })
+  }
+
   // eslint-disable-next-line max-lines-per-function
   render() {
     const {
@@ -331,6 +386,9 @@ class EditProfile extends Component {
       userDocument,
       userDocumentModal,
       loadingUpload,
+      profileImg,
+      profileImgModal,
+      loadingImgUpload,
     } = this.state
     const customStyles = {
       placeholder: defaultStyles => ({
@@ -631,6 +689,14 @@ class EditProfile extends Component {
               >
                 Upload User Registration
               </Button>
+              <Button
+                color="blue"
+                block
+                className="mt-1 mb-5"
+                onClick={this.toggleProfileImgUpload}
+              >
+                Upload Profile Image
+              </Button>
               {/* Document upload */}
               <DocumentUpload
                 userDocumentModal={userDocumentModal}
@@ -640,6 +706,15 @@ class EditProfile extends Component {
                 handleUserDocument={this.handleUserDocument}
                 submitUserDocument={this.submitUserDocument}
                 loadingUpload={loadingUpload}
+              />
+              {/* Image upload */}
+              <ImageUpload
+                profileImgModal={profileImgModal}
+                profileImg={profileImg}
+                toggleProfileImgUpload={this.toggleProfileImgUpload}
+                handleProfileImg={this.handleProfileImg}
+                submitProfileImg={this.submitProfileImg}
+                loadingImgUpload={loadingImgUpload}
               />
             </Col>
           </Row>
