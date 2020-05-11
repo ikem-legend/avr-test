@@ -86,7 +86,7 @@ const ImageUpload = ({profileImgModal, profileImg, toggleProfileImgUpload, handl
               <Button onClick={toggleProfileImgUpload} block color="inv-blue" className="mt-2 float-right">Cancel</Button>
             </Col>
             <Col md={4} xs={6}>
-    		      <Button onClick={submitProfileImg} block color="inv-blue" className="mt-2 float-left">Upload Image</Button>
+    		      <Button onClick={submitProfileImg} block color="inv-blue" className="mt-2 float-left">Upload</Button>
             </Col>
           </Row>
 		    )}
