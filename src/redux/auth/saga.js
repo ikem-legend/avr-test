@@ -1,27 +1,19 @@
 // @flow
-// import Cookies from 'universal-cookie'
-// import {Cookies} from 'react-cookie'
 import Cookies from 'js-cookie'
 import {toast} from 'react-toastify'
 import {all, call, fork, put, takeLatest} from 'redux-saga/effects'
-
 import {callApi} from '../../helpers/api'
-
 import {
   LOGIN_USER,
   LOGOUT_USER,
   REGISTER_USER,
-  FORGET_PASSWORD,
   UPDATE_USER_DATA,
 } from './constants'
-
 import {
   loginUserSuccess,
   loginUserFailed,
   registerUserSuccess,
   registerUserFailed,
-  forgetPasswordSuccess,
-  forgetPasswordFailed,
   updateUserDataSuccess,
 } from './actions'
 
@@ -30,14 +22,12 @@ import {
  * @param {object} userData User object
  */
 const setSession = userData => {
-  // const cookies = new Cookies()
-  // console.log(cookies, userData)
   if (userData) {
-  	// debugger
+    // For some unusual reason cookies would fail from time to time
+    // so it made more sense to use localStorage which was stable
   	Cookies.set('avenirUser', userData)
   	localStorage.setItem('avenirApp', userData)
-  }
-  else {
+  } else {
   	Cookies.remove('avenirUser')
   	localStorage.removeItem('avenirApp')
 	}
@@ -45,7 +35,7 @@ const setSession = userData => {
 
 /**
  * Login the user
- * @param {*} payload - username and password
+ * @param {object} payload User and history data
  */
 function* login({payload: {user, history}}) {
   try {
@@ -58,7 +48,6 @@ function* login({payload: {user, history}}) {
       result.token,
     )
     const {
-      // data,
       data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myIdentifier, myContactAddress, myCurrencyDistributions, myMultiplierSetting, MyInvestmentPause, setup, myImage},
     } = response
     const userObj = {}
@@ -91,7 +80,7 @@ function* login({payload: {user, history}}) {
 
 /**
  * Logout the user
- * @param {*} {object} payload
+ * @param {object} payload Logout payload
  */
 function* logout({payload: {history}}) {
   try {
@@ -106,12 +95,14 @@ function* logout({payload: {history}}) {
 
 /**
  * Register the user
+ * @param {object} payload Register payload
  */
 function* register({payload: {user, history}}) {
   try {
   	const queryString = history.location.search
   	const urlParams = new URLSearchParams(queryString);
   	let result
+    // This conditional was for the referral signup or basic signup
   	if (urlParams === '') {
     	result = yield call(callApi, '/auth/signup', user, 'POST')
   	} else {
@@ -126,7 +117,6 @@ function* register({payload: {user, history}}) {
     )
     const {
       data
-      // data: {myFirstName, myLastName, myEmailAddress, myPhoneNumber},
     } = response
     const userObj = {}
     Object.assign(
@@ -138,7 +128,6 @@ function* register({payload: {user, history}}) {
     const userObjStr = JSON.stringify(userObj)
     setSession(userObjStr)
     yield put(registerUserSuccess(userObj))
-    // debugger
     history.push('/account/account-connect')
   } catch (error) {
   	console.log(error)
@@ -171,34 +160,9 @@ function* register({payload: {user, history}}) {
 }
 
 /**
- * forget password
+ * update data to ensure side bar is always up to date
+ * param {object} payload UserData payload
  */
-function* forgetPassword({payload: {username}}) {
-  const options = {
-    body: JSON.stringify({username}),
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-  }
-
-  try {
-    const response = yield call(callApi, '/users/password-reset', options)
-    yield put(forgetPasswordSuccess(response.message))
-  } catch (error) {
-    let message
-    switch (error.status) {
-      case 500:
-        message = 'Internal Server Error'
-        break
-      case 401:
-        message = 'Invalid credentials'
-        break
-      default:
-        message = error
-    }
-    yield put(forgetPasswordFailed(message))
-  }
-}
-
 function* updateData({payload: {userData}}) {
 	try {
 		const userDataStr = JSON.stringify(userData)
@@ -221,10 +185,6 @@ export function* watchRegisterUser() {
   yield takeLatest(REGISTER_USER, register)
 }
 
-export function* watchForgetPassword() {
-  yield takeLatest(FORGET_PASSWORD, forgetPassword)
-}
-
 export function* watchUpdateData() {
   yield takeLatest(UPDATE_USER_DATA, updateData)
 }
@@ -234,7 +194,6 @@ function* authSaga() {
     fork(watchLoginUser),
     fork(watchLogoutUser),
     fork(watchRegisterUser),
-    fork(watchForgetPassword),
     fork(watchUpdateData),
   ])
 }

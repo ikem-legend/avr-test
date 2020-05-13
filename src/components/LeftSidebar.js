@@ -98,14 +98,6 @@ class LeftSidebar extends Component {
     }
   }
 
-  /**
-   * Handle click
-   * @param {*} e Global event object
-   */
-  handleClick = (e) => {
-    console.log(e)
-  }
-
   render() {
     const isCondensed = this.props.isCondensed || false
     const {userData} = this.state
