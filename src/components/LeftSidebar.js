@@ -19,18 +19,23 @@ const UserProfile = ({user}) => {
     <Fragment>
       <div className="media user-profile user-avatar mt-2">
         <img
-          src={user.myImage ? user.myImage : profilePic}
+          src={/jpg|jpeg$/.test(user.myImage) ? user.myImage : profilePic}
           className="avatar-lg rounded-circle img-fluid mr-2"
           alt="Avenir"
         />
       </div>
-
-        <div className="media-body user-profile details mb-2">
-          <h4 className="pro-user-name mt-2 mb-0">Hi {user.myFirstName},</h4>
-          <div className="mt-2 mb-4">{user.myEmailAddress}</div>
-          <div>Account Setup - <span className="setup">{user.setup && user.setup.total}%</span></div>
-          <Progress value={user.setup && user.setup.total} className="setup-level" />
+      <div className="media-body user-profile details mb-2">
+        <h4 className="pro-user-name mt-2 mb-0">Hi {user.myFirstName},</h4>
+        <div className="mt-2 mb-4">{user.myEmailAddress}</div>
+        <div>
+          Account Setup -{' '}
+          <span className="setup">{user.setup && user.setup.total}%</span>
         </div>
+        <Progress
+          value={user.setup && user.setup.total}
+          className="setup-level"
+        />
+      </div>
     </Fragment>
   )
 }
@@ -55,7 +60,7 @@ class LeftSidebar extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      userData: getLoggedInUser()
+      userData: getLoggedInUser(),
     }
   }
 
@@ -66,9 +71,12 @@ class LeftSidebar extends Component {
     document.addEventListener('mousedown', this.handleOtherClick, false)
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = prevProps => {
     // const user = getLoggedInUser()
-    if (prevProps.auth.user.setup.total < this.props.auth.user.setup.total || prevProps.auth.user.myImage !== this.props.auth.user.myImage) {
+    if (
+      prevProps.auth.user.setup.total < this.props.auth.user.setup.total ||
+      prevProps.auth.user.myImage !== this.props.auth.user.myImage
+    ) {
       this.updateUserData(this.props.auth.user)
     }
   }
@@ -80,10 +88,10 @@ class LeftSidebar extends Component {
     document.removeEventListener('mousedown', this.handleOtherClick, false)
   }
 
-  updateUserData = (value) => {
+  updateUserData = value => {
     this.setState({
-      userData: value
-    });
+      userData: value,
+    })
   }
 
   /**

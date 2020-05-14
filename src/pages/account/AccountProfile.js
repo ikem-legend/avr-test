@@ -1,20 +1,33 @@
 import React from 'react'
-import {
-  Progress,
-  CustomInput
-} from 'reactstrap'
+import {Progress, CustomInput} from 'reactstrap'
 import classnames from 'classnames'
 import {getLoggedInUser} from '../../helpers/authUtils'
 import defaultProfilePic from '../../assets/images/users/default-user-avatar.svg'
 
-export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, documentUpload, documentUploadStatus, documentUploadError, topup, image}) => {
+export const AccountProfile = ({
+  user,
+  bankAccountSetup,
+  total,
+  multiplierSetup,
+  documentUpload,
+  documentUploadStatus,
+  documentUploadError,
+  topup,
+  image,
+}) => {
   const backupImage = getLoggedInUser().myImage
   return (
     <div className="account-profile">
       <h6>My Account</h6>
       <div className="media user-profile user-avatar mt-2">
         <img
-          src={image ? image : backupImage === '' ? defaultProfilePic : backupImage}
+          src={
+            /jpg|jpeg$/.test(image)
+              ? image
+              : backupImage === ''
+              ? defaultProfilePic
+              : backupImage
+          }
           className="avatar-lg rounded-circle img-fluid mr-2"
           alt="Avenir"
         />
@@ -40,7 +53,13 @@ export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, 
           checked={bankAccountSetup}
           readOnly
         />
-        <span className={classnames({complete: bankAccountSetup === true}, {incomplete: bankAccountSetup === false}, 'ml-4 font-weight-bold')}>
+        <span
+          className={classnames(
+            {complete: bankAccountSetup === true},
+            {incomplete: bankAccountSetup === false},
+            'ml-4 font-weight-bold',
+          )}
+        >
           {bankAccountSetup ? 'Complete' : 'Incomplete'}
         </span>
       </div>
@@ -52,7 +71,13 @@ export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, 
           checked={multiplierSetup}
           readOnly
         />
-        <span className={classnames({complete: multiplierSetup === true}, {incomplete: multiplierSetup === false}, 'ml-4 font-weight-bold')}>
+        <span
+          className={classnames(
+            {complete: multiplierSetup === true},
+            {incomplete: multiplierSetup === false},
+            'ml-4 font-weight-bold',
+          )}
+        >
           {multiplierSetup ? 'Complete' : 'Incomplete'}
         </span>
       </div>
@@ -61,11 +86,30 @@ export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, 
           type="checkbox"
           id="reg-stage-4"
           label="Upload User ID"
-          checked={documentUpload === true && documentUploadStatus === 'APPROVED'}
+          checked={
+            documentUpload === true && documentUploadStatus === 'APPROVED'
+          }
           readOnly
         />
-        <span className={classnames({complete: documentUpload === true && documentUploadStatus === 'APPROVED'}, {incomplete: documentUpload === false}, 'ml-4 font-weight-bold')}>
-          {documentUpload === true && documentUploadStatus === 'APPROVED' ? 'Complete' : 'Incomplete'} - {documentUploadStatus ? documentUploadStatus === 'PENDING' ? 'Awaiting Verification' : documentUploadStatus : ''}
+        <span
+          className={classnames(
+            {
+              complete:
+                documentUpload === true && documentUploadStatus === 'APPROVED',
+            },
+            {incomplete: documentUpload === false},
+            'ml-4 font-weight-bold',
+          )}
+        >
+          {documentUpload === true && documentUploadStatus === 'APPROVED'
+            ? 'Complete'
+            : 'Incomplete'}{' '}
+          -{' '}
+          {documentUploadStatus
+            ? documentUploadStatus === 'PENDING'
+              ? 'Awaiting Verification'
+              : documentUploadStatus
+            : ''}
         </span>
         <span className={classnames('ml-4 font-weight-bold')}>
           {documentUploadError ? documentUploadError : null}
@@ -79,7 +123,13 @@ export const AccountProfile = ({user, bankAccountSetup, total, multiplierSetup, 
           checked={topup}
           readOnly
         />
-        <span className={classnames({complete: topup === true}, {incomplete: topup === false}, 'ml-4 font-weight-bold')}>
+        <span
+          className={classnames(
+            {complete: topup === true},
+            {incomplete: topup === false},
+            'ml-4 font-weight-bold',
+          )}
+        >
           {topup ? 'Complete' : 'Incomplete'}
         </span>
       </div>

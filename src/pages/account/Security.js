@@ -19,19 +19,19 @@ import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
 import PasswordLoader from '../../assets/images/spin-loader.gif'
 
-class Security  extends Component {
-	constructor() {
-		super()
-		this.state = {
-			twoFA: '',
-			notifications: '',
+class Security extends Component {
+  constructor() {
+    super()
+    this.state = {
+      twoFA: '',
+      notifications: '',
       pwdModal: false,
       acctModal: false,
       password: '',
       newPassword: '',
       confirmNewPassword: '',
-		}
-	}
+    }
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.twofactorAuthStatus !== this.props.twofactorAuthStatus) {
@@ -39,46 +39,77 @@ class Security  extends Component {
     }
   }
 
+  /**
+   * Update local state with user data from parent component
+   * @param {object} e Global event object
+   */
   loadUserData = () => {
     const {twoFA, notifications} = this.props
     this.setState({
       twoFA,
-      notifications
-    });
+      notifications,
+    })
   }
 
-	updateFields = e => {
-		const {name, checked} = e.target
+  /**
+   * Update notification or 2FA settings
+   * @param {object} e Global event object
+   */
+  updateFields = e => {
+    const {name, checked} = e.target
     const {user, updateUserData} = this.props
-		this.setState((prevState) => ({
-			...prevState,
-			[name]: checked
-		}));
+    this.setState(prevState => ({
+      ...prevState,
+      [name]: checked,
+    }))
     if (name === 'twoFA') {
       const twoFactorStatus = {two_factor_auth: checked}
-      callApi('/user/two-factor-auth/status', twoFactorStatus, 'POST', user.token)
+      callApi(
+        '/user/two-factor-auth/status',
+        twoFactorStatus,
+        'POST',
+        user.token,
+      )
         .then(() => {
           updateUserData()
-          this.props.showFeedback('Two-factor setting successfully updated', 'success')
+          this.props.showFeedback(
+            'Two-factor setting successfully updated',
+            'success',
+          )
         })
         .catch(() => {
           updateUserData()
           this.props.showFeedback('Error updating Two-factor setting', 'error')
         })
-      } else {
-        const notificationStatus = {app_notification: checked}
-        callApi('/user/notification/status', notificationStatus, 'POST', user.token)
-          .then(() => {
-            updateUserData()
-            this.props.showFeedback('Notifications setting successfully updated', 'success')
-          })
-          .catch(() => {
-            updateUserData()
-            this.props.showFeedback('Error updating Notifications setting', 'error')
-          })
+    } else {
+      const notificationStatus = {app_notification: checked}
+      callApi(
+        '/user/notification/status',
+        notificationStatus,
+        'POST',
+        user.token,
+      )
+        .then(() => {
+          updateUserData()
+          this.props.showFeedback(
+            'Notifications setting successfully updated',
+            'success',
+          )
+        })
+        .catch(() => {
+          updateUserData()
+          this.props.showFeedback(
+            'Error updating Notifications setting',
+            'error',
+          )
+        })
     }
-	}
+  }
 
+  /**
+   * Move label to top of field on data entry
+   * @param {object} e Global event object
+   */
   activateField = e => {
     document
       .querySelector(`.float-container #${e.target.name}`)
@@ -88,6 +119,10 @@ class Security  extends Component {
     ).parentElement.style.borderLeft = '2px solid #1ca4a9'
   }
 
+  /**
+   * Move label to center of field when empty
+   * @param {object} e Global event object
+   */
   deactivateField = e => {
     document.querySelector(
       `.float-container #${e.target.name}`,
@@ -99,25 +134,35 @@ class Security  extends Component {
     }
   }
 
+  /**
+   * Toggle password modal
+   */
   togglePwdChange = () => {
     const {pwdModal} = this.state
     this.setState({
-      pwdModal: !pwdModal
-    });
+      pwdModal: !pwdModal,
+    })
   }
 
+  /**
+   * Update user password in state
+   * @param {object} e Global event object
+   */
   updatePassword = e => {
     const {name, value} = e.target
     this.setState({
-      [name]: value
-    });
+      [name]: value,
+    })
   }
 
+  /**
+   * Change user password via API call
+   */
   changePassword = () => {
     const {user} = this.props
     const {currentPassword, newPassword, confirmNewPassword} = this.state
     if (newPassword === confirmNewPassword) {
-      this.setState({loadingPwdChange: true});
+      this.setState({loadingPwdChange: true})
       const pwdData = {
         password: newPassword,
         password_current: currentPassword,
@@ -130,40 +175,50 @@ class Security  extends Component {
         .catch(err => {
           if (Object.keys(err).length) {
             const {error} = err.data
-            Object.keys(error).map(obj => (
-              this.props.showFeedback(
-                error[obj][0],
-                'error'
-              )
-            ))
+            Object.keys(error).map(obj =>
+              this.props.showFeedback(error[obj][0], 'error'),
+            )
           } else {
-            this.props.showFeedback('Error updating password, please try again', 'error')
+            this.props.showFeedback(
+              'Error updating password, please try again',
+              'error',
+            )
           }
         })
         .finally(() => {
           this.setState({
             loadingPwdChange: false,
-            pwdModal: false
-          });
+            pwdModal: false,
+          })
         })
     } else {
-      this.props.showFeedback('Passwords do not match, please check and try again', 'error')
+      this.props.showFeedback(
+        'Passwords do not match, please check and try again',
+        'error',
+      )
     }
   }
-  
+
   // eslint-disable-next-line max-lines-per-function
-	render() {
-		const {twoFA, notifications} = this.props
+  render() {
+    const {twoFA, notifications} = this.props
     const {
       pwdModal,
       currentPassword,
       newPassword,
       confirmNewPassword,
       loadingPwdChange,
-      // loadingAcctDelete,
     } = this.state
-    const externalPwdCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={this.togglePwdChange}>&times;</button>;
-		return (
+    const externalPwdCloseBtn = (
+      <button
+        className="close"
+        style={{position: 'absolute', top: '15px', right: '15px'}}
+        onClick={this.togglePwdChange}
+      >
+        &times;
+      </button>
+    )
+    return (
       <div className="mt-2">
         <Row>
           <Col md={12}>
@@ -172,13 +227,17 @@ class Security  extends Component {
         </Row>
         <Row className="mb-4">
           <Col md={9}>
-            <p className="mb-0">For added security, enable a two-step authentication</p>
-            <p className="mb-0">Which will require a PIN when sent to your email or</p>
+            <p className="mb-0">
+              For added security, enable a two-step authentication
+            </p>
+            <p className="mb-0">
+              Which will require a PIN when sent to your email or
+            </p>
             <p className="mb-0">registered phone with Avenir</p>
           </Col>
           <Col md={3} className="d-flex align-items-center">
             <div>
-              <CustomInput 
+              <CustomInput
                 type="switch"
                 id="twoFASwitch"
                 name="twoFA"
@@ -191,7 +250,7 @@ class Security  extends Component {
           </Col>
         </Row>
 
-  			<Row>
+        <Row>
           <Col md={12}>
             <h6 className="font-weight-bold">Notifications</h6>
           </Col>
@@ -199,12 +258,14 @@ class Security  extends Component {
         <Row>
           <Col md={9}>
             <p className="mb-0">For added security, enable notification</p>
-            <p className="mb-0">Which will require a PIN when sent to your email or</p>
+            <p className="mb-0">
+              Which will require a PIN when sent to your email or
+            </p>
             <p>registered phone with Avenir</p>
           </Col>
-  				 <Col md={3} className="d-flex align-items-center">
+          <Col md={3} className="d-flex align-items-center">
             <div>
-              <CustomInput 
+              <CustomInput
                 type="switch"
                 id="notificationsSwitch"
                 name="notifications"
@@ -224,7 +285,16 @@ class Security  extends Component {
         </Row>
         <Row>
           <Col md={12}>
-            <p className="mb-o">To change account password click <span className="setting-highlight" onClick={this.togglePwdChange} onKeyPress={this.togglePwdChange}>here</span></p>
+            <p className="mb-o">
+              To change account password click{' '}
+              <span
+                className="setting-highlight"
+                onClick={this.togglePwdChange}
+                onKeyPress={this.togglePwdChange}
+              >
+                here
+              </span>
+            </p>
           </Col>
         </Row>
 
@@ -235,14 +305,34 @@ class Security  extends Component {
         </Row>
         <Row>
           <Col md={12}>
-            <p className="mb-0">Deleting your account is irreversible and takes 3 - 5 days</p>
-            <p className="mb-0">Ensure you have deleted all your funds from your wallet before this process</p>
-            <p className="mb-o">To start deletion process click <span className="setting-highlight" onClick={this.togglePwdChange} onKeyPress={this.toggleAcctDelete}>here</span></p>
+            <p className="mb-0">
+              Deleting your account is irreversible and takes 3 - 5 days
+            </p>
+            <p className="mb-0">
+              Ensure you have deleted all your funds from your wallet before
+              this process
+            </p>
+            <p className="mb-o">
+              To start deletion process click{' '}
+              <span
+                className="setting-highlight"
+                onClick={this.togglePwdChange}
+                onKeyPress={this.toggleAcctDelete}
+              >
+                here
+              </span>
+            </p>
           </Col>
         </Row>
 
         {/* Password modal */}
-        <Modal isOpen={pwdModal} toggle={this.togglePwdChange} external={externalPwdCloseBtn} size="lg" centered>
+        <Modal
+          isOpen={pwdModal}
+          toggle={this.togglePwdChange}
+          external={externalPwdCloseBtn}
+          size="lg"
+          centered
+        >
           <ModalBody>
             <div className="text-center account-pages">
               <h4 className="setting-highlight mt-4">Change Password</h4>
@@ -260,8 +350,7 @@ class Security  extends Component {
                       value={currentPassword}
                       validate={{
                         pattern: {
-                          value:
-                            '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
+                          value: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
                           errorMessage:
                             'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
                         },
@@ -279,8 +368,8 @@ class Security  extends Component {
                       required
                     />
                     <AvFeedback data-testid="currentPassword-error">
-                      Password must contain at least 1 lowercase, 
-                      1 uppercase, 1 number and 8 characters
+                      Password must contain at least 1 lowercase, 1 uppercase, 1
+                      number and 8 characters
                     </AvFeedback>
                   </AvGroup>
                 </Col>
@@ -297,8 +386,7 @@ class Security  extends Component {
                       value={newPassword}
                       validate={{
                         pattern: {
-                          value:
-                            '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
+                          value: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
                           errorMessage:
                             'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
                         },
@@ -333,8 +421,7 @@ class Security  extends Component {
                       value={confirmNewPassword}
                       validate={{
                         pattern: {
-                          value:
-                            '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
+                          value: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})',
                           errorMessage:
                             'Password must contain at least 1 lowercase, 1 uppercase, 1 number and 8 characters',
                         },
@@ -393,8 +480,8 @@ class Security  extends Component {
           </ModalBody>
         </Modal>
       </div>
-		)
-	}
+    )
+  }
 }
 
 const mapStateToProps = state => ({

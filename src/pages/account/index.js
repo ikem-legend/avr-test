@@ -1,17 +1,9 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
-import {
-  Row,
-  Col,
-  TabPane,
-  TabContent,
-  Nav,
-  NavItem,
-  NavLink,
-} from 'reactstrap'
+import {Row, Col, TabPane, TabContent, Nav, NavItem, NavLink} from 'reactstrap'
 import classnames from 'classnames'
-import isEqual from 'lodash/isEqual'
+import isEqual from 'lodash.isequal'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import {callApi} from '../../helpers/api'
 import {showFeedback, updateUserData} from '../../redux/actions'
@@ -68,12 +60,44 @@ class Account extends Component {
   componentDidMount() {
     this.loadUserData()
   }
-  // document
+
+  /**
+   * Load local state with user data
+   * Optionally update Redux state with latest user data
+   * This ensures sidebar is always up to date with account setup progress
+   * @param {boolean} mlprUpdate Multiplier update status
+   * @param {boolean} imgUpdate Image update status
+   */
   loadUserData = (mlprUpdate = false, imgUpdate = false) => {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
-        const {myFirstName, myLastName, myEmailAddress, myPhoneNumber, myBirthDay, myContactAddress, myContactCity, myContactCountry, myZipCode, myIdentifier, MyInvestmentPause, myMultiplierSetting, myCurrencyDistributions, plaidBanks, appNotifications, twofactorAuthStatus, setup: {bankAccountSetup, multiplierSetup, topup, documentUpload, total}, myImage} = res.data
+        const {
+          myFirstName,
+          myLastName,
+          myEmailAddress,
+          myPhoneNumber,
+          myBirthDay,
+          myContactAddress,
+          myContactCity,
+          myContactCountry,
+          myZipCode,
+          myIdentifier,
+          MyInvestmentPause,
+          myMultiplierSetting,
+          myCurrencyDistributions,
+          plaidBanks,
+          appNotifications,
+          twofactorAuthStatus,
+          setup: {
+            bankAccountSetup,
+            multiplierSetup,
+            topup,
+            documentUpload,
+            total,
+          },
+          myImage,
+        } = res.data
         const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
         const btcVal = myCurrencyDistributions[0].percentage
         const ethVal = myCurrencyDistributions[1].percentage
@@ -88,26 +112,33 @@ class Account extends Component {
             return details
           })
           return acc
-          // Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
         })
         // Deep copy needed to avoid overwriting account details
         // Create an array for the accounts with only id and value and this is
-        // then used to track sttate of each account for linking and unlinking
-        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(acctDet => {
-          Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'link') && delete acctDet[key])
-          return acctDet
-        })
-        const accountsFSArr = JSON.parse(JSON.stringify(acctFSArr)).map(acctDet => {
-          Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'fundingSource') && delete acctDet[key])
-          return acctDet
-        })
+        // then used to track state of each account for linking and unlinking
+        const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(
+          acctDet => {
+            Object.keys(acctDet).forEach(
+              key => key !== 'id' && key !== 'link' && delete acctDet[key],
+            )
+            return acctDet
+          },
+        )
+        const accountsFSArr = JSON.parse(JSON.stringify(acctFSArr)).map(
+          acctDet => {
+            Object.keys(acctDet).forEach(
+              key =>
+                key !== 'id' && key !== 'fundingSource' && delete acctDet[key],
+            )
+            return acctDet
+          },
+        )
         this.setState({
           firstName: myFirstName,
           lastName: myLastName,
           email: myEmailAddress,
           phone: myPhoneNumber ? myPhoneNumber : '',
           dob: new Date(myBirthDay),
-          // dob: myBirthDay * 1000,
           address: myContactAddress ? myContactAddress : '',
           city: myContactCity,
           country: myContactCountry,
@@ -119,7 +150,6 @@ class Account extends Component {
           eth: ethVal,
           currDist: {btc: btcVal, eth: ethVal}, // stores a copy of the distribution for display
           accounts: accountsLinkedList,
-          // accounts: plaidBanks,
           accountsConnectList: accountsConnectArr,
           accountsFSList: accountsFSArr,
           acctFundingSource: res.data.plaidBankAccountFundingSource,
@@ -137,15 +167,11 @@ class Account extends Component {
             invPause: MyInvestmentPause,
             multiplier: multiplierList[myMultiplierSetting],
             currDist: {btc: btcVal, eth: ethVal},
-          }
-        });
+          },
+        })
         if (mlprUpdate || imgUpdate) {
           const userObj = {}
-          Object.assign(
-            userObj,
-            {...res.data},
-            {token: user.token},
-          )
+          Object.assign(userObj, {...res.data}, {token: user.token})
           this.props.updateUserData(userObj)
         }
       })
@@ -154,7 +180,9 @@ class Account extends Component {
       })
   }
 
-  // This updates the data used to compare which functionality was updated and possibly fire one notification instead of 2
+  /**
+   * This updates the data used to compare which functionality was updated and possibly fire one notification instead of 2
+   */
   updateCheckData = () => {
     const {invPause, multiplier, btc, eth} = this.state
     this.setState({
@@ -162,10 +190,14 @@ class Account extends Component {
         invPause,
         multiplier,
         currDist: {btc, eth},
-      }
-    });
+      },
+    })
   }
 
+  /**
+   * Set active tab
+   * @param {string} tab Selected tab
+   */
   toggle = tab => {
     if (tab !== this.state.activeTab) {
       this.setState({
@@ -175,6 +207,10 @@ class Account extends Component {
   }
 
   /* start account settings functions */
+  /**
+   * Update roundup state locally and via API
+   * @param {object} e Global event object
+   */
   switchRoundup = e => {
     const {checked} = e.target
     const {user} = this.props
@@ -205,6 +241,10 @@ class Account extends Component {
       })
   }
 
+  /**
+   * Update multiplier local state
+   * @param {object} e Global event object
+   */
   selectMultiplier = e => {
     const {value} = e.target
     this.setState({
@@ -212,6 +252,11 @@ class Account extends Component {
     })
   }
 
+  /**
+   * Update investment ratio local state
+   * @param {object} e Global event object
+   * @returns {boolean} Return false if invalid amount entered
+   */
   updateRatio = e => {
     const {name, value} = e.target
     if (value.length > 2 && value > 100) {
@@ -224,46 +269,61 @@ class Account extends Component {
           eth: parseInt(100 - value, 10),
           checkDetails: {
             ...prevState.checkDetails,
-            currDist: {              
+            currDist: {
               btc: parseInt(value, 10),
               eth: parseInt(100 - value, 10),
-            }
-          }
-        })
-      )}
+            },
+          },
+        }))
+      }
       if (name === 'eth') {
         this.setState(prevState => ({
           btc: parseInt(100 - value, 10),
           eth: parseInt(value, 10),
           checkDetails: {
             ...prevState.checkDetails,
-            currDist: {    
+            currDist: {
               btc: parseInt(100 - value, 10),
               eth: parseInt(value, 10),
-            }
-          }
-        })
-      )}
+            },
+          },
+        }))
+      }
     }
   }
 
+  /**
+   * Compare which fields changed in a bid to fire two notifications only if both fields changed
+   * else only one notification is fired at a time
+   */
   saveDetails = async () => {
     const {multiplier, currDist, checkDetails} = this.state
-    if (isEqual(multiplier, checkDetails.multiplier) && !isEqual(currDist, checkDetails.currDist)) {
+    if (
+      isEqual(multiplier, checkDetails.multiplier) &&
+      !isEqual(currDist, checkDetails.currDist)
+    ) {
       this.saveRatio()
-    } else if (isEqual(currDist, checkDetails.currDist) && !isEqual(multiplier, checkDetails.multiplier)) {
+    } else if (
+      isEqual(currDist, checkDetails.currDist) &&
+      !isEqual(multiplier, checkDetails.multiplier)
+    ) {
       this.saveMultiplier()
-    } else if (!isEqual(currDist, checkDetails.currDist) && !isEqual(multiplier, checkDetails.multiplier)) {
+    } else if (
+      !isEqual(currDist, checkDetails.currDist) &&
+      !isEqual(multiplier, checkDetails.multiplier)
+    ) {
       await this.saveMultiplier()
       this.saveRatio()
     }
   }
 
+  /**
+   * Update multiplier setting via API
+   */
   saveMultiplier = () => {
     // Check and submit only changed values
     const {multiplier} = this.state
     const {user} = this.props
-    // console.log(user)
     const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
     const selectedMultiplierId = Object.keys(multiplierList).find(
       key => multiplierList[key] === String(parseInt(multiplier, 10)),
@@ -275,7 +335,6 @@ class Account extends Component {
     callApi('/user/multipliers', multiplierObj, 'POST', user.token)
       .then(() => {
         this.props.showFeedback('Multiplier successfully updated', 'success')
-        // this.saveRatio()
         if (user.setup.multiplierSetup.done === false) {
           // Update percentage in left sidebar if multiplier is being set for the first time
           this.loadUserData(true)
@@ -284,19 +343,21 @@ class Account extends Component {
         }
         this.updateCheckData()
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         this.props.showFeedback(
           'Error updating currency ratio, please try again',
         )
       })
-      .finally(() => 
+      .finally(() =>
         this.setState({
           loadingCoinDstrbn: false,
-        })
+        }),
       )
   }
 
+  /**
+   * Set investment ratio setting via API
+   */
   saveRatio = () => {
     const {btc, eth} = this.state
     const {user} = this.props
@@ -325,15 +386,20 @@ class Account extends Component {
           'Error updating currency ratio, please try again',
         )
       })
-      .finally(() => 
+      .finally(() =>
         this.setState({
           loadingCoinDstrbn: false,
-        })
+        }),
       )
   }
   /* end account settings functions */
 
   /* start banks functions */
+  /**
+   * Update linked account state
+   * @param {number} id Selected account ID
+   * @param {boolean} val Selected account status value
+   */
   accountsLinked = (id, val) => {
     const {accountsConnectList} = this.state
     const tempList = accountsConnectList.map(acc => {
@@ -347,12 +413,15 @@ class Account extends Component {
     })
   }
 
+  /**
+   * Update funding source state
+   * @param {number} id Selected account ID
+   * @param {boolean} val Selected funding source status value
+   */
   fundingSourceLinked = (id, val) => {
     const {accountsFSList} = this.state
-    // toggle selected object
-    // const clearedList = accountsFSList.map(acc => ({...acc, fundingSource: false})) // find better solution
+    // TODO: toggle selected object
     const tempList = accountsFSList.map(acc => {
-    // const tempList = clearedList.map(acc => {
       if (acc.id === id) {
         return {...acc, fundingSource: val}
       }
@@ -363,6 +432,9 @@ class Account extends Component {
     })
   }
 
+  /**
+   * Update linked account setting via API
+   */
   connectSelectedAccts = () => {
     const {accountsConnectList, accountsFSList} = this.state
     const {user} = this.props
@@ -370,14 +442,14 @@ class Account extends Component {
     // Check if single funding source
     const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
     if (filteredFS.length === 1) {
-      this.setState({loadingAcctLink: true});
+      this.setState({loadingAcctLink: true})
       callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
         .then(() => {
           this.props.showFeedback('Account(s) successfully linked', 'success')
           this.connectFundingSource(filteredFS[0])
         })
         .catch(() => {
-          this.setState({loadingAcctLink: false});
+          this.setState({loadingAcctLink: false})
           this.props.showFeedback('Error linking account(s)', 'error')
         })
     } else {
@@ -385,17 +457,29 @@ class Account extends Component {
     }
   }
 
-  connectFundingSource = (val) => {
+  /**
+   * Update funding source setting via API
+   * @param {object} val Funding source object
+   */
+  connectFundingSource = val => {
     const {user} = this.props
     const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
-    callApi('/user/plaid/bank/account/funding/source', fsObj, 'POST', user.token)
+    callApi(
+      '/user/plaid/bank/account/funding/source',
+      fsObj,
+      'POST',
+      user.token,
+    )
       .then(() => {
-        this.props.showFeedback('Funding source successfully updated', 'success')
-        this.setState({loadingAcctLink: false, accountModal: false});
+        this.props.showFeedback(
+          'Funding source successfully updated',
+          'success',
+        )
+        this.setState({loadingAcctLink: false, accountModal: false})
         this.loadUserData()
       })
       .catch(() => {
-        this.setState({loadingAcctLink: false});
+        this.setState({loadingAcctLink: false})
         this.props.showFeedback('Error updating funding source', 'error')
       })
   }
@@ -413,12 +497,45 @@ class Account extends Component {
   }
 
   render() {
-    const {firstName, lastName, email, phone, dob, address, city, country, zipCode, referralUrl, multiplier, btc, eth, currDist, invPause, loadingRoundup, loadingCoinDstrbn, accounts, acctFundingSource, accountModal, bankAccountSetup, multiplierSetup, topup, documentUpload, documentUploadStatus, documentUploadError, total, notifications, twofactorAuth, activeTab, loadingAcctLink, image} = this.state
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      dob,
+      address,
+      city,
+      country,
+      zipCode,
+      referralUrl,
+      multiplier,
+      btc,
+      eth,
+      currDist,
+      invPause,
+      loadingRoundup,
+      loadingCoinDstrbn,
+      accounts,
+      acctFundingSource,
+      accountModal,
+      bankAccountSetup,
+      multiplierSetup,
+      topup,
+      documentUpload,
+      documentUploadStatus,
+      documentUploadError,
+      total,
+      notifications,
+      twofactorAuth,
+      activeTab,
+      loadingAcctLink,
+      image,
+    } = this.state
     const {user} = this.props
 
     return (
       <div>
-      {this.renderRedirectToRoot()}
+        {this.renderRedirectToRoot()}
         {/* preloader */}
         {this.props.loading && <Loader />}
         <Row className="page-title">
@@ -507,7 +624,7 @@ class Account extends Component {
                 <Col md={12}>
                   <TabContent activeTab={activeTab}>
                     <TabPane tabId="1" className="p-4">
-                      <EditProfile 
+                      <EditProfile
                         firstName={firstName}
                         lastName={lastName}
                         email={email}
@@ -523,7 +640,7 @@ class Account extends Component {
                       />
                     </TabPane>
                     <TabPane tabId="2" className="p-4">
-                      <AccountSettings 
+                      <AccountSettings
                         multiplier={multiplier}
                         btc={btc}
                         eth={eth}
@@ -539,7 +656,7 @@ class Account extends Component {
                       />
                     </TabPane>
                     <TabPane tabId="3" className="p-4">
-                      <BanksCards 
+                      <BanksCards
                         bankAccounts={accounts}
                         acctFundingSource={acctFundingSource}
                         accountsLinked={this.accountsLinked}
@@ -551,7 +668,12 @@ class Account extends Component {
                       />
                     </TabPane>
                     <TabPane tabId="4" className="p-4">
-                      <Security user={user} twoFA={twofactorAuth} notifications={notifications} updateUserData={this.loadUserData} />
+                      <Security
+                        user={user}
+                        twoFA={twofactorAuth}
+                        notifications={notifications}
+                        updateUserData={this.loadUserData}
+                      />
                     </TabPane>
                   </TabContent>
                 </Col>

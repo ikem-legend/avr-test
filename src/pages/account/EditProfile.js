@@ -52,21 +52,27 @@ class EditProfile extends Component {
     }
   }
 
-  updateFields = e => {
-    const {name, value} = e.target
-    // Update validation logic
-    this.setState(prevState => ({
-      ...prevState,
-      [name]: value,
-    }))
-  }
-
   componentDidUpdate(prevProps) {
     if (this.props.firstName.length > prevProps.firstName.length) {
       this.getProfileDetails()
     }
   }
 
+  /**
+   * Update field in state
+   * @param {object} e Global event object
+   */
+  updateFields = e => {
+    const {name, value} = e.target
+    this.setState(prevState => ({
+      ...prevState,
+      [name]: value,
+    }))
+  }
+
+  /**
+   * Update local state with user data including the country and city list
+   */
   getProfileDetails = async () => {
     const {
       firstName,
@@ -111,7 +117,6 @@ class EditProfile extends Component {
       phone,
       dob,
       address,
-      // city: city ? city : selectedCity,
       city: selectedCity,
       country: selectedCountry,
       zipCode,
@@ -119,6 +124,10 @@ class EditProfile extends Component {
     })
   }
 
+  /**
+   * Move label to top of field on data entry
+   * @param {object} e Global event object
+   */
   activateField = e => {
     document
       .querySelector(`.float-container #${e.target.name}`)
@@ -128,18 +137,24 @@ class EditProfile extends Component {
     ).parentElement.style.borderLeft = '2px solid #1ca4a9'
   }
 
+  /**
+   * Move label to center of field when empty
+   * @param {object} e Global event object
+   */
   deactivateField = e => {
     document.querySelector(
       `.float-container #${e.target.name}`,
     ).parentElement.style.borderLeft = '1px solid #ccc'
     if (e.target.value === '') {
-      // console.log(e.target.name)
       document
         .querySelector(`.float-container #${e.target.name}`)
         .parentElement.classList.remove('active')
     }
   }
 
+  /**
+   * Toggle image upload modal
+   */
   toggleImgUpload = () => {
     const {userDocumentModal} = this.state
     this.setState({
@@ -147,8 +162,10 @@ class EditProfile extends Component {
     })
   }
 
-  // Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
-  // However it does not popup on the edit profile page as it does on the Dashboard so it is of less use here
+  /** Update Document Upload State
+   * Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
+   * However it does not popup on the edit profile page as it does on the Dashboard so it is of less use here
+   */
   updateDocUploadState = () => {
     const userData = JSON.parse(localStorage.getItem('avenirApp'))
     Object.assign(userData, {docUploadState: true})
@@ -156,6 +173,10 @@ class EditProfile extends Component {
     localStorage.setItem('avenirApp', userDataStr)
   }
 
+  /**
+   * Specify ID type
+   * @param {number} id ID indicator
+   */
   specifyId = id => {
     if (id === 1) {
       this.setState({
@@ -170,6 +191,12 @@ class EditProfile extends Component {
     }
   }
 
+  /**
+   * Handle ID upload state update
+   * @param {file} file Image file details
+   * @param {object} body Image body details
+   * @returns {object} setState with image updated
+   */
   handleUserDocument = (file, body) => {
     const {idType, userDocument} = this.state
     if (idType === 'individualGovernmentId' && userDocument.length >= 1) {
@@ -219,6 +246,9 @@ class EditProfile extends Component {
     }
   }
 
+  /**
+   * Upload ID to SendWyre
+   */
   submitUserDocument = () => {
     const {userDocument, idType} = this.state
     const {user} = this.props
@@ -261,6 +291,9 @@ class EditProfile extends Component {
     }
   }
 
+  /**
+   * Update Profile via API
+   */
   updateProfile = () => {
     const {
       firstName,
@@ -314,6 +347,9 @@ class EditProfile extends Component {
       })
   }
 
+  /**
+   * Toggle Image Upload Modal
+   */
   toggleProfileImgUpload = () => {
     const {profileImgModal} = this.state
     this.setState({
@@ -321,6 +357,12 @@ class EditProfile extends Component {
     })
   }
 
+  /**
+   * Handle profile image update state
+   * @param {file} file Image file details
+   * @param {object} body Image body details
+   * @returns {object} setState with image updated
+   */
   handleProfileImg = (file, body) => {
     return resizeImage(file, body).then(blob => {
       return this.setState({
@@ -332,6 +374,9 @@ class EditProfile extends Component {
     })
   }
 
+  /**
+   * Update Profile Image via API
+   */
   submitProfileImg = () => {
     const {user, loadUserData} = this.props
     const {profileImg} = this.state
@@ -348,12 +393,9 @@ class EditProfile extends Component {
       .catch(err => {
         if (Object.keys(err).length) {
           const {error} = err.data
-          Object.keys(error).map(obj => (
-            this.props.showFeedback(
-              error[obj][0],
-              'error'
-            )
-          ))
+          Object.keys(error).map(obj =>
+            this.props.showFeedback(error[obj][0], 'error'),
+          )
         } else {
           this.props.showFeedback(
             'Error updating profile image, please try again',
