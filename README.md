@@ -1,23 +1,38 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Avenir
+Avenir Frontend Dashboard Application
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `yarn start`
+### `npm setup`
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Sets up the project and installs all dependencies.
+
+```
+git clone https://github.com/moji12/roundup-frontend.git
+cd avenir
+npm run setup
+```
+
+### `npm start`
+
+Runs the app in the development mode. The port is currently set to 3001 but can be updated to any other suitable port.<br>
+Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
-### `yarn test`
+### `npm test`
 
-Launches the test runner in the interactive watch mode.<br>
+Launches the Jest test runner in the interactive watch mode.<br>
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `yarn run build`
+### `npm test:e2e:dev`
+
+Launches the Cypress test runner for end to end tests in the interactive watch mode.<br>
+
+### `npm run build`
 
 Builds the app for production to the `build` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
@@ -27,7 +42,7 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn run eject`
+### `npm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
@@ -43,22 +58,9 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+### This project was bootstrapped using:
+- [Create React App](https://github.com/facebook/create-react-app)
+- [redux](https://github.com/reduxjs/redux)
+- [react-redux](https://github.com/reduxjs/react-redux)
+- [redux-saga](https://github.com/redux-saga/redux-saga)
+- [reactstrap](https://reactstrap.github.io/components)
