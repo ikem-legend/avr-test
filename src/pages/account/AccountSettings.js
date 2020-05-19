@@ -20,7 +20,7 @@ import ethImg from '../../assets/images/layouts/eth.svg'
 import SaveLoader from '../../assets/images/spin-loader.gif'
 
 class AccountSettings extends Component {
-  // eslint-disable-next-line
+  // eslint-disable-next-line max-lines-per-function
   render() {
     const {
       multiplier,

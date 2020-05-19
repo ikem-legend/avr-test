@@ -1,39 +1,28 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
-
-import {
-  Container,
-  Row,
-  Col,
-  Label,
-  FormGroup,
-  Button,
-  Alert,
-  Modal,
-  ModalHeader,
-  ModalBody
-} from 'reactstrap'
+import {Container, Row, Col, Label, FormGroup, Button, Alert} from 'reactstrap'
 import {
   AvForm,
   AvGroup,
   AvInput,
   AvFeedback,
 } from 'availity-reactstrap-validation'
-
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
+import PrivacyModal from './PrivacyModal'
+import TermsModal from './TermsModal'
 
 class ForgotPassword extends Component {
   _isMounted = false
 
-  constructor(props) {
-    super(props)
-
-    this.handleValidSubmit = this.handleValidSubmit.bind(this)
+  constructor() {
+    super()
     this.state = {
       email: '',
       password: '',
+      privacyModal: false,
+      termsModal: false,
     }
   }
 
@@ -62,8 +51,11 @@ class ForgotPassword extends Component {
     this.props.loginUser(values.email, this.props.history)
   }
 
+  /**
+   * Move label to top of field on data entry
+   * @param {object} e Global event object
+   */
   activateField = e => {
-    // console.log(e.target.name)
     document
       .querySelector(`.float-container #${e.target.name}`)
       .parentElement.classList.add('active')
@@ -72,40 +64,51 @@ class ForgotPassword extends Component {
     ).parentElement.style.borderLeft = '2px solid #1ca4a9'
   }
 
+  /**
+   * Move label to center of field when empty
+   * @param {object} e Global event object
+   */
   deactivateField = e => {
-    // console.log(e.target.name)
     document.querySelector(
       `.float-container #${e.target.name}`,
     ).parentElement.style.borderLeft = '1px solid #ccc'
     if (e.target.value === '') {
-      // console.log(e.target.name)
       document
         .querySelector(`.float-container #${e.target.name}`)
         .parentElement.classList.remove('active')
     }
   }
 
+  /**
+   * Update field in state
+   * @param {object} e Global event object
+   */
   updateInputValue = e => {
     e.preventDefault()
     const {name, value} = e.target
     this.setState({
       [name]: value,
     })
-    // this.activateField(e);
   }
 
+  /**
+   * Toggle privacy modal
+   */
   togglePrivacy = () => {
     const {privacyModal} = this.state
     this.setState({
-      privacyModal: !privacyModal
-    });
+      privacyModal: !privacyModal,
+    })
   }
 
+  /**
+   * Toggle terms modal
+   */
   toggleTerms = () => {
     const {termsModal} = this.state
     this.setState({
-      termsModal: !termsModal
-    });
+      termsModal: !termsModal,
+    })
   }
 
   /**
@@ -118,6 +121,8 @@ class ForgotPassword extends Component {
       return <Redirect to="/" />
     }
   }
+
+  // eslint-disable-next-line max-lines-per-function
 
   render() {
     const isAuthTokenValid = isUserAuthenticated()
@@ -215,7 +220,19 @@ class ForgotPassword extends Component {
                     </Col>
                     <Col className="col-4">
                       <p className="text-muted font-weight-bold float-right">
-                        <span onClick={this.togglePrivacy} onKeyPress={this.togglePrivacy}>Privacy</span> | <span onClick={this.toggleTerms} onKeyPress={this.toggleTerms}>Terms</span>
+                        <span
+                          onClick={this.togglePrivacy}
+                          onKeyPress={this.togglePrivacy}
+                        >
+                          Privacy
+                        </span>{' '}
+                        |{' '}
+                        <span
+                          onClick={this.toggleTerms}
+                          onKeyPress={this.toggleTerms}
+                        >
+                          Terms
+                        </span>
                       </p>
                     </Col>
                   </Row>
@@ -228,14 +245,8 @@ class ForgotPassword extends Component {
                 </Col>
               </Row>
             </Container>
-            <Modal isOpen={privacyModal} toggle={this.togglePrivacy} centered className="">
-              <ModalHeader>PRIVACY POLICY</ModalHeader>
-              <ModalBody>The Avenir Privacy Policies govern your use of the Services, which allow self-directed Users to: (i) designate Selected Amounts from the Users’ connected accounts for Coinbits to use; (ii) designate Coinbits, as the User’s agent, to automatically purchase and own cryptocurrency for the equivalent value of the Selected Amount, and deposit and hold purchased cryptocurrency via Coinbits’ own wallet that must be accessed with a password or by maintaining a private key (“Digital Wallet”); and (iii) receive the Withdrawal Amount from Coinbits, who will remit to the User the equivalent value in US Dollars of cryptocurrency purchased and owned by Coinbits from User’s Selected Amount upon User’s request. Users will not own cryptocurrency through the Services, and at no point will Coinbits act as a custodian of any User- owned cryptocurrency. Coinbits solely acts as Users’ designated agent with limited actual authority to purchase cryptocurrency that Coinbits owns outright by automatically rounding up pre-completed transactions in the Selected Amount, and Users solely receive the right to view the transactions performed on and the value of the User Account and the right to receive the dollar equivalent amount of cryptocurrency purchased by Coinbits using the Selected Amount by Withdrawal Request. Users have no right or discretion to withdraw, pledge, trade, or otherwise dispose of any cryptocurrency held by Coinbits. Any access to and use of Coinbits’ website, mobile applications, and any other online services provided to automatically debit and credit User’s designated account(s) (as part of the Services) will be subject to and governed by the Coinbits Terms and Policies. You understand that we may revise, update, and add new Coinbits Terms and Policies in our sole discretion, and may update the existing Coinbits Terms and Policies from time to time as described therein. Where appropriate, we may seek to provide advance notice before updated Terms and Policies become effective. You agree that we may notify you of the updated Terms and Policies by posting them on the Services (such as on our website), and that your use of the Services after the effective date of the updated Terms and Policies (or engaging in such other conduct as we may reasonably specify) constitutes your agreement to the updated Terms and Policies. It is your responsibility to check the Coinbits Terms and Policies posted on the Services periodically so that you are aware of any changes, as they are binding on you. The Coinbits Terms and Policies do not constitute a prospectus of any sort, are not a solicitation for investment and do not pertain in any way to an offering of securities in any jurisdiction. It is a description of the Services’ terms and conditions.</ModalBody>
-            </Modal>
-            <Modal isOpen={termsModal} toggle={this.toggleTerms} centered className="">
-              <ModalHeader>TERMS AND CONDITIONS</ModalHeader>
-              <ModalBody>The Coinbits Terms and Policies govern your use of the Services, which allow self-directed Users to: (i) designate Selected Amounts from the Users’ connected accounts for Coinbits to use; (ii) designate Coinbits, as the User’s agent, to automatically purchase and own cryptocurrency for the equivalent value of the Selected Amount, and deposit and hold purchased cryptocurrency via Coinbits’ own wallet that must be accessed with a password or by maintaining a private key (“Digital Wallet”); and (iii) receive the Withdrawal Amount from Coinbits, who will remit to the User the equivalent value in US Dollars of cryptocurrency purchased and owned by Coinbits from User’s Selected Amount upon User’s request. Users will not own cryptocurrency through the Services, and at no point will Coinbits act as a custodian of any User- owned cryptocurrency. Coinbits solely acts as Users’ designated agent with limited actual authority to purchase cryptocurrency that Coinbits owns outright by automatically rounding up pre-completed transactions in the Selected Amount, and Users solely receive the right to view the transactions performed on and the value of the User Account and the right to receive the dollar equivalent amount of cryptocurrency purchased by Coinbits using the Selected Amount by Withdrawal Request. Users have no right or discretion to withdraw, pledge, trade, or otherwise dispose of any cryptocurrency held by Coinbits. Any access to and use of Coinbits’ website, mobile applications, and any other online services provided to automatically debit and credit User’s designated account(s) (as part of the Services) will be subject to and governed by the Coinbits Terms and Policies. You understand that we may revise, update, and add new Coinbits Terms and Policies in our sole discretion, and may update the existing Coinbits Terms and Policies from time to time as described therein. Where appropriate, we may seek to provide advance notice before updated Terms and Policies become effective. You agree that we may notify you of the updated Terms and Policies by posting them on the Services (such as on our website), and that your use of the Services after the effective date of the updated Terms and Policies (or engaging in such other conduct as we may reasonably specify) constitutes your agreement to the updated Terms and Policies. It is your responsibility to check the Coinbits Terms and Policies posted on the Services periodically so that you are aware of any changes, as they are binding on you. The Coinbits Terms and Policies do not constitute a prospectus of any sort, are not a solicitation for investment and do not pertain in any way to an offering of securities in any jurisdiction. It is a description of the Services’ terms and conditions.</ModalBody>
-            </Modal>
+            <PrivacyModal isOpen={privacyModal} toggle={this.togglePrivacy} />
+            <TermsModal isOpen={termsModal} toggle={this.toggleTerms} />
           </div>
         )}
       </Fragment>
@@ -244,12 +255,8 @@ class ForgotPassword extends Component {
 }
 
 const mapStateToProps = state => {
-  const { user, loading, error } = state.Auth;
-// const { loading, error } = state.Auth;
-  return { user, loading, error };
-// return { loading, error };
+  const {user, loading, error} = state.Auth
+  return {user, loading, error}
 }
 
 export default connect(mapStateToProps)(ForgotPassword)
-// export default connect(null, {loginUser})(ForgotPassword)
-// export default connect(mapStateToProps, { loginUser })(ForgotPassword);
