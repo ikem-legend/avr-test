@@ -15,11 +15,9 @@ import {
   NavLink,
 } from 'reactstrap'
 import classnames from 'classnames'
-
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import Loader from '../../assets/images/spin-loader.gif'
 import TopUp from '../../assets/images/topups.svg'
-
 import {callApi} from '../../helpers/api'
 import {showFeedback, updateUserData} from '../../redux/actions'
 import RoundUps from './RoundUps'
@@ -47,6 +45,12 @@ class Transactions extends Component {
     this.loadWithdrawals()
   }
 
+  /**
+   * Load local state with user data
+   * Optionally update Redux state with latest user data
+   * This ensures sidebar is always up to date with account setup progress
+   * @param {boolean} update Topup update status
+   */
   loadUserData = (update = false) => {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
@@ -65,11 +69,7 @@ class Transactions extends Component {
         })
         if (update) {
           const userObj = {}
-          Object.assign(
-            userObj,
-            {...res.data},
-            {token: user.token},
-          )
+          Object.assign(userObj, {...res.data}, {token: user.token})
           this.props.updateUserData(userObj)
         }
       })
@@ -81,6 +81,9 @@ class Transactions extends Component {
       })
   }
 
+  /**
+   * Load roundups
+   */
   loadRoundups = () => {
     const {user} = this.props
     callApi('/user/plaid/bank/get/transactions', null, 'GET', user.token)
@@ -95,6 +98,9 @@ class Transactions extends Component {
       })
   }
 
+  /**
+   * Load topups
+   */
   loadTopups = () => {
     const {user} = this.props
     callApi('/user/wallet/fund', null, 'GET', user.token)
@@ -109,6 +115,9 @@ class Transactions extends Component {
       })
   }
 
+  /**
+   * Load withdrawal
+   */
   loadWithdrawals = () => {
     const {user} = this.props
     callApi('/user/withdraw/fund', null, 'GET', user.token)
@@ -123,12 +132,20 @@ class Transactions extends Component {
       })
   }
 
+  /**
+   * Set active tab
+   * @param {object} e Global event object
+   */
   updateValue = e => {
     this.setState({
       topup: e.target.value,
     })
   }
 
+  /**
+   * Set active tab
+   * @param {string} tab Selected tab
+   */
   toggle = tab => {
     if (tab !== this.state.activeTab) {
       this.setState({
@@ -331,4 +348,6 @@ const mapStateToProps = state => ({
   user: state.Auth.user,
 })
 
-export default connect(mapStateToProps, {showFeedback, updateUserData})(Transactions)
+export default connect(mapStateToProps, {showFeedback, updateUserData})(
+  Transactions,
+)

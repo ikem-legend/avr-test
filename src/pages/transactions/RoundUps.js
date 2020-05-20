@@ -35,17 +35,24 @@ class RoundUps extends Component {
     }
   }
 
+  /**
+   * Load local state with user data
+   */
   loadUserData = () => {
-    const {multiplier, invPause} = this.props    
+    const {multiplier, invPause} = this.props
     this.setState({
       multiplier,
-      invPause,      
+      invPause,
     })
   }
 
+  /**
+   * Load local state with transaction data
+   */
   loadTxnData = () => {
     const {milestone} = this.props
-    const userMilestone = milestone && milestone.length ? parseFloat(milestone[0].amount, 10) : 0
+    const userMilestone =
+      milestone && milestone.length ? parseFloat(milestone[0].amount, 10) : 0
     let milestoneProgress, result
     if (userMilestone > 0) {
       result = (userMilestone * 100) / 5
@@ -53,10 +60,15 @@ class RoundUps extends Component {
     }
     this.setState({
       milestone: milestoneProgress,
-      milestoneAmount: milestone && milestone.length ? milestone[0].amount : '0.00'
-    });
+      milestoneAmount:
+        milestone && milestone.length ? milestone[0].amount : '0.00',
+    })
   }
 
+  /**
+   * Update roundup state locally and via API
+   * @param {object} e Global event object
+   */
   switchRoundup = e => {
     const {checked} = e.target
     const {user} = this.props
@@ -68,7 +80,7 @@ class RoundUps extends Component {
       pause_investment: !checked,
     }
     callApi('/user/investment/status', invStatus, 'POST', user.token)
-      .then(({data}) => {
+      .then(() => {
         this.setState({
           invPause: !checked,
           loadingRndp: false,
@@ -87,6 +99,10 @@ class RoundUps extends Component {
       })
   }
 
+  /**
+   * Update multiplier local state
+   * @param {object} e Global event object
+   */
   selectMultiplier = e => {
     const {value} = e.target
     this.setState({
@@ -94,6 +110,9 @@ class RoundUps extends Component {
     })
   }
 
+  /**
+   * Update multiplier setting via API
+   */
   saveMultiplier = () => {
     const {multiplier} = this.state
     const {user, dataUpdate} = this.props
@@ -132,7 +151,14 @@ class RoundUps extends Component {
   }
 
   render() {
-    const {multiplier, milestone, milestoneAmount, invPause, loadingRndp, loadingMlpr} = this.state
+    const {
+      multiplier,
+      milestone,
+      milestoneAmount,
+      invPause,
+      loadingRndp,
+      loadingMlpr,
+    } = this.state
     return (
       <Row>
         {/* milestone */}

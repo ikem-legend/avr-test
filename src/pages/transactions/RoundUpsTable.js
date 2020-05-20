@@ -1,12 +1,5 @@
 import React, {Component, Fragment} from 'react'
-import {
-  Row,
-  Col,
-  Card,
-  CardBody,
-  Input,
-  Table,
-} from 'reactstrap'
+import {Row, Col, Card, CardBody, Input, Table} from 'reactstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import ToolkitProvider, {
   Search,
@@ -58,8 +51,20 @@ class RoundUpsTable extends Component {
     }
   }
 
-  formatStatus = status => (<span>{`${status[0].toUpperCase()}${status.slice(1)}`}</span>)
+  /**
+   * Format status text
+   * @param {string} status Status
+   * @returns {string} Formatted text
+   */
+  formatStatus = status => (
+    <span>{`${status[0].toUpperCase()}${status.slice(1)}`}</span>
+  )
 
+  /**
+   * Format amount text
+   * @param {string} amount Amount
+   * @returns {string} Formatted text
+   */
   formatCurr = amount => <span>${amount}</span>
 
   componentDidUpdate(prevProps) {
@@ -68,8 +73,16 @@ class RoundUpsTable extends Component {
     }
   }
 
+  /**
+   * Format amount text
+   * @param {array} updatedList Array of transactions
+   */
   updateTxnList = updatedList => {
-    const newList = updatedList.map((item, idx) => ({...item, name: 'Roundups', key: idx}))
+    const newList = updatedList.map((item, idx) => ({
+      ...item,
+      name: 'Roundups',
+      key: idx,
+    }))
     this.setState({roundups: newList})
   }
 
@@ -114,36 +127,34 @@ class RoundUpsTable extends Component {
       renderer: (row, rowIdx) => {
         const txnDetails = row.transactions.map(item => (
           <tr key={`${row.id}-${rowIdx}-${item.id}`}>
-          <td></td>
-          <td>{item.transaction_date}</td>
-          <td>{item.transaction}</td>
-          <td>${item.amount}</td>
-          <td>${item.remainder}</td>
-          <td>${item.transaction_investment_amount}</td>
-          <td>{item.multiplier}x</td>
-        </tr>
-          )
-        )
+            <td />
+            <td>{item.transaction_date}</td>
+            <td>{item.transaction}</td>
+            <td>${item.amount}</td>
+            <td>${item.remainder}</td>
+            <td>${item.transaction_investment_amount}</td>
+            <td>{item.multiplier}x</td>
+          </tr>
+        ))
         return (
-        <div>
-          <Table striped hover>
-            <thead>
-              <tr>
-                <th></th>
-                <th>Date</th>
-                <th>Transaction</th>
-                <th>Amount</th>
-                <th>Round-Up</th>
-                <th>Multiplier Amount</th>
-                <th>Multiplier</th>
-              </tr>
-            </thead>
-            <tbody>
-              {txnDetails}
-            </tbody>
-          </Table>
-        </div>
-      )},
+          <div>
+            <Table striped hover>
+              <thead>
+                <tr>
+                  <th />
+                  <th>Date</th>
+                  <th>Transaction</th>
+                  <th>Amount</th>
+                  <th>Round-Up</th>
+                  <th>Multiplier Amount</th>
+                  <th>Multiplier</th>
+                </tr>
+              </thead>
+              <tbody>{txnDetails}</tbody>
+            </Table>
+          </div>
+        )
+      },
       showExpandColumn: true,
       onlyOneExpanding: true,
       expandHeaderColumnRenderer: ({isAnyExpands}) => {
