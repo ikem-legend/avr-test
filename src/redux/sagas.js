@@ -3,6 +3,9 @@ import layoutSaga from './layout/saga'
 import authSaga from './auth/saga'
 import appMenuSaga from './appMenu/saga'
 
-export default function* rootSaga(getState: any): any {
+/**
+ * Root saga configuration
+ */
+export default function* rootSaga() {
   yield all([layoutSaga(), authSaga(), appMenuSaga()])
 }

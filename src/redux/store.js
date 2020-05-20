@@ -6,7 +6,13 @@ import sagas from './sagas'
 
 const sagaMiddleware = createSagaMiddleware()
 const middlewares = [sagaMiddleware]
-export function configureStore(initialState: {}) {
+
+/**
+ * Configure Redux store
+ * @param {object} initialState Initial State
+ * @returns {object} store Redux store
+ */
+export function configureStore(initialState = {}) {
   const composeEnhancers =
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 

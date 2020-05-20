@@ -17,7 +17,7 @@ export const toFormData = values => {
 }
 
 /**
- * Specify ID type
+ * Number with commas
  * @param {number} x Number
  * @returns {string} Number formatted with commas
  */
@@ -25,7 +25,7 @@ export const numberWithCommas = x =>
   x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
 
 /**
- * Specify ID type
+ * Resize image
  * @param {file} file Image file details
  * @param {object} body Image body details
  * @returns {Promise} Resized image
