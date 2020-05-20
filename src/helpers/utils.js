@@ -31,8 +31,7 @@ export const numberWithCommas = x =>
  * @returns {Promise} Resized image
  */
 export function resizeImage(file, body) {
-  // eslint-disable-next-line babel/new-cap
-  const pica = Pica()
+  const pica = new Pica()
 
   const outputCanvas = document.createElement('canvas')
   outputCanvas.height = 480
