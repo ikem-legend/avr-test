@@ -34,15 +34,11 @@ class AccountConnect extends Component {
     super(props)
     this.state = {
       accountModal: false,
-      cardModal: false,
       invModal: false,
       accounts: [],
       accountsLinkedList: [],
-      cards: [],
-      cardsLinkedList: [],
       loadingAccts: true,
       loadingAcctLink: false,
-      loadingCards: true,
       loadingDstrbn: false,
       btc: 50,
       eth: 50,
@@ -61,6 +57,9 @@ class AccountConnect extends Component {
     document.body.classList.remove('authentication-bg')
   }
 
+  /**
+   * Toggle account modal
+   */
   toggle = () => {
     const {accountModal} = this.state
     this.setState({
@@ -68,9 +67,12 @@ class AccountConnect extends Component {
     })
   }
 
+  /**
+   * Handle Successful Plaid link
+   * @param {string} token Public token
+   * @param {object} metadata Metadata object
+   */
   handleOnSuccess = (token, metadata) => {
-    console.log(token)
-    console.log(metadata)
     const {user} = this.props
     this.setState({
       accountModal: true,
@@ -99,10 +101,6 @@ class AccountConnect extends Component {
           acc.fundingSource = false
           return acc
         })
-        // const accountsFSArr = JSON.parse(JSON.stringify(fsList)).map(acctDet => {
-        //   Object.keys(acctDet).forEach(key => (key !== 'id' && key !== 'fundingSource') && delete acctDet[key])
-        //   return acctDet
-        // })
         this.setState({
           accounts: accountsModList,
           accountsLinkedList,
@@ -117,13 +115,19 @@ class AccountConnect extends Component {
       })
   }
 
+  /**
+   * Handle Plaid Link exit
+   */
   handleOnExit = () => {
-    // handle the case when your user exits Link
-    this.props.showFeedback('Exited Plaid account linking', 'error')
+    this.props.showFeedback('Cancelled bank account linking', 'error')
   }
 
+  /**
+   * Update linked account state
+   * @param {number} id Selected account ID
+   * @param {boolean} val Selected account status value
+   */
   accountsLinked = (id, val) => {
-    // console.log(id, val)
     const {accountsLinkedList} = this.state
     const tempList = accountsLinkedList.map(acc => {
       if (acc.id === id) {
@@ -138,6 +142,11 @@ class AccountConnect extends Component {
     })
   }
 
+  /**
+   * Update funding source state
+   * @param {number} id Selected account ID
+   * @param {boolean} val Selected funding source status value
+   */
   fundingSourceLinked = (id, val) => {
     const {accountsFSList} = this.state
     const tempList = accountsFSList.map(acc => {
@@ -151,6 +160,9 @@ class AccountConnect extends Component {
     })
   }
 
+  /**
+   * Update linked account setting via API
+   */
   connectSelectedAccts = () => {
     const {accountsLinkedList, accountsFSList} = this.state
     const {user} = this.props
@@ -173,6 +185,10 @@ class AccountConnect extends Component {
     }
   }
 
+  /**
+   * Set funding source via API
+   * @param {object} val Funding source details
+   */
   connectFundingSource = val => {
     const {user} = this.props
     const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
@@ -193,13 +209,17 @@ class AccountConnect extends Component {
           invModal: true,
         })
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         this.setState({loadingAcctLink: false})
         this.props.showFeedback('Error updating funding source', 'error')
       })
   }
 
+  /**
+   * Update investment ratio local state
+   * @param {object} e Global event object
+   * @returns {boolean} Return false if invalid amount entered
+   */
   updateRatio = e => {
     const {name, value} = e.target
     if (value.length > 2 && value > 100) {
@@ -211,7 +231,8 @@ class AccountConnect extends Component {
           btc: parseInt(value, 10),
           eth: parseInt(100 - value, 10),
         })
-      } else {
+      }
+      if (name === 'eth') {
         this.setState({
           btc: parseInt(100 - value, 10),
           eth: parseInt(value, 10),
@@ -220,6 +241,9 @@ class AccountConnect extends Component {
     }
   }
 
+  /**
+   * Set investment ratio setting via API
+   */
   saveRatio = () => {
     const {btc, eth} = this.state
     const {user} = this.props
@@ -289,7 +313,7 @@ class AccountConnect extends Component {
 
     return (
       <Fragment>
-        {/*this.renderRedirectToRoot()*/}
+        {this.renderRedirectToRoot()}
 
         {(this._isMounted || !isAuthTokenValid) && (
           <div className="account-pages mt-5 mb-5">
@@ -306,14 +330,14 @@ class AccountConnect extends Component {
                           </p>
                         </div>
                       </div>
-                      <div className="overlay signup-bg"></div>
+                      <div className="overlay signup-bg" />
                     </Col>
                     <Col md={6} className="position-relative">
                       {/* preloader */}
                       {this.props.loading && <Loader />}
 
                       <div className="auth-page-sidebar">
-                        <div className="overlay"></div>
+                        <div className="overlay" />
                         <div className="auth-user-testimonial">
                           <p className="verify-info font-weight-bold text-muted mb-0">
                             This bank account will be used for your weekly
@@ -382,9 +406,8 @@ class AccountConnect extends Component {
                                 Your account is now linked to Avenir. Tick a box
                                 to choose your{' '}
                                 <span className="font-weight-bold">
-                                  Funding Source
+                                  Funding Source.
                                 </span>
-                                .
                               </p>
                               <p>
                                 You can unlink an account by clicking on the{' '}

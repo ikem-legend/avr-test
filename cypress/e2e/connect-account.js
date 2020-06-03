@@ -58,6 +58,9 @@ describe('Connect Account Page', () => {
     cy.route('POST', '/api/v1/user/plaid/bank/account/link', {
       data: {message: 'your account has been linked'},
     })
+    cy.route('POST', '/api/v1/user/plaid/bank/account/funding/source', {
+      data: {message: 'your funding source account has been activated'},
+    })
     cy.route(
       'POST',
       'https://sandbox.plaid.com/link/item/create',
@@ -101,7 +104,15 @@ describe('Connect Account Page', () => {
 
     getIframeBody()
       .wait('@banks')
-      .get('.linked', {timeout: 20000})
+      .findAllByText('Linked', {timeout: 20000})
+      .first()
+      .click({force: true})
+      .findByText(/continue/i, {timeout: 10000})
+      .click({force: true})
+      .get('.Toastify__toast-body', {timeout: 10000})
+      .should('contain.text', 'Please specify only one funding source')
+      .should('be.visible')
+      .get('.funding-btn')
       .first()
       .click({force: true})
       .findByText(/continue/i, {timeout: 10000})
@@ -115,7 +126,7 @@ describe('Connect Account Page', () => {
       .get('input[name="eth"]')
       .should('have.value', '70')
       .wait(2000)
-      .findByText(/save/i, {timeout: 10000})
+      .findByText(/continue account setup/i, {timeout: 10000})
       .click()
       .get('.Toastify__toast-body', {timeout: 10000})
       .should('contain.text', 'Currency ratio successfully updated')

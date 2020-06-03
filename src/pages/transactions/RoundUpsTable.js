@@ -51,10 +51,20 @@ class RoundUpsTable extends Component {
     }
   }
 
+  /**
+   * Format status text
+   * @param {string} status Status
+   * @returns {string} Formatted text
+   */
   formatStatus = status => (
     <span>{`${status[0].toUpperCase()}${status.slice(1)}`}</span>
   )
 
+  /**
+   * Format amount text
+   * @param {string} amount Amount
+   * @returns {string} Formatted text
+   */
   formatCurr = amount => <span>${amount}</span>
 
   componentDidUpdate(prevProps) {
@@ -63,6 +73,10 @@ class RoundUpsTable extends Component {
     }
   }
 
+  /**
+   * Format amount text
+   * @param {array} updatedList Array of transactions
+   */
   updateTxnList = updatedList => {
     const newList = updatedList.map((item, idx) => ({
       ...item,
@@ -113,7 +127,7 @@ class RoundUpsTable extends Component {
       renderer: (row, rowIdx) => {
         const txnDetails = row.transactions.map(item => (
           <tr key={`${row.id}-${rowIdx}-${item.id}`}>
-            <td></td>
+            <td />
             <td>{item.transaction_date}</td>
             <td>{item.transaction}</td>
             <td>${item.amount}</td>
@@ -127,7 +141,7 @@ class RoundUpsTable extends Component {
             <Table striped hover>
               <thead>
                 <tr>
-                  <th></th>
+                  <th />
                   <th>Date</th>
                   <th>Transaction</th>
                   <th>Amount</th>

@@ -1,6 +1,5 @@
 import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux'
-// import {Redirect} from 'react-router-dom'
 import {
   Row,
   Col,
@@ -15,171 +14,13 @@ import {
 } from 'reactstrap'
 import classnames from 'classnames'
 import Loader from '../../components/Loader'
-// import {callApi} from '../../helpers/api'
 import {showFeedback} from '../../redux/actions'
 import btcImg from '../../assets/images/layouts/btc.svg'
 import ethImg from '../../assets/images/layouts/eth.svg'
 import SaveLoader from '../../assets/images/spin-loader.gif'
 
 class AccountSettings extends Component {
-  // constructor() {
-  //   super()
-  //   this.state = {
-  //     multiplier: '1',
-  //     btc: 50,
-  //     eth: 50,
-  //     invPause: false,
-  //     loading: false,
-  //     currDist: {},
-  //   }
-  // }
-
-  // componentDidMount() {
-  //   this.loadUserData()
-  // }
-
-  // loadUserData = () => {
-  //   const {user} = this.props
-  //   callApi('/auth/me', null, 'GET', user.token)
-  //     .then(res => {
-  //       const {
-  //         MyInvestmentPause,
-  //         myMultiplierSetting,
-  //         myCurrencyDistributions,
-  //       } = res.data
-  //       const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
-  //       const btcVal = myCurrencyDistributions[0].percentage
-  //       const ethVal = myCurrencyDistributions[1].percentage
-  //       this.setState({
-  //         multiplier: multiplierList[myMultiplierSetting],
-  //         invPause: MyInvestmentPause,
-  //         btc: btcVal,
-  //         eth: ethVal,
-  //         currDist: {btc: btcVal, eth: ethVal},
-  //       })
-  //     })
-  //     .catch(err => {
-  //       this.props.showFeedback(err, 'error')
-  //       // this.props.showFeedback('Error retrieving user details. Please try again', 'error')
-  //     })
-  // }
-
-  // switchRoundup = e => {
-  //   const {checked} = e.target
-  //   const {user} = this.props
-  //   this.setState({
-  //     invPause: !checked,
-  //     loading: true,
-  //   })
-  //   const invStatus = {
-  //     pause_investment: !checked,
-  //   }
-  //   callApi('/user/investment/status', invStatus, 'POST', user.token)
-  //     .then(({data}) => {
-  //       console.log(data)
-  //       this.setState({
-  //         loading: false,
-  //       })
-  //       this.props.showFeedback('Round-up successfully updated', 'success')
-  //     })
-  //     .catch(() => {
-  //       this.setState({
-  //         loading: false,
-  //         invPause: checked,
-  //       })
-  //       this.props.showFeedback(
-  //         'Error updating round-up. Please try again',
-  //         'error',
-  //       )
-  //     })
-  // }
-
-  // selectMultiplier = e => {
-  //   const {value} = e.target
-  //   this.setState({
-  //     multiplier: value,
-  //   })
-  // }
-
-  // updateRatio = e => {
-  //   const {name, value} = e.target
-  //   if (value.length > 2 && value > 100) {
-  //     this.props.showFeedback('Please enter valid amount', 'error')
-  //     return false
-  //   } else {
-  //     if (name === 'btc') {
-  //       this.setState({
-  //         btc: parseInt(value, 10),
-  //         eth: parseInt(100 - value, 10),
-  //       })
-  //     } else {
-  //       this.setState({
-  //         btc: parseInt(100 - value, 10),
-  //         eth: parseInt(value, 10),
-  //       })
-  //     }
-  //   }
-  // }
-
-  // saveMultiplier = () => {
-  //   const {multiplier} = this.state
-  //   const {user} = this.props
-  //   // console.log(user)
-  //   const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
-  //   const selectedMultiplierId = Object.keys(multiplierList).find(
-  //     key => multiplierList[key] === String(parseInt(multiplier, 10)),
-  //   )
-  //   this.setState({
-  //     loading: true,
-  //   })
-  //   const multiplierObj = {multiplier: selectedMultiplierId}
-  //   // console.log(multiplierObj)
-  //   callApi('/user/multipliers', multiplierObj, 'POST', user.token)
-  //     .then(() => {
-  //       this.props.showFeedback('Multiplier successfully updated', 'success')
-  //       this.saveRatio()
-  //     })
-  //     .catch(err => {
-  //       console.log(err)
-  //       this.setState({
-  //         loading: false,
-  //       })
-  //       this.props.showFeedback(
-  //         'Error updating currency ratio, please try again',
-  //       )
-  //     })
-  // }
-
-  // saveRatio = () => {
-  //   const {btc, eth} = this.state
-  //   const {user} = this.props
-  //   // Created temporarily
-  //   const currArray = [
-  //     {id: 2, percentage: btc},
-  //     {id: 3, percentage: eth},
-  //   ]
-  //   const currObj = {currencies: currArray}
-  //   callApi('/user/distributions', currObj, 'POST', user.token)
-  //     .then(() => {
-  //       this.props.showFeedback(
-  //         'Currency ratio successfully updated',
-  //         'success',
-  //       )
-  //       this.setState({
-  //         loading: false,
-  //         currDist: {btc, eth},
-  //       })
-  //     })
-  //     .catch(() => {
-  //       this.props.showFeedback(
-  //         'Error updating currency ratio, please try again',
-  //       )
-  //       this.setState({
-  //         loading: false,
-  //       })
-  //     })
-  // }
-  // eslint-disable-next-line
+  // eslint-disable-next-line max-lines-per-function
   render() {
     const {
       multiplier,

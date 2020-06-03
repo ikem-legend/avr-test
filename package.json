@@ -52,7 +52,6 @@
     "react-toastify": "^5.5.0",
     "reactstrap": "^8.0.1",
     "redux": "^4.0.4",
-    "redux-persist": "^6.0.0",
     "redux-saga": "^1.1.1",
     "sortablejs": "^1.10.0",
     "universal-cookie": "^4.0.3"
@@ -91,7 +90,7 @@
       "no-console": "off",
       "jsx-a11y/accessible-emoji": "off",
       "consistent-return": "off",
-      "camelcase": "off",
+      "babel/camelcase": "off",
       "max-lines-per-function": [
         "error",
         200

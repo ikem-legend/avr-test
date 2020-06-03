@@ -46,10 +46,20 @@ class TopUpsTable extends Component {
     }
   }
 
+  /**
+   * Format status text
+   * @param {string} status Status
+   * @returns {string} Formatted text
+   */
   formatStatus = status => (
     <span>{`${status[0].toUpperCase()}${status.slice(1)}`}</span>
   )
 
+  /**
+   * Format amount text
+   * @param {string} amount Amount
+   * @returns {string} Formatted text
+   */
   formatCurr = amount => <span>${amount}</span>
 
   componentDidUpdate(prevProps) {

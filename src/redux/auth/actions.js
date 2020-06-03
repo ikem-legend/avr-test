@@ -7,9 +7,6 @@ import {
   REGISTER_USER,
   REGISTER_USER_SUCCESS,
   REGISTER_USER_FAILED,
-  FORGET_PASSWORD,
-  FORGET_PASSWORD_SUCCESS,
-  FORGET_PASSWORD_FAILED,
   UPDATE_USER_DATA,
   UPDATE_USER_DATA_SUCCESS,
 } from './constants'
@@ -47,21 +44,6 @@ export const registerUserFailed = error => ({
 export const logoutUser = history => ({
   type: LOGOUT_USER,
   payload: {history},
-})
-
-export const forgetPassword = username => ({
-  type: FORGET_PASSWORD,
-  payload: {username},
-})
-
-export const forgetPasswordSuccess = passwordResetStatus => ({
-  type: FORGET_PASSWORD_SUCCESS,
-  payload: passwordResetStatus,
-})
-
-export const forgetPasswordFailed = error => ({
-  type: FORGET_PASSWORD_FAILED,
-  payload: error,
 })
 
 export const updateUserData = userData => ({

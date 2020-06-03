@@ -11,11 +11,9 @@ import {
   Input,
 } from 'reactstrap'
 import {Link} from 'react-feather'
-
 import {showFeedback} from '../../redux/actions'
 import {callApi} from '../../helpers/api'
 import {isUserAuthenticated} from '../../helpers/authUtils'
-// import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 
 class Referral extends Component {
@@ -25,7 +23,7 @@ class Referral extends Component {
     this.state = {
       referralCode: '',
       referralUrl: '',
-      copySuccess: '',
+      // copySuccess: '',
     }
     this.refUrlInput = createRef()
   }
@@ -39,7 +37,6 @@ class Referral extends Component {
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
         const {myIdentifier} = res.data
-        // console.log(res)
         this.setState({
           referralCode: myIdentifier,
           referralUrl: `https://my.avenir-app.com/r/${myIdentifier}`,
@@ -50,35 +47,14 @@ class Referral extends Component {
       })
   }
 
-  copyRefCode = e => {
-    // const {referralUrl} = this.state
-    // console.log('Copying...')
-    // let ax = document.querySelector('.referral-url')
-    // ax.select()
-    // console.log(this.textInput)
-    console.log(this.refUrlInput)
-    // console.log(this.textInput.current)
-    console.log(this.refUrlInput.select())
-    // this.textInput.current.focus();
+  /**
+   * Copy referral code
+   */
+  copyRefCode = () => {
+    // console.log(this.refUrlInput)
+    // console.log(this.refUrlInput.select())
     document.execCommand('copy')
-    // This is just personal preference.
-    // I prefer to not show the the whole text area selected.
-    // e.target.focus();
-    this.setState({copySuccess: 'Copied!'})
-
-    // this.textArea.select();
-    //   document.execCommand('copy');
-    // document.execCommand('copy', null, referralUrl)
-
-    // const el = document.createElement('textarea');
-    //  el.value = referralUrl;
-    //  el.setAttribute('readonly', '');
-    //  el.style.position = 'absolute';
-    //  el.style.left = '-9999px';
-    //  document.body.appendChild(el);
-    //  el.select();
-    //  document.execCommand('copy');
-    //  document.body.removeChild(el);
+    // this.setState({copySuccess: 'Copied!'})
   }
 
   /**

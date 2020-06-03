@@ -405,6 +405,14 @@ span.edit-ratio {
   border: 1px solid #eaeaea;
 }
 
+.setting-highlight {
+	color: $avenir-deep-blue;
+	font-weight: bold;
+	&:hover {
+		cursor: pointer;
+	}
+}
+
 
 // Referral
 .referral-head {

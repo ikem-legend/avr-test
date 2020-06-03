@@ -58,6 +58,14 @@ describe('Login Page', () => {
   })
 
   it('requires correct email and password combination', () => {
+    user.server()
+    user.route({
+      method: 'POST',
+      url: '/api/v1/auth/signin',
+      status: 401,
+      response: {data: {error: 'unauthenticated', code: 401}},
+    })
+
     user
       .findByLabelText(/email/i)
       .type('frank@ocean.com')

@@ -1,7 +1,8 @@
 import React from 'react'
 import {Progress, CustomInput} from 'reactstrap'
 import classnames from 'classnames'
-import profilePic from '../../assets/images/users/default-user-avatar.svg'
+import {getLoggedInUser} from '../../helpers/authUtils'
+import defaultProfilePic from '../../assets/images/users/default-user-avatar.svg'
 
 export const AccountProfile = ({
   user,
@@ -12,19 +13,22 @@ export const AccountProfile = ({
   documentUploadStatus,
   documentUploadError,
   topup,
+  image,
 }) => {
+  const backupImage = getLoggedInUser().myImage
   return (
     <div className="account-profile">
       <h6>My Account</h6>
       <div className="media user-profile user-avatar mt-2">
         <img
-          src={profilePic}
-          className="avatar-lg rounded-circle mr-2"
-          alt="Avenir"
-        />
-        <img
-          src={profilePic}
-          className="avatar-xs rounded-circle mr-2"
+          src={
+            /jpg|jpeg$/.test(image)
+              ? image
+              : backupImage === ''
+              ? defaultProfilePic
+              : backupImage
+          }
+          className="avatar-lg rounded-circle img-fluid mr-2"
           alt="Avenir"
         />
       </div>

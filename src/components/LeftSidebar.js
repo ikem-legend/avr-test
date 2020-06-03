@@ -11,25 +11,19 @@ import AppMenu from './AppMenu'
 
 /**
  * User Widget
+ * @param {object} user User prop
+ * @returns {node} User Profile details
  */
 const UserProfile = ({user}) => {
-  // const user = getLoggedInUser()
   return (
     <Fragment>
       <div className="media user-profile user-avatar mt-2">
         <img
-          src={profilePic}
-          bg
-          className="avatar-lg rounded-circle mr-2"
-          alt="Avenir"
-        />
-        <img
-          src={profilePic}
-          className="avatar-xs rounded-circle mr-2"
+          src={/jpg|jpeg$/.test(user.myImage) ? user.myImage : profilePic}
+          className="avatar-lg rounded-circle img-fluid mr-2"
           alt="Avenir"
         />
       </div>
-
       <div className="media-body user-profile details mb-2">
         <h4 className="pro-user-name mt-2 mb-0">Hi {user.myFirstName},</h4>
         <div className="mt-2 mb-4">{user.myEmailAddress}</div>
@@ -40,7 +34,7 @@ const UserProfile = ({user}) => {
         <Progress
           value={user.setup && user.setup.total}
           className="setup-level"
-        ></Progress>
+        />
       </div>
     </Fragment>
   )
@@ -48,6 +42,7 @@ const UserProfile = ({user}) => {
 
 /**
  * Sidenav
+ * @returns {node} Sidebar Nav
  */
 const SideNav = () => {
   return (
@@ -67,8 +62,6 @@ class LeftSidebar extends Component {
     this.state = {
       userData: getLoggedInUser(),
     }
-    this.handleClick = this.handleClick.bind(this)
-    this.handleOtherClick = this.handleOtherClick.bind(this)
   }
 
   /**
@@ -80,8 +73,10 @@ class LeftSidebar extends Component {
 
   componentDidUpdate = prevProps => {
     // const user = getLoggedInUser()
-    // debugger
-    if (prevProps.auth.user.setup.total < this.props.auth.user.setup.total) {
+    if (
+      prevProps.auth.user.setup.total < this.props.auth.user.setup.total ||
+      prevProps.auth.user.myImage !== this.props.auth.user.myImage
+    ) {
       this.updateUserData(this.props.auth.user)
     }
   }
@@ -101,6 +96,7 @@ class LeftSidebar extends Component {
 
   /**
    * Handle the click anywhere in doc
+   * @param {object} e Global event object
    */
   handleOtherClick = e => {
     if (this.menuNodeRef.contains(e.target)) return
@@ -110,30 +106,19 @@ class LeftSidebar extends Component {
     }
   }
 
-  /**
-   * Handle click
-   * @param {*} e
-   * @param {*} item
-   */
-  handleClick(e) {
-    console.log(e)
-  }
-
   render() {
     const isCondensed = this.props.isCondensed || false
     const {userData} = this.state
     return (
-      <Fragment>
-        <div className="left-side-menu" ref={node => (this.menuNodeRef = node)}>
-          <UserProfile user={userData} />
-          {!isCondensed && (
-            <PerfectScrollbar>
-              <SideNav />
-            </PerfectScrollbar>
-          )}
-          {isCondensed && <SideNav />}
-        </div>
-      </Fragment>
+      <div className="left-side-menu" ref={node => (this.menuNodeRef = node)}>
+        <UserProfile user={userData} />
+        {!isCondensed && (
+          <PerfectScrollbar>
+            <SideNav />
+          </PerfectScrollbar>
+        )}
+        {isCondensed && <SideNav />}
+      </div>
     )
   }
 }

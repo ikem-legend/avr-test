@@ -1,8 +1,6 @@
-/* eslint-disable camelcase */
 import React, {Component, Fragment, createRef} from 'react'
 import {connect} from 'react-redux'
 import {Redirect, Link} from 'react-router-dom'
-// import {Cookies} from 'react-cookie'
 import subYears from 'date-fns/subYears'
 import {
   Container,
@@ -83,6 +81,10 @@ class Signup extends Component {
     document.body.classList.remove('authentication-bg')
   }
 
+  /**
+   * Move label to top of field on data entry
+   * @param {object} e Global event object
+   */
   activateField = e => {
     document
       .querySelector(`.float-container #${e.target.name}`)
@@ -92,22 +94,28 @@ class Signup extends Component {
     ).parentElement.style.borderLeft = '2px solid #1ca4a9'
   }
 
+  /**
+   * Move label to center of field when empty
+   * @param {object} e Global event object
+   */
   deactivateField = e => {
     document.querySelector(
       `.float-container #${e.target.name}`,
     ).parentElement.style.borderLeft = '1px solid #ccc'
     if (e.target.value === '') {
-      // console.log(e.target.name)
       document
         .querySelector(`.float-container #${e.target.name}`)
         .parentElement.classList.remove('active')
     }
   }
 
+  /**
+   * Update field in state
+   * @param {object} e Global event object
+   */
   updateInputValue = e => {
     e.preventDefault()
     const {name, value, files} = e.target
-    // console.log(name, value)
     if (files) {
       this.setState(prevState => ({
         ...prevState,
@@ -127,6 +135,10 @@ class Signup extends Component {
     }
   }
 
+  /**
+   * Update terms in state
+   * @param {object} e Global event object
+   */
   updateTerms = e => {
     const {checked} = e.target
     this.setState({
@@ -135,7 +147,7 @@ class Signup extends Component {
   }
 
   /**
-   * Handles the submit
+   * Handles the form submit
    * @returns {function} showFeedback Displays feedback
    **/
   handleValidSubmit = async () => {
@@ -156,14 +168,10 @@ class Signup extends Component {
       const data = {...this.state.inputs}
       // Date format
       const year = new Date(data.dob).getFullYear().toString()
-      // const month = new Date(data.dob).getMonth().toString();
       const month = (1 + new Date(data.dob).getMonth()).toString()
-      // month = month.length > 1 ? month : `0${month}`;
       const day = new Date(data.dob).getDate().toString()
-      // day = day.length > 1 ? day : `0${day}`;
 
       data.dob = `${month}-${day}-${year}`
-      // data.dob = String(data.dob)
       data.first_name = String(data.firstname)
       data.last_name = String(data.lastname)
       data.zip_code = String(data.zipcode)
@@ -200,6 +208,7 @@ class Signup extends Component {
     }
   }
 
+  // eslint-disable-next-line max-lines-per-function
   render() {
     const isAuthTokenValid = isUserAuthenticated()
     const {
@@ -259,7 +268,7 @@ class Signup extends Component {
                           </div>
                         </div>
                       </div>
-                      <div className="overlay signup-bg h-100"></div>
+                      <div className="overlay signup-bg h-100" />
                     </Col>
                     <Col md={7} className="position-relative">
                       <div className="px-5">
@@ -267,7 +276,7 @@ class Signup extends Component {
                         {this.props.loading && <Loader />}
 
                         <div className="auth-page-sidebar mb-4">
-                          <div className="overlay"></div>
+                          <div className="overlay" />
                           <div className="auth-user-testimonial d-block d-sm-none">
                             <p className="lead font-weight-bold">
                               <span>Create an Account</span>
@@ -402,8 +411,9 @@ class Signup extends Component {
                                     onBlur={this.deactivateField}
                                     onChange={this.updateInputValue}
                                     validate={{
+                                      // tel: {pattern: /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/},
                                       pattern: {
-                                        value: '^[0-9]+$',
+                                        value: /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
                                         errorMessage:
                                           'Your phone number must be composed only with numbers',
                                       },
@@ -413,7 +423,7 @@ class Signup extends Component {
                                           'Your phone number must be between 10 and 15 characters',
                                       },
                                       maxLength: {
-                                        value: 15,
+                                        value: 17,
                                         errorMessage:
                                           'Your phone number must be between 10 and 15 characters',
                                       },

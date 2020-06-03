@@ -24,8 +24,6 @@ class BanksCards extends Component {
     super()
     this.state = {
       accounts: [],
-      accountsLinkedList: [],
-      accountsFSList: [],
       loadingAccts: false,
       accountModal: false,
       disableConnectBtn: false,
@@ -38,11 +36,19 @@ class BanksCards extends Component {
     }
   }
 
+  /**
+   * Update local Modal state
+   */
   updateModalState = () => {
     const {accountModal} = this.props
     this.setState({accountModal})
   }
 
+  /**
+   * Handle Successful Plaid link
+   * @param {string} token Public token
+   * @param {object} metadata Metadata object
+   */
   handleOnSuccess = (token, metadata) => {
     const {user} = this.props
     this.setState({
@@ -60,24 +66,8 @@ class BanksCards extends Component {
           acc.fundingSource = acc.accountFundingSource
           return acc
         })
-        // Deep copy is the best option
-        const accountList = JSON.parse(JSON.stringify(res.data.accounts))
-        const accountsLinkedList = accountList.map(acc => {
-          Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
-          acc.link = true
-          return acc
-        })
-        const fsList = JSON.parse(JSON.stringify(res.data.accounts))
-        const accountsFSArr = fsList.map(acc => {
-          Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
-          acc.fundingSource = false
-          return acc
-        })
         this.setState({
           accounts: accountsModList,
-          // accounts: res.data.accounts,
-          accountsLinkedList,
-          accountsFSList: accountsFSArr,
           loadingAccts: false,
         })
       })
@@ -87,52 +77,17 @@ class BanksCards extends Component {
       })
   }
 
+  /**
+   * Handle Plaid Link exit
+   */
   handleOnExit = () => {
-    // handle the case when your user exits Link
-    this.props.showFeedback('Exited Plaid account linking', 'error')
+    this.props.showFeedback('Cancelled bank account linking', 'error')
   }
 
-  // Rework to parent component
-  // connectSelectedAccts = () => {
-  //   const {accountsLinkedList} = this.state
-  //   const {user, loadUserData} = this.props
-  //   const accountsObj = {accounts_link: accountsLinkedList}
-  //   callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
-  //     .then(() => {
-  //       this.props.showFeedback('Account(s) successfully linked', 'success')
-  //       loadUserData()
-  //       this.setState({
-  //         accountModal: false,
-  //       })
-  //     })
-  //     .catch(() => {
-  //       this.props.showFeedback('Error linking account(s)', 'error')
-  //     })
-  // }
-
-  // connectSelectedAccts = () => {
-  //   const {accountsLinkedList, accountsFSList} = this.state
-  //   const {user} = this.props
-  //   const accountsObj = {accounts_link: accountsLinkedList}
-  //   // Check if single funding source
-  //   const filteredFS = accountsFSList.filter(fs => fs.fundingSource === true)
-  //   if (filteredFS.length === 1) {
-  //     this.setState({loadingAcctLink: true});
-  //     callApi('/user/plaid/bank/account/link', accountsObj, 'POST', user.token)
-  //       .then(() => {
-  //         this.props.showFeedback('Account(s) successfully linked', 'success')
-  //         this.connectFundingSource(filteredFS[0])
-  //       })
-  //       .catch(err => {
-  //         console.log(err)
-  //         this.setState({loadingAcctLink: false});
-  //         this.props.showFeedback('Error linking account(s)', 'error')
-  //       })
-  //   } else {
-  //     this.props.showFeedback('Please specify only one funding source', 'error')
-  //   }
-  // }
-
+  /**
+   * Set funding source via API
+   * @param {object} val Funding source details
+   */
   connectFundingSource = val => {
     const {user, loadUserData} = this.props
     const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
@@ -149,19 +104,18 @@ class BanksCards extends Component {
         )
         loadUserData()
         this.setState({
-          loadingAcctLink: false,
           accountModal: false,
         })
       })
-      .catch(err => {
-        console.log(err)
-        this.setState({loadingAcctLink: false})
+      .catch(() => {
         this.props.showFeedback('Error updating funding source', 'error')
       })
   }
 
+  /**
+   * Cancel account link
+   */
   exitAccountLink = () => {
-    // Possibly unlink/deactivate selected bank
     this.setState({
       accountModal: false,
     })

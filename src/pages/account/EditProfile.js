@@ -24,6 +24,7 @@ import {callApi} from '../../helpers/api'
 import {resizeImage, toFormData} from '../../helpers/utils'
 import {showFeedback} from '../../redux/actions'
 import DocumentUpload from '../../components/DocumentUpload'
+import ImageUpload from '../../components/ImageUpload'
 import SaveLoader from '../../assets/images/spin-loader.gif'
 
 class EditProfile extends Component {
@@ -45,16 +46,10 @@ class EditProfile extends Component {
       userDocument: ['', ''],
       userDocumentModal: false,
       idType: 'individualProofOfAddress',
+      profileImgModal: false,
+      profileImg: '',
+      loadingImgUpload: false,
     }
-  }
-
-  updateFields = e => {
-    const {name, value} = e.target
-    // Update validation logic
-    this.setState(prevState => ({
-      ...prevState,
-      [name]: value,
-    }))
   }
 
   componentDidUpdate(prevProps) {
@@ -63,6 +58,21 @@ class EditProfile extends Component {
     }
   }
 
+  /**
+   * Update field in state
+   * @param {object} e Global event object
+   */
+  updateFields = e => {
+    const {name, value} = e.target
+    this.setState(prevState => ({
+      ...prevState,
+      [name]: value,
+    }))
+  }
+
+  /**
+   * Update local state with user data including the country and city list
+   */
   getProfileDetails = async () => {
     const {
       firstName,
@@ -107,7 +117,6 @@ class EditProfile extends Component {
       phone,
       dob,
       address,
-      // city: city ? city : selectedCity,
       city: selectedCity,
       country: selectedCountry,
       zipCode,
@@ -115,6 +124,10 @@ class EditProfile extends Component {
     })
   }
 
+  /**
+   * Move label to top of field on data entry
+   * @param {object} e Global event object
+   */
   activateField = e => {
     document
       .querySelector(`.float-container #${e.target.name}`)
@@ -124,30 +137,35 @@ class EditProfile extends Component {
     ).parentElement.style.borderLeft = '2px solid #1ca4a9'
   }
 
+  /**
+   * Move label to center of field when empty
+   * @param {object} e Global event object
+   */
   deactivateField = e => {
     document.querySelector(
       `.float-container #${e.target.name}`,
     ).parentElement.style.borderLeft = '1px solid #ccc'
     if (e.target.value === '') {
-      // console.log(e.target.name)
       document
         .querySelector(`.float-container #${e.target.name}`)
         .parentElement.classList.remove('active')
     }
   }
 
+  /**
+   * Toggle image upload modal
+   */
   toggleImgUpload = () => {
     const {userDocumentModal} = this.state
-    // if (userDocumentModal) {
-    //   this.updateDocUploadState()
-    // }
     this.setState({
       userDocumentModal: !userDocumentModal,
     })
   }
 
-  // Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
-  // However it does not popup on the edit profile page as it does on the Dashboard so it is of less use here
+  /** Update Document Upload State
+   * Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
+   * However it does not popup on the edit profile page as it does on the Dashboard so it is of less use here
+   */
   updateDocUploadState = () => {
     const userData = JSON.parse(localStorage.getItem('avenirApp'))
     Object.assign(userData, {docUploadState: true})
@@ -155,6 +173,10 @@ class EditProfile extends Component {
     localStorage.setItem('avenirApp', userDataStr)
   }
 
+  /**
+   * Specify ID type
+   * @param {number} id ID indicator
+   */
   specifyId = id => {
     if (id === 1) {
       this.setState({
@@ -169,6 +191,12 @@ class EditProfile extends Component {
     }
   }
 
+  /**
+   * Handle ID upload state update
+   * @param {file} file Image file details
+   * @param {object} body Image body details
+   * @returns {object} setState with image updated
+   */
   handleUserDocument = (file, body) => {
     const {idType, userDocument} = this.state
     if (idType === 'individualGovernmentId' && userDocument.length >= 1) {
@@ -218,6 +246,9 @@ class EditProfile extends Component {
     }
   }
 
+  /**
+   * Upload ID to SendWyre
+   */
   submitUserDocument = () => {
     const {userDocument, idType} = this.state
     const {user} = this.props
@@ -260,6 +291,9 @@ class EditProfile extends Component {
     }
   }
 
+  /**
+   * Update Profile via API
+   */
   updateProfile = () => {
     const {
       firstName,
@@ -313,6 +347,69 @@ class EditProfile extends Component {
       })
   }
 
+  /**
+   * Toggle Image Upload Modal
+   */
+  toggleProfileImgUpload = () => {
+    const {profileImgModal} = this.state
+    this.setState({
+      profileImgModal: !profileImgModal,
+    })
+  }
+
+  /**
+   * Handle profile image update state
+   * @param {file} file Image file details
+   * @param {object} body Image body details
+   * @returns {object} setState with image updated
+   */
+  handleProfileImg = (file, body) => {
+    return resizeImage(file, body).then(blob => {
+      return this.setState({
+        profileImg: {
+          src: URL.createObjectURL(blob),
+          blob,
+        },
+      })
+    })
+  }
+
+  /**
+   * Update Profile Image via API
+   */
+  submitProfileImg = () => {
+    const {user, loadUserData} = this.props
+    const {profileImg} = this.state
+    const userData = toFormData({image: profileImg.blob})
+    this.setState({
+      loadingImgUpload: true,
+    })
+    callApi('/user/profile/image/upload', userData, 'POST', user.token)
+      .then(() => {
+        loadUserData(false, true)
+        this.toggleProfileImgUpload()
+        this.props.showFeedback('Profile image updated successfully', 'success')
+      })
+      .catch(err => {
+        if (Object.keys(err).length) {
+          const {error} = err.data
+          Object.keys(error).map(obj =>
+            this.props.showFeedback(error[obj][0], 'error'),
+          )
+        } else {
+          this.props.showFeedback(
+            'Error updating profile image, please try again',
+            'error',
+          )
+        }
+      })
+      .finally(() => {
+        this.setState({
+          loadingImgUpload: false,
+        })
+      })
+  }
+
   // eslint-disable-next-line max-lines-per-function
   render() {
     const {
@@ -331,6 +428,9 @@ class EditProfile extends Component {
       userDocument,
       userDocumentModal,
       loadingUpload,
+      profileImg,
+      profileImgModal,
+      loadingImgUpload,
     } = this.state
     const customStyles = {
       placeholder: defaultStyles => ({
@@ -459,7 +559,7 @@ class EditProfile extends Component {
                   onChange={this.updateFields}
                   validate={{
                     pattern: {
-                      value: '^[0-9]+$',
+                      value: /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/,
                       errorMessage:
                         'Your phone number must be composed only with numbers',
                     },
@@ -631,6 +731,14 @@ class EditProfile extends Component {
               >
                 Upload User Registration
               </Button>
+              <Button
+                color="blue"
+                block
+                className="mt-1 mb-5"
+                onClick={this.toggleProfileImgUpload}
+              >
+                Upload Profile Image
+              </Button>
               {/* Document upload */}
               <DocumentUpload
                 userDocumentModal={userDocumentModal}
@@ -640,6 +748,15 @@ class EditProfile extends Component {
                 handleUserDocument={this.handleUserDocument}
                 submitUserDocument={this.submitUserDocument}
                 loadingUpload={loadingUpload}
+              />
+              {/* Image upload */}
+              <ImageUpload
+                profileImgModal={profileImgModal}
+                profileImg={profileImg}
+                toggleProfileImgUpload={this.toggleProfileImgUpload}
+                handleProfileImg={this.handleProfileImg}
+                submitProfileImg={this.submitProfileImg}
+                loadingImgUpload={loadingImgUpload}
               />
             </Col>
           </Row>

@@ -8,7 +8,6 @@ import {toast} from 'react-toastify'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import {numberWithCommas, resizeImage, toFormData} from '../../helpers/utils'
 import {callApi} from '../../helpers/api'
-// import { getLoggedInUser, isUserAuthenticated } from '../../helpers/authUtils'
 import Loader from '../../components/Loader'
 import DocumentUpload from '../../components/DocumentUpload'
 import {showFeedback, updateUserData} from '../../redux/actions'
@@ -22,8 +21,8 @@ import RevenueChart from './RevenueChart'
 import InvestmentChart from './InvestmentChart'
 
 class Dashboard extends Component {
-  constructor(props) {
-    super(props)
+  constructor() {
+    super()
 
     this.state = {
       userDocument: ['', ''],
@@ -63,6 +62,9 @@ class Dashboard extends Component {
     clearInterval(this.ratesUpdate)
   }
 
+  /**
+   * Get exchange rates from SendWyre
+   */
   getExchangeRates = () => {
     callApi('https://api.sendwyre.com/v3/rates', null, 'GET', null)
       .then(res => {
@@ -138,6 +140,9 @@ class Dashboard extends Component {
       })
   }
 
+  /**
+   * Toggle topup modal
+   */
   toggleTopup = () => {
     const {topupModal} = this.state
     this.setState({
@@ -145,11 +150,18 @@ class Dashboard extends Component {
     })
   }
 
+  /**
+   * Update topup in state
+   * @param {object} e Global event object
+   */
   updateTopup = e => {
     const {value} = e.target
     this.setState({topup: value})
   }
 
+  /**
+   * Set topup setting via API
+   */
   setTopup = () => {
     this.setState({loadingTopup: true})
     const {myCurrencyDistributions, topup} = this.state
@@ -188,6 +200,9 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Toggle withdrawal modal
+   */
   toggleWithdraw = () => {
     const {withdrawModal} = this.state
     this.setState({
@@ -195,12 +210,20 @@ class Dashboard extends Component {
     })
   }
 
+  /**
+   * Update selected coin in state
+   * @param {object} val Selected coin
+   */
   selectCoin = val => {
     this.setState({
       activeCoin: val,
     })
   }
 
+  /**
+   * Update withdrawal value in state
+   * @param {object} e Global event object
+   */
   updateWithdrawal = e => {
     const {value} = e.target
     const {activeCoin, btcVal, ethVal} = this.state
@@ -212,6 +235,9 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Withdraw via API
+   */
   fundsWithdraw = () => {
     const {user} = this.props
     const {withdraw, activeCoin} = this.state
@@ -242,6 +268,9 @@ class Dashboard extends Component {
       })
   }
 
+  /**
+   * Toggle image upload
+   */
   toggleImgUpload = () => {
     const {userDocumentModal} = this.state
     if (userDocumentModal) {
@@ -252,7 +281,10 @@ class Dashboard extends Component {
     })
   }
 
-  // Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
+  /**
+   * Update document upload in state
+   * Used to ensure that the image upload popup only displays once per session for users who haven't done it yet
+   */
   updateDocUploadState = () => {
     const userData = JSON.parse(localStorage.getItem('avenirApp'))
     Object.assign(userData, {docUploadState: true})
@@ -260,6 +292,10 @@ class Dashboard extends Component {
     localStorage.setItem('avenirApp', userDataStr)
   }
 
+  /**
+   * Specify ID type
+   * @param {number} id ID indicator
+   */
   specifyId = id => {
     if (id === 1) {
       this.setState({
@@ -274,6 +310,12 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Handle ID upload state update
+   * @param {file} file Image file details
+   * @param {object} body Image body details
+   * @returns {object} setState with image updated
+   */
   handleUserDocument = (file, body) => {
     const {idType, userDocument} = this.state
     if (idType === 'individualGovernmentId' && userDocument.length >= 1) {
@@ -323,6 +365,9 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Upload ID to SendWyre
+   */
   submitUserDocument = () => {
     const {userDocument, idType} = this.state
     const {user} = this.props
@@ -397,6 +442,24 @@ class Dashboard extends Component {
       loadingWithdraw,
     } = this.state
     const {user} = this.props
+    const externalTopupCloseBtn = (
+      <button
+        className="close"
+        style={{position: 'absolute', top: '15px', right: '15px'}}
+        onClick={this.toggleTopup}
+      >
+        &times;
+      </button>
+    )
+    const externalWdlCloseBtn = (
+      <button
+        className="close"
+        style={{position: 'absolute', top: '15px', right: '15px'}}
+        onClick={this.toggleWithdraw}
+      >
+        &times;
+      </button>
+    )
     return (
       <Fragment>
         {this.renderRedirectToRoot()}
@@ -495,7 +558,12 @@ class Dashboard extends Component {
           </Row>
 
           {/* Top-up modal */}
-          <Modal isOpen={topupModal} toggle={this.toggleTopup} centered>
+          <Modal
+            isOpen={topupModal}
+            toggle={this.toggleTopup}
+            external={externalTopupCloseBtn}
+            centered
+          >
             <ModalBody>
               <div className="text-center">
                 <h4 className="wallet-topup mt-4">Wallet Top Up</h4>
@@ -504,7 +572,7 @@ class Dashboard extends Component {
                 <img src={TopUp} alt="Top Up" className="img-fluid" />
                 <h4>{`$${numberWithCommas(walletTotal.toFixed(2))}`}</h4>
                 <p>Total Wallet Balance</p>
-                <Form row>
+                <Form className="row" onSubmit={this.setTopup}>
                   <Col md={{offset: 2, size: 8}}>
                     <Input
                       name="topup"
@@ -552,7 +620,12 @@ class Dashboard extends Component {
           </Modal>
 
           {/* Withdrawal modal */}
-          <Modal isOpen={withdrawModal} toggle={this.toggleWithdraw} centered>
+          <Modal
+            isOpen={withdrawModal}
+            toggle={this.toggleWithdraw}
+            external={externalWdlCloseBtn}
+            centered
+          >
             <ModalBody>
               <div className="text-center">
                 <h4 className="wallet-topup mt-4 mb-0">Make a withdrawal</h4>
@@ -590,7 +663,7 @@ class Dashboard extends Component {
                 <h4 className="mt-4">
                   ${activeCoin === 'btc' ? btcVal : ethVal}
                 </h4>
-                <Form row>
+                <Form className="row">
                   <Col md={{offset: 2, size: 8}}>
                     <Input
                       name="topup"

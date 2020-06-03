@@ -1,14 +1,17 @@
+/* eslint-disable max-lines-per-function */
 import {buildUser} from '../support/generator'
 import 'cypress-file-upload'
 
 describe('Register Page', () => {
   const user = cy
-  beforeEach(() => {
-    user.visit('/account/signup')
+  const customer = buildUser()
 
+  before(() => {
     user.fixture('countries').as('countriesJSON')
-    cy.server()
-    cy.route('GET', '/api/v1/data/countries', '@countriesJSON')
+    user.server()
+    user.route('GET', '/api/v1/data/countries', '@countriesJSON')
+
+    user.visit('/account/signup')
   })
 
   it('greets with create an account and confirm your identity', () => {
@@ -40,7 +43,8 @@ describe('Register Page', () => {
 
   it('requires first name', () => {
     user
-      .findByText(/sign up/i)
+      .findAllByText(/create an account/i)
+      .last()
       .click()
       .findByTestId('fname-error')
       .should('be.visible')
@@ -60,14 +64,19 @@ describe('Register Page', () => {
 
   it('requires last name', () => {
     user
-      .findByText(/sign up/i)
+      .findByLabelText(/first name/i)
+      .click({force: true})
+      .clear()
+      .type('John')
+      .findAllByText(/create an account/i)
+      .first()
       .click()
       .findByTestId('lname-error')
       .should('be.visible')
       .should('contain', `Last Name is invalid`)
   })
 
-  it('requires first name to be letters only', () => {
+  it('requires last name to be letters only', () => {
     user
       .findByLabelText(/last name/i)
       .click({force: true})
@@ -78,29 +87,15 @@ describe('Register Page', () => {
       .should('contain', `Last Name is invalid`)
   })
 
-  it('requires phone number', () => {
-    user
-      .findByText(/sign up/i)
-      .click()
-      .findByTestId('phone-error')
-      .should('be.visible')
-      .should('contain', `Phone number is invalid`)
-  })
-
-  it('requires phone number to be valid numbers', () => {
-    user
-      .findByLabelText(/phone/i)
-      .type('anemail@example.com')
-      .blur()
-      .findByTestId('phone-error')
-      .should('be.visible')
-      .should('contain', `Phone number is invalid`)
-  })
-
   it('requires email', () => {
     user
-      .findByText(/sign up/i)
-      .click()
+      .findByLabelText(/last name/i)
+      .click({force: true})
+      .clear()
+      .type('Doe')
+      .findAllByText(/create an account/i)
+      .first()
+      .click({force: true})
       .findByTestId('email-error')
       .should('be.visible')
       .should('contain', `Email is invalid`)
@@ -109,16 +104,43 @@ describe('Register Page', () => {
   it('requires email to be valid email', () => {
     user
       .findByLabelText(/email/i)
-      .type('1234@33#.cp')
+      .type('1234@33#.cp', {force: true})
       .blur()
       .findByTestId('email-error')
       .should('be.visible')
       .should('contain', `Email is invalid`)
   })
 
+  it('requires phone number', () => {
+    user
+      .findByLabelText(/email/i)
+      .clear()
+      .type('john.doe@gmail.com', {force: true})
+      .findAllByText(/create an account/i)
+      .first()
+      .click({force: true})
+      .findByTestId('phone-error')
+      .should('be.visible')
+      .should('contain', `Phone number is invalid`)
+  })
+
+  it('requires phone number to be valid numbers', () => {
+    user
+      .findByLabelText(/phone/i)
+      .type('09987gk8797', {force: true})
+      .blur()
+      .findByTestId('phone-error')
+      .should('be.visible')
+      .should('contain', `Phone number is invalid`)
+  })
+
   it('requires password', () => {
     user
-      .findByText(/sign up/i)
+      .findByLabelText(/phone/i)
+      .clear()
+      .type('09056458778', {force: true})
+      .findAllByText(/create an account/i)
+      .first()
       .click()
       .findAllByTestId('password-error')
       .should('be.visible')
@@ -145,7 +167,12 @@ describe('Register Page', () => {
 
   it('requires confirm password', () => {
     user
-      .findByText(/sign up/i)
+      .findByLabelText('Password')
+      .click({force: true})
+      .clear()
+      .type('Password1@')
+      .findAllByText(/create an account/i)
+      .first()
       .click()
       .findAllByTestId('password-error')
       .should('be.visible')
@@ -154,9 +181,6 @@ describe('Register Page', () => {
 
   it(`requires confirm password to not match`, () => {
     user
-      .findByLabelText('Password')
-      .click({force: true})
-      .type('Password1@#')
       .findByLabelText('Confirm Password')
       .click({force: true})
       .type('Password')
@@ -173,8 +197,12 @@ describe('Register Page', () => {
       .should('contain', `Passwords do not match`)
   })
 
-  it('should have 07-Apr-1995 as date selected', () => {
+  it('should have 04-07-1995 as date selected', () => {
     user
+      .findByLabelText('Confirm Password')
+      .click({force: true})
+      .clear()
+      .type('Password1@')
       .findByLabelText(/date of birth/i)
       .click({force: true})
       .get('.numInput')
@@ -184,111 +212,17 @@ describe('Register Page', () => {
       .get('[aria-label="April 7, 1995"]')
       .click()
       .get('#dob')
-      .should('have.value', '07-Apr-1995')
+      .should('have.value', '04-07-1995')
   })
 
   it('requires street address', () => {
-    user
-      .findByText(/sign up/i)
-      .click()
-      .findByTestId('address-error')
-      .should('contain', `Address is invalid`)
-  })
-
-  it('requires city', () => {
-    const customer = buildUser()
-    user
-      .findByLabelText(/first name/i)
-      .click({force: true})
-      .type(customer.firstName)
-      .findByLabelText(/last name/i)
-      .click({force: true})
-      .type(customer.lastName)
-      .click({force: true})
-      .findByLabelText(/email/i)
-      .type(customer.email)
-      .findByLabelText(/phone/i)
-      .type('07036975559')
-      .findByLabelText('Password')
-      .click({force: true})
-      .type('Password1')
-      .findByLabelText('Confirm Password')
-      .click({force: true})
-      .type('Password1')
-      .findByLabelText(/date of birth/i)
-      .click({force: true})
-      .get('.numInput')
-      .type('1995')
-      .get('.flatpickr-monthDropdown-months')
-      .select('April')
-      .get('[aria-label="April 7, 1995"]')
-      .click({force: true})
-      .findByLabelText(/street address/i)
-      .click({force: true})
-      .type(customer.streetAddress)
-      .findByLabelText(/zipcode/i)
-      .click({force: true})
-      .type(customer.zipcode)
-      .findByLabelText(
-        /Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy/i,
-      )
-      .check({force: true})
-      .findByText(/sign up/i)
-      .click()
-      .findAllByText('Please select your city')
-      .should('be.visible')
-  })
-
-  it('requires country', () => {
-    const customer = buildUser()
-    user
-      .findByLabelText(/first name/i)
-      .click({force: true})
-      .type(customer.firstName)
-      .findByLabelText(/last name/i)
-      .click({force: true})
-      .type(customer.lastName)
-      .findByLabelText(/email/i)
-      .type(customer.email)
-      .findByLabelText(/phone/i)
-      .type('07036975559')
-      .findByLabelText('Password')
-      .click({force: true})
-      .type('Password1')
-      .findByLabelText('Confirm Password')
-      .click({force: true})
-      .type('Password1')
-      .findByLabelText(/date of birth/i)
-      .click({force: true})
-      .get('.numInput')
-      .type('1995')
-      .get('.flatpickr-monthDropdown-months')
-      .select('April')
-      .get('[aria-label="April 7, 1995"]')
-      .click({force: true})
-      .findByLabelText(/street address/i)
-      .type(customer.streetAddress, {force: true})
-      .findByLabelText(/choose your city/i)
-      .click()
-      .findByText('New York')
-      .click()
-      .findByLabelText(/zipcode/i)
-      .click({force: true})
-      .type(customer.zipcode)
-      .findByLabelText(
-        /Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy/i,
-      )
-      .check({force: true})
-      .findByText(/sign up/i)
-      .click()
-      .findAllByText('Please select your country')
-      .should('be.visible')
+    user.findByTestId('address-error').should('contain', `Address is invalid`)
   })
 
   it('requires zip code', () => {
     user
-      .findByText(/sign up/i)
-      .click()
+      .findByLabelText(/street address/i)
+      .type(customer.streetAddress, {force: true})
       .findByTestId('zip-error')
       .should('be.visible')
       .should('contain', `Zipcode is invalid`)
@@ -305,114 +239,90 @@ describe('Register Page', () => {
       .should('contain', `Zipcode is invalid`)
   })
 
-  it('requires terms and conditions', () => {
-    const customer = buildUser()
-
+  it('requires city', () => {
     user
-      .findByLabelText(/first name/i)
+      .findByLabelText(/zipcode/i)
       .click({force: true})
-      .type(customer.firstName)
-      .findByLabelText(/last name/i)
-      .click({force: true})
-      .type(customer.lastName)
-      .findByLabelText(/email/i)
-      .type(customer.email)
-      .findByLabelText(/phone/i)
-      .type('07036975559')
-      .findByLabelText('Password')
-      .click({force: true})
-      .type('Password1')
-      .findByLabelText('Confirm Password')
-      .click({force: true})
-      .type('Password1')
-      .findByLabelText(/date of birth/i)
-      .click({force: true})
-      .get('.numInput')
-      .type('1995')
-      .get('.flatpickr-monthDropdown-months')
-      .select('April')
-      .get('[aria-label="April 7, 1995"]')
+      .clear()
+      .type(customer.zipcode)
+      .findAllByText(/create an account/i)
+      .last()
       .click()
-      .findByLabelText(/street address/i)
-      .type(customer.streetAddress, {force: true})
+      .findAllByText('Please select your city')
+      .should('be.visible')
+  })
+
+  it('requires country', () => {
+    user
       .findByLabelText(/choose your city/i)
       .click()
       .findByText('New York')
       .click()
+      .findAllByText(/create an account/i)
+      .last()
+      .click()
+      .findAllByText('Please select your country')
+      .should('be.visible')
+  })
+
+  it('requires terms and conditions', () => {
+    user
       .findByLabelText(/select your country/i)
       .click()
       .findByText('United States')
       .click()
-      .findByLabelText(/zipcode/i)
-      .click({force: true})
-      .type(customer.zipcode)
-      .findByText(/sign up/i)
+      .findAllByText(/create an account/i)
+      .last()
       .click()
       .findAllByText('Please agree to the terms and conditions')
       .should('be.visible')
   })
 
-  it('should register a new user', () => {
-    const customer = buildUser()
-    cy.fixture('signup').as('signupJSON')
-    user.fixture('signin').as('signinJSON')
-    user.fixture('user').as('usersJSON')
-    cy.server()
-    cy.route('POST', '/api/v1/auth/signup', '@signupJSON')
-    user.route('POST', '/api/v1/auth/signin', '@signinJSON')
-    user.route('GET', '/api/v1/auth/me', '@usersJSON')
+  it('it should not register user if email exist', () => {
+    user.fixture('signup').as('signupJSON')
+    user.server()
+    user.route({
+      method: 'POST',
+      url: '/api/v1/auth/signup',
+      status: 422,
+      response: {
+        data: {
+          error: {email: ['The email has already been taken.']},
+          code: 422,
+        },
+      },
+    })
+
     user
-      .findByLabelText(/first name/i)
-      .click({force: true})
-      .type(customer.firstName)
-      .findByLabelText(/last name/i)
-      .click({force: true})
-      .type(customer.lastName)
-      .findByLabelText(/email/i)
-      .type(customer.email)
-      .findByLabelText(/phone/i)
-      .type('07036975559')
-      .findByLabelText('Password')
-      .type('Password1', {force: true})
-      .findByLabelText('Confirm Password')
-      .click({force: true})
-      .type('Password1')
-      .findByLabelText(/date of birth/i)
-      .click({force: true})
-      .get('.numInput')
-      .type('1995')
-      .get('.flatpickr-monthDropdown-months')
-      .select('April')
-      .get('[aria-label="April 7, 1995"]')
-      .click()
-      .findByLabelText(/street address/i)
-      .type(customer.streetAddress, {force: true})
-      .findByLabelText(/choose your city/i)
-      .click()
-      .findByText('New York')
-      .click()
-      .findByLabelText(/select your country/i)
-      .click()
-      .findByText('United States')
-      .click()
-      .findByLabelText(/zipcode/i)
-      .click({force: true})
-      .type(customer.zipcode)
       .findByLabelText(
         /Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy/i,
       )
       .check({force: true})
-      .findByText(/sign up/i)
+      .findAllByText(/create an account/i)
+      .last()
+      .click()
+      .findAllByText('The email has already been taken.')
+      .should('be.visible')
+  })
+
+  it('should register a new user', () => {
+    user.fixture('signup').as('signupJSON')
+    user.fixture('signin').as('signinJSON')
+    user.fixture('user').as('usersJSON')
+    user.server()
+    user.route('POST', '/api/v1/auth/signup', '@signupJSON')
+    user.route('POST', '/api/v1/auth/signin', '@signinJSON')
+    user.route('GET', '/api/v1/auth/me', '@usersJSON')
+
+    user
+      .findByLabelText(
+        /Avenir’s Platform Agreement and Wyre’s Terms of Service and Privacy Policy/i,
+      )
+      .check({force: true})
+      .findAllByText(/create an account/i)
+      .last()
       .click()
       .url()
       .should('include', '/account/account-connect')
   })
 })
-// .fixture('logo.png')
-// .then(fileContent => {
-//   cy.get('#userId').upload({
-//     fileContent,
-//     fileName: 'logo.png',
-//     mimeType: 'image/png',
-//   })
-// })

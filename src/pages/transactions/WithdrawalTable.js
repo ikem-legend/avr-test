@@ -11,29 +11,7 @@ class WithdrawalTable extends Component {
   constructor() {
     super()
     this.state = {
-      withdrawals: [
-        // {
-        //   date: '12-02-2020',
-        //   account: '*****9806',
-        //   amount: '$15.34',
-        //   status: 'Sent',
-        //   source: 'BTC'
-        // },
-        // {
-        //   date: '27-08-2020',
-        //   account: '*****8319',
-        //   amount: '$15.34',
-        //   status: 'Sent',
-        //   source: 'ETH'
-        // },
-        // {
-        //   date: '31-07-2020',
-        //   account: '*****1076',
-        //   amount: '$15.34',
-        //   status: 'Sent',
-        //   source: 'BTC'
-        // },
-      ],
+      withdrawals: [],
       columns: [
         {
           dataField: 'dateCreated',
@@ -66,10 +44,20 @@ class WithdrawalTable extends Component {
     }
   }
 
+  /**
+   * Format status text
+   * @param {string} status Status
+   * @returns {string} Formatted text
+   */
   formatStatus = status => (
     <span>{`${status[0].toUpperCase()}${status.slice(1)}`}</span>
   )
 
+  /**
+   * Format amount text
+   * @param {string} amount Amount
+   * @returns {string} Formatted text
+   */
   formatCurr = amount => <span>${amount}</span>
 
   render() {

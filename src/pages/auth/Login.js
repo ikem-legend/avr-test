@@ -36,6 +36,7 @@ class Login extends Component {
 
     document.body.classList.add('authentication-bg')
     const {email, password} = this.state
+    // Email and password are sometimes autofilled by the browser hence the need to update the styling in such cases
     // Another possible solution is to use an array to loop through the state then update field styling
     if (email && password) {
       document.querySelectorAll('.float-container').classList.add('active')
@@ -60,6 +61,10 @@ class Login extends Component {
     }
   }
 
+  /**
+   * Move label to top of field on data entry
+   * @param {object} e Global event object
+   */
   activateField = e => {
     document
       .querySelector(`.float-container #${e.target.name}`)
@@ -69,6 +74,10 @@ class Login extends Component {
     ).parentElement.style.borderLeft = '2px solid #1ca4a9'
   }
 
+  /**
+   * Move label to center of field when empty
+   * @param {object} e Global event object
+   */
   deactivateField = e => {
     document.querySelector(
       `.float-container #${e.target.name}`,
@@ -80,6 +89,10 @@ class Login extends Component {
     }
   }
 
+  /**
+   * Update field in state
+   * @param {object} e Global event object
+   */
   updateInputValue = e => {
     e.preventDefault()
     const {name, value} = e.target
@@ -88,6 +101,9 @@ class Login extends Component {
     })
   }
 
+  /**
+   * Toggle privacy modal
+   */
   togglePrivacy = () => {
     const {privacyModal} = this.state
     this.setState({
@@ -95,6 +111,9 @@ class Login extends Component {
     })
   }
 
+  /**
+   * Toggle terms modal
+   */
   toggleTerms = () => {
     const {termsModal} = this.state
     this.setState({
@@ -253,7 +272,7 @@ class Login extends Component {
                 </Col>
 
                 <Col md={7} className="d-none d-md-inline-block login-bg">
-                  <div className="auth-page-sidebar"></div>
+                  <div className="auth-page-sidebar" />
                 </Col>
               </Row>
             </Container>

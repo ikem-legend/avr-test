@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
 import {Row, Col, TabPane, TabContent, Nav, NavItem, NavLink} from 'reactstrap'
 import classnames from 'classnames'
-import isEqual from 'lodash/isEqual'
+import isEqual from 'lodash.isequal'
 import {isUserAuthenticated} from '../../helpers/authUtils'
 import {callApi} from '../../helpers/api'
 import {showFeedback, updateUserData} from '../../redux/actions'
@@ -49,6 +49,7 @@ class Account extends Component {
       documentUploadError: null,
       documentUpload: false,
       total: 0,
+      image: null,
       twofactorAuth: false,
       notifications: false,
       checkDetails: {},
@@ -59,8 +60,15 @@ class Account extends Component {
   componentDidMount() {
     this.loadUserData()
   }
-  // document
-  loadUserData = (update = false) => {
+
+  /**
+   * Load local state with user data
+   * Optionally update Redux state with latest user data
+   * This ensures sidebar is always up to date with account setup progress
+   * @param {boolean} mlprUpdate Multiplier update status
+   * @param {boolean} imgUpdate Image update status
+   */
+  loadUserData = (mlprUpdate = false, imgUpdate = false) => {
     const {user} = this.props
     callApi('/auth/me', null, 'GET', user.token)
       .then(res => {
@@ -88,6 +96,7 @@ class Account extends Component {
             documentUpload,
             total,
           },
+          myImage,
         } = res.data
         const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
         const btcVal = myCurrencyDistributions[0].percentage
@@ -103,11 +112,10 @@ class Account extends Component {
             return details
           })
           return acc
-          // Object.keys(acc).forEach(key => key !== 'id' && delete acc[key])
         })
         // Deep copy needed to avoid overwriting account details
         // Create an array for the accounts with only id and value and this is
-        // then used to track sttate of each account for linking and unlinking
+        // then used to track state of each account for linking and unlinking
         const accountsConnectArr = JSON.parse(JSON.stringify(acctArr)).map(
           acctDet => {
             Object.keys(acctDet).forEach(
@@ -131,7 +139,6 @@ class Account extends Component {
           email: myEmailAddress,
           phone: myPhoneNumber ? myPhoneNumber : '',
           dob: new Date(myBirthDay),
-          // dob: myBirthDay * 1000,
           address: myContactAddress ? myContactAddress : '',
           city: myContactCity,
           country: myContactCountry,
@@ -143,7 +150,6 @@ class Account extends Component {
           eth: ethVal,
           currDist: {btc: btcVal, eth: ethVal}, // stores a copy of the distribution for display
           accounts: accountsLinkedList,
-          // accounts: plaidBanks,
           accountsConnectList: accountsConnectArr,
           accountsFSList: accountsFSArr,
           acctFundingSource: res.data.plaidBankAccountFundingSource,
@@ -154,6 +160,7 @@ class Account extends Component {
           documentUploadStatus: documentUpload.status,
           documentUploadError: documentUpload.error,
           total,
+          image: myImage,
           notifications: appNotifications,
           twofactorAuth: twofactorAuthStatus,
           checkDetails: {
@@ -162,7 +169,7 @@ class Account extends Component {
             currDist: {btc: btcVal, eth: ethVal},
           },
         })
-        if (update) {
+        if (mlprUpdate || imgUpdate) {
           const userObj = {}
           Object.assign(userObj, {...res.data}, {token: user.token})
           this.props.updateUserData(userObj)
@@ -173,7 +180,9 @@ class Account extends Component {
       })
   }
 
-  // This updates the data used to compare which functionality was updated and possibly fire one notification instead of 2
+  /**
+   * This updates the data used to compare which functionality was updated and possibly fire one notification instead of 2
+   */
   updateCheckData = () => {
     const {invPause, multiplier, btc, eth} = this.state
     this.setState({
@@ -185,6 +194,10 @@ class Account extends Component {
     })
   }
 
+  /**
+   * Set active tab
+   * @param {string} tab Selected tab
+   */
   toggle = tab => {
     if (tab !== this.state.activeTab) {
       this.setState({
@@ -194,6 +207,10 @@ class Account extends Component {
   }
 
   /* start account settings functions */
+  /**
+   * Update roundup state locally and via API
+   * @param {object} e Global event object
+   */
   switchRoundup = e => {
     const {checked} = e.target
     const {user} = this.props
@@ -224,6 +241,10 @@ class Account extends Component {
       })
   }
 
+  /**
+   * Update multiplier local state
+   * @param {object} e Global event object
+   */
   selectMultiplier = e => {
     const {value} = e.target
     this.setState({
@@ -231,6 +252,11 @@ class Account extends Component {
     })
   }
 
+  /**
+   * Update investment ratio local state
+   * @param {object} e Global event object
+   * @returns {boolean} Return false if invalid amount entered
+   */
   updateRatio = e => {
     const {name, value} = e.target
     if (value.length > 2 && value > 100) {
@@ -266,6 +292,10 @@ class Account extends Component {
     }
   }
 
+  /**
+   * Compare which fields changed in a bid to fire two notifications only if both fields changed
+   * else only one notification is fired at a time
+   */
   saveDetails = async () => {
     const {multiplier, currDist, checkDetails} = this.state
     if (
@@ -287,11 +317,13 @@ class Account extends Component {
     }
   }
 
+  /**
+   * Update multiplier setting via API
+   */
   saveMultiplier = () => {
     // Check and submit only changed values
     const {multiplier} = this.state
     const {user} = this.props
-    // console.log(user)
     const multiplierList = {1: '1', 2: '2', 3: '5', 4: '10'}
     const selectedMultiplierId = Object.keys(multiplierList).find(
       key => multiplierList[key] === String(parseInt(multiplier, 10)),
@@ -303,16 +335,15 @@ class Account extends Component {
     callApi('/user/multipliers', multiplierObj, 'POST', user.token)
       .then(() => {
         this.props.showFeedback('Multiplier successfully updated', 'success')
-        // this.saveRatio()
         if (user.setup.multiplierSetup.done === false) {
+          // Update percentage in left sidebar if multiplier is being set for the first time
           this.loadUserData(true)
         } else {
           this.loadUserData()
         }
         this.updateCheckData()
       })
-      .catch(err => {
-        console.log(err)
+      .catch(() => {
         this.props.showFeedback(
           'Error updating currency ratio, please try again',
         )
@@ -324,6 +355,9 @@ class Account extends Component {
       )
   }
 
+  /**
+   * Set investment ratio setting via API
+   */
   saveRatio = () => {
     const {btc, eth} = this.state
     const {user} = this.props
@@ -361,6 +395,11 @@ class Account extends Component {
   /* end account settings functions */
 
   /* start banks functions */
+  /**
+   * Update linked account state
+   * @param {number} id Selected account ID
+   * @param {boolean} val Selected account status value
+   */
   accountsLinked = (id, val) => {
     const {accountsConnectList} = this.state
     const tempList = accountsConnectList.map(acc => {
@@ -374,12 +413,15 @@ class Account extends Component {
     })
   }
 
+  /**
+   * Update funding source state
+   * @param {number} id Selected account ID
+   * @param {boolean} val Selected funding source status value
+   */
   fundingSourceLinked = (id, val) => {
     const {accountsFSList} = this.state
-    // toggle selected object
-    // const clearedList = accountsFSList.map(acc => ({...acc, fundingSource: false})) // find better solution
+    // TODO: toggle selected object
     const tempList = accountsFSList.map(acc => {
-      // const tempList = clearedList.map(acc => {
       if (acc.id === id) {
         return {...acc, fundingSource: val}
       }
@@ -390,6 +432,9 @@ class Account extends Component {
     })
   }
 
+  /**
+   * Update linked account setting via API
+   */
   connectSelectedAccts = () => {
     const {accountsConnectList, accountsFSList} = this.state
     const {user} = this.props
@@ -412,6 +457,10 @@ class Account extends Component {
     }
   }
 
+  /**
+   * Update funding source setting via API
+   * @param {object} val Funding source object
+   */
   connectFundingSource = val => {
     const {user} = this.props
     const fsObj = {funding_source: val.fundingSource, bank_account_id: val.id}
@@ -480,6 +529,7 @@ class Account extends Component {
       twofactorAuth,
       activeTab,
       loadingAcctLink,
+      image,
     } = this.state
     const {user} = this.props
 
@@ -499,6 +549,7 @@ class Account extends Component {
               documentUploadStatus={documentUploadStatus}
               documentUploadError={documentUploadError}
               topup={topup}
+              image={image}
             />
           </Col>
           <Col md={9}>

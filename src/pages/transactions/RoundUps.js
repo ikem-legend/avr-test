@@ -35,6 +35,9 @@ class RoundUps extends Component {
     }
   }
 
+  /**
+   * Load local state with user data
+   */
   loadUserData = () => {
     const {multiplier, invPause} = this.props
     this.setState({
@@ -43,6 +46,9 @@ class RoundUps extends Component {
     })
   }
 
+  /**
+   * Load local state with transaction data
+   */
   loadTxnData = () => {
     const {milestone} = this.props
     const userMilestone =
@@ -59,6 +65,10 @@ class RoundUps extends Component {
     })
   }
 
+  /**
+   * Update roundup state locally and via API
+   * @param {object} e Global event object
+   */
   switchRoundup = e => {
     const {checked} = e.target
     const {user} = this.props
@@ -70,7 +80,7 @@ class RoundUps extends Component {
       pause_investment: !checked,
     }
     callApi('/user/investment/status', invStatus, 'POST', user.token)
-      .then(({data}) => {
+      .then(() => {
         this.setState({
           invPause: !checked,
           loadingRndp: false,
@@ -89,6 +99,10 @@ class RoundUps extends Component {
       })
   }
 
+  /**
+   * Update multiplier local state
+   * @param {object} e Global event object
+   */
   selectMultiplier = e => {
     const {value} = e.target
     this.setState({
@@ -96,6 +110,9 @@ class RoundUps extends Component {
     })
   }
 
+  /**
+   * Update multiplier setting via API
+   */
   saveMultiplier = () => {
     const {multiplier} = this.state
     const {user, dataUpdate} = this.props

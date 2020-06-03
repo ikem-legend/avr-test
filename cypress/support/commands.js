@@ -61,3 +61,45 @@ Cypress.Commands.add('login', () => {
       cy.setCookie('avenirUser', JSON.stringify(userObj))
     })
 })
+
+Cypress.Commands.add(
+  'dropFile',
+  {
+    prevSubject: false,
+  },
+  fileName => {
+    Cypress.log({
+      name: 'dropFile',
+    })
+    return cy
+      .fixture(fileName, 'base64')
+      .then(Cypress.Blob.base64StringToBlob)
+      .then(blob => {
+        // instantiate File from `application` window, not cypress window
+        return cy.window().then(win => {
+          const file = new win.File([blob], fileName)
+          const dataTransfer = new win.DataTransfer()
+          dataTransfer.items.add(file)
+
+          return cy.document().trigger('drop', {
+            dataTransfer,
+          })
+        })
+      })
+  },
+)
+
+// Cypress.Commands.add('uploadFile', (fileNamePath, fileName, fileType = ' ', selector) => {
+//   cy.get(selector).then(subject => {
+//       cy.fixture(fileNamePath, 'base64')
+//           .then(Cypress.Blob.base64StringToBlob)
+//           .then(blob => {
+//               const el = subject[0]
+//               const testFile = new File([blob], fileName, {
+//                   type: fileType
+//               })
+//               const dataTransfer = new DataTransfer()
+//               dataTransfer.items.add(testFile)
+//               el.files = dataTransfer.files
+//           })
+//   })

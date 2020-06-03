@@ -8,9 +8,6 @@ import {
   REGISTER_USER,
   REGISTER_USER_SUCCESS,
   REGISTER_USER_FAILED,
-  FORGET_PASSWORD,
-  FORGET_PASSWORD_SUCCESS,
-  FORGET_PASSWORD_FAILED,
   UPDATE_USER_DATA,
   UPDATE_USER_DATA_SUCCESS,
 } from './constants'
@@ -36,17 +33,6 @@ const Auth = (state = INIT_STATE, action) => {
       return {...state, error: action.payload, loading: false}
     case LOGOUT_USER:
       return {...state, user: null}
-    case FORGET_PASSWORD:
-      return {...state, loading: true}
-    case FORGET_PASSWORD_SUCCESS:
-      return {
-        ...state,
-        passwordResetStatus: action.payload,
-        loading: false,
-        error: null,
-      }
-    case FORGET_PASSWORD_FAILED:
-      return {...state, error: action.payload, loading: false}
     case UPDATE_USER_DATA:
       return {...state, loading: true}
     case UPDATE_USER_DATA_SUCCESS:
